@@ -10,6 +10,9 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 
+/config/production.json
+/config/test.json
+
 # OS
 .DS_Store
 
