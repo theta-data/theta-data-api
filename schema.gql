@@ -1,0 +1,66 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserInfo {
+  status: Int!
+  email: String!
+}
+
+type ResInfo {
+  code: CODE_ENUM!
+  message: String
+  userInfo: UserInfo
+}
+
+enum CODE_ENUM {
+  invalid_request
+  too_many_request
+  sys_err
+  db_operate_err
+  success
+  params_format_error
+  register_password_repeat_error
+  register_user_exist
+  login_no_user
+  login_password_error
+  login_not_verified
+  mail_check_invalid_auth_token
+}
+
+type SendTxMonitorResIno {
+  code: CODE_ENUM!
+  message: String
+  list: [SendTxMonitorResList!]!
+}
+
+type SendTxMonitorResList {
+  id: Int!
+  min: Int!
+  notify_email: String!
+  token_type: SendTxMonitorTokenTypeEnum!
+  status: SendTxMonitorStatusEnum!
+  create_date: String!
+  update_date: String!
+}
+
+enum SendTxMonitorTokenTypeEnum {
+  THETA
+  TFUEL
+}
+
+enum SendTxMonitorStatusEnum {
+  success
+}
+
+type Query {
+  whoAmI: UserInfo!
+  monitorList: SendTxMonitorResIno!
+}
+
+type Mutation {
+  register(password: String!, email: String!): ResInfo!
+  login(password: String!, email: String!): ResInfo!
+  confirmEmail: ResInfo!
+  addMonitor(token_type: SendTxMonitorTokenTypeEnum!, min: Int!, notify_email: String!): SendTxMonitorResIno!
+}
