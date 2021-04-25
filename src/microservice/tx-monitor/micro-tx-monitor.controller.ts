@@ -7,7 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm'
 import { TxMonitorSendListEntity } from '../../tx-monitor/send/tx-monitor-send-list.entity'
 import { LessThan, MoreThan, Repository } from 'typeorm'
-
+const config = require('config')
 @Controller()
 export class MicroTxMonitorController {
   constructor(
@@ -16,7 +16,7 @@ export class MicroTxMonitorController {
     @Inject('MAIL_SERVICE') private client: ClientProxy
   ) {}
 
-  @EventPattern('send-tx-monitor')
+  @EventPattern('send-tx-monitor-' + config.util.getEnv('NODE_ENV'))
   async sendTxMonitor({
     token_type,
     amount,
