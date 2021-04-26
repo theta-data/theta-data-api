@@ -1,19 +1,11 @@
 {
-  "RONG_DB": {
-    "host": "localhost",
-    "port": 3306,
-    "username": "root",
-    "password": "",
-    "database": "rong_db",
-    "synchronize": true,
-    "autoLoadEntities": true
-  },
+  "THETA_DATA_DATABASE_CREDENTIALS": "/home/ubuntu",
   "REDIS": {
     "host": "127.0.0.1",
     "port": 6379
   },
   "LOG_PATH": "./logs/",
-  "MAIL": {
+  "MAIL_CREDENTIALS": {
     "USER": "ron1993219@gmail.com",
     "PASS": ""
   }

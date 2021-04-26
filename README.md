@@ -1,6 +1,20 @@
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Config
+`export THETA_DATA_DATABASE_CREDENTIALS='KEY_PATH'`
+
+### theta
+``` 
+{
+    "host": "localhost",
+    "port": 3306,
+    "username": "root",
+    "password": "",
+    "database": "",
+    "synchronize": true,
+    "autoLoadEntities": true
+}
+```
 
 ## Installation
 
@@ -19,4 +33,6 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+
+
 ```
