@@ -1,8 +1,5 @@
 ## Description
 
-## Config
-`export THETA_DATA_DATABASE_CREDENTIALS='KEY_PATH'`
-
 ### theta
 ``` 
 {
