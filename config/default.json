@@ -15,6 +15,6 @@
   "LOG_PATH": "./logs/",
   "MAIL": {
     "USER": "ron1993219@gmail.com",
-    "PASS": "Larry1993@google"
+    "PASS": ""
   }
 }
