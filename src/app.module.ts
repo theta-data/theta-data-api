@@ -14,7 +14,7 @@ const config = require('config')
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () =>
-        Object.assign(await getConnectionOptions('RONG_DB'), config.get('RONG_DB'))
+        Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
