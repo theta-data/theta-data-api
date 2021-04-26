@@ -1,18 +1,5 @@
 ## Description
 
-### theta
-``` 
-{
-    "host": "localhost",
-    "port": 3306,
-    "username": "root",
-    "password": "",
-    "database": "",
-    "synchronize": true,
-    "autoLoadEntities": true
-}
-```
-
 ## Installation
 
 ```bash
