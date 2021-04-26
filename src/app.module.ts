@@ -7,7 +7,6 @@ import { TxModule } from './tx/tx.module'
 import { TxMonitorSendModule } from './tx-monitor/send/tx-monitor-send.module'
 import { MicroTxMonitorModule } from './microservice/tx-monitor/micro-tx-monitor.module'
 import { TxMonitorWidrawStakeModule } from './tx-monitor/withdraw-stake/tx-monitor-widraw-stake.module'
-// import {} from '@nesjs/mi'
 const config = require('config')
 
 @Module({
@@ -26,7 +25,6 @@ const config = require('config')
     MicroTxMonitorModule,
     TxMonitorWidrawStakeModule
   ],
-  // controllers: [AppController],
   providers: []
 })
 export class AppModule {}
