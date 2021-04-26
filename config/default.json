@@ -1,12 +1,25 @@
 {
-  "THETA_DATA_DATABASE_CREDENTIALS": "/home/ubuntu",
-  "REDIS": {
-    "host": "127.0.0.1",
-    "port": 6379
+  "THETA_DB": {
+    "host": "",
+    "port": 3306,
+    "username": "admin",
+    "password": "",
+    "database": "",
+    "synchronize": true,
+    "autoLoadEntities": true,
+    "logging": false,
+    "extra": {
+      "charset": "utf8mb4_unicode_ci"
+    }
   },
-  "LOG_PATH": "./logs/",
-  "MAIL_CREDENTIALS": {
-    "USER": "ron1993219@gmail.com",
+  "LOG_PATH": "",
+  "MAIL": {
+    "USER": "",
     "PASS": ""
+  },
+
+  "REDIS": {
+    "host": "",
+    "port": 6379
   }
 }
