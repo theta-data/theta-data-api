@@ -52,16 +52,6 @@ export class MicroTxMonitorController {
           SendTxMonitorTokenTypeEnum[token_type] +
           ' was transferred.',
         text: '',
-        // 'from  address ' +
-        // from +
-        // ' to ' +
-        // to +
-        // ' transfer' +
-        // amount +
-        // ' ' +
-        // SendTxMonitorTokenTypeEnum[token_type] +
-        // ' hash: ' +
-        // hash,
         html:
           '<p>from  address:<a href="https://explorer.thetatoken.org/account/' +
           from +
@@ -88,17 +78,7 @@ export class MicroTxMonitorController {
   }
 
   @EventPattern('withdraw-stake-tx-monitor')
-  async withdrawStakeTxMonitor({
-    from,
-    to,
-    hash
-  }: {
-    // token_type: SendTxMonitorTokenTypeEnum
-    // amount: number
-    from: string
-    to: string
-    hash: string
-  }) {
+  async withdrawStakeTxMonitor({ from, to, hash }: { from: string; to: string; hash: string }) {
     let monitorToSend = await this.withdrawTxMonitorRepository.find({
       where: {
         // token_type: token_type,
@@ -112,25 +92,12 @@ export class MicroTxMonitorController {
         to: monitor.notify_email,
         subject: 'Notification: new stake withdraw happen.',
         text: '',
-        // 'from  address ' +
-        // from +
-        // ' to ' +
-        // to +
-        // ' transfer' +
-        // amount +
-        // ' ' +
-        // SendTxMonitorTokenTypeEnum[token_type] +
-        // ' hash: ' +
-        // hash,
         html:
           '<p>address:<a href="https://explorer.thetatoken.org/account/' +
           from +
           '">' +
           from +
           '</a></p><p>withdraw stake ' +
-          // amount +
-          // ' ' +
-          // SendTxMonitorTokenTypeEnum[token_type] +
           '</p>' +
           '<p>from: <a href="https://explorer.thetatoken.org/account/">' +
           to +
