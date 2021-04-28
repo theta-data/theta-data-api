@@ -1,10 +1,10 @@
 {
-  "THETA_DB": {
+  "THETA_DATA_DB": {
     "host": "",
     "port": 3306,
-    "username": "admin",
+    "username": "root",
     "password": "",
-    "database": "",
+    "database": "theta_db",
     "synchronize": true,
     "autoLoadEntities": true,
     "logging": false,
@@ -21,5 +21,9 @@
   "REDIS": {
     "host": "",
     "port": 6379
+  },
+
+  "JWT_CONSTANTS" : {
+    "secret" : "secretKey"
   }
 }

@@ -28,6 +28,24 @@ enum CODE_ENUM {
   mail_check_invalid_auth_token
 }
 
+type ThetaTx {
+  coin_base_tx: Int!
+  slash_tx: Int!
+  send_tx: Int!
+  reserve_fund_tx: Int!
+  release_fund_tx: Int!
+  service_payment_tx: Int!
+  split_rule_tx: Int!
+  deposit_stake_tx: Int!
+  withdraw_stake_tx: Int!
+  smart_contract_tx: Int!
+  timestamp: String
+}
+
+type ThetaTxList {
+  list: [ThetaTx!]!
+}
+
 type SendTxMonitorResIno {
   code: CODE_ENUM!
   message: String
@@ -50,17 +68,44 @@ enum SendTxMonitorTokenTypeEnum {
 }
 
 enum SendTxMonitorStatusEnum {
+  deleted
   success
+}
+
+type TxMonitorWithdrawStakeResIno {
+  code: CODE_ENUM!
+  message: String
+  list: [TxMonitorWithdrawStakeResList!]!
+}
+
+type TxMonitorWithdrawStakeResList {
+  id: Int!
+  min: Int!
+  notify_email: String!
+  status: TxMonitorWithdrawStakeStatusEnum!
+  create_date: String!
+  update_date: String!
+}
+
+enum TxMonitorWithdrawStakeStatusEnum {
+  success
+  deleted
 }
 
 type Query {
   whoAmI: UserInfo!
-  monitorList: SendTxMonitorResIno!
+  thetaTxList: ThetaTxList!
+  thetaTxListByDay: ThetaTxList!
+  sendTxMonitorList: SendTxMonitorResIno!
+  txWithdrawMonitorList: TxMonitorWithdrawStakeResIno!
 }
 
 type Mutation {
   register(password: String!, email: String!): ResInfo!
   login(password: String!, email: String!): ResInfo!
   confirmEmail: ResInfo!
-  addMonitor(token_type: SendTxMonitorTokenTypeEnum!, min: Int!, notify_email: String!): SendTxMonitorResIno!
+  addSendTxMonitor(token_type: SendTxMonitorTokenTypeEnum!, min: Int!, notify_email: String!): SendTxMonitorResIno!
+  delTxMonitor(id: Int!): SendTxMonitorResIno!
+  addTxWithdrawStakeMonitor(min: Int!, notify_email: String!): TxMonitorWithdrawStakeResIno!
+  delTxWithdrawStakeMonitor(id: Int!): TxMonitorWithdrawStakeResIno!
 }
