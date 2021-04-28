@@ -12,7 +12,7 @@ const config = require('config')
     UsersModule,
     PassportModule,
     JwtModule.register({
-      secret: config.get("JWT_CONSTANTS"),
+      secret: config.get('JWT_CONSTANTS').secret,
       signOptions: { expiresIn: '6000s' }
     })
   ],
