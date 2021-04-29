@@ -1,9 +1,8 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Injectable } from '@nestjs/common'
 import { UsersService } from '../users/users.service'
 import { JwtService } from '@nestjs/jwt'
 import { CODE_ENUM } from '../common/code.enum'
 import { ResInfo } from '../users/user-info.model'
-import { ClientProxy } from '@nestjs/microservices'
 const moment = require('moment')
 @Injectable()
 export class AuthService {
