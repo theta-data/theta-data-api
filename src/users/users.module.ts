@@ -20,7 +20,7 @@ const config = require('config')
       }
     ]),
     JwtModule.register({
-      secret: jwtConstants.secret,
+      secret: config.get('JWT_CONSTANTS').secret,
       signOptions: { expiresIn: '6000s' }
     })
   ],
