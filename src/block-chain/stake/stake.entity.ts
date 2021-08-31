@@ -44,7 +44,7 @@ export class StakeEntity {
   @Column({ type: 'int' })
   node_type: STAKE_NODE_TYPE_ENUM
 
-  @Field()
+  @Field({ nullable: true })
   @Column()
   holder: string
 
