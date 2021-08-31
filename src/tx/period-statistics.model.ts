@@ -1,5 +1,4 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { GraphQLList } from "graphql";
 
 @ObjectType()
 export class PeriodStatistics{
