@@ -6,7 +6,7 @@ import { StakeEntity } from './stake.entity'
 export class StakeResolver {
   constructor(private stakeService: StakeService) {}
 
-  @Query(() => StakeEntity)
+  @Query(() => [StakeEntity])
   async stakeEntity() {
     return this.stakeService.getNodeList()
   }
