@@ -82,7 +82,7 @@ export class StakeService {
     }
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async updateStakeInfo() {
     let nodeInfo = await provider.getStatus()
     console.log('node info', JSON.stringify(nodeInfo))
