@@ -85,6 +85,8 @@ export class StakeService {
   @Cron(CronExpression.EVERY_MINUTE)
   async updateStakeInfo() {
     let nodeInfo = await provider.getStatus()
+    console.log('node info', JSON.stringify(nodeInfo))
+
     await this.updateVcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateGcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateEenp(nodeInfo.result.latest_finalized_block_height)
