@@ -15,7 +15,7 @@ export class StakeService {
 
   async updateVcp(height: string) {
     let vcpList = await provider.getVcpByHeight(height)
-    console.log('vcp list', JSON.stringify(vcpList))
+    console.log('height', height, 'vcp list', JSON.stringify(vcpList))
     for (const validator of vcpList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates) {
       let res = await this.stakeRepository.findOne({
         holder: validator.Holder,
