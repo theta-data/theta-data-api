@@ -13,6 +13,12 @@ export class StakeService {
     return await this.stakeRepository.find()
   }
 
+  async getEdgeNodeNum() {
+    return await this.stakeRepository.count({
+      node_type: STAKE_NODE_TYPE_ENUM.edge_cache
+    })
+  }
+
   async updateVcp(height: string) {
     let vcpList = await provider.getVcpByHeight(height)
     console.log('height', height, 'vcp list', JSON.stringify(vcpList))

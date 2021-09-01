@@ -1,4 +1,4 @@
-import { Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 // import { StakeEntity } from './stake.entity'
 import { stakeInfo } from './stake.model'
@@ -17,5 +17,10 @@ export class StakeResolver {
   @ResolveField('node_info', (returns) => [StakeEntity])
   async getNodeInfo() {
     return await this.stakeService.getNodeList()
+  }
+
+  @ResolveField('statistics.elite_edge_node_num', () => Int)
+  async getEliteEdgeNodeNum() {
+    return await this.stakeService.getEdgeNodeNum()
   }
 }
