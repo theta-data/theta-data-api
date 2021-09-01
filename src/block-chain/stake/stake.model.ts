@@ -2,15 +2,6 @@ import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 import { StakeEntity } from './stake.entity'
 
 @ObjectType()
-export class stakeInfo {
-  @Field(() => [StakeEntity])
-  node_info: Array<StakeEntity>
-
-  @Field(() => stakeStatistics)
-  statistics: stakeStatistics
-}
-
-@ObjectType()
 export class stakeStatistics {
   @Field(() => Int)
   elite_edge_node_num: number
@@ -26,4 +17,13 @@ export class stakeStatistics {
 
   @Field(() => Int)
   guardian_node_num: number
+}
+
+@ObjectType()
+export class stakeInfo {
+  @Field(() => [StakeEntity])
+  node_info: Array<StakeEntity>
+
+  @Field(() => stakeStatistics)
+  statistics: stakeStatistics
 }
