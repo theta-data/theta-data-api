@@ -82,6 +82,6 @@ export class StakeResolver {
     console.log('total validator theta wei', totalThetaWei.toString())
     console.log('total guardian wei', guardianThetaWei.toString())
 
-    return totalThetaWei.plus(guardianThetaWei).dividedBy('1e28').toFixed()
+    return totalThetaWei.plus(guardianThetaWei).dividedBy('1e27').toFixed()
   }
 }
