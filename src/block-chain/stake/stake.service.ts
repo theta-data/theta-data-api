@@ -9,7 +9,11 @@ const provider = new ThetaHttpProvider('http://localhost:16888/rpc')
 export class StakeService {
   constructor(@InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>) {}
 
-  async getNodeList() {
+  async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
+    if (nodeType)
+      return await this.stakeRepository.find({
+        node_type: nodeType
+      })
     return await this.stakeRepository.find()
   }
 
