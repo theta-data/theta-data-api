@@ -58,13 +58,13 @@ export class StakeResolver {
           totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
           // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
-          if (stake.return_height > latestHeight) {
+          if (Number(latestHeight) < Number(stake.return_height)) {
             totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
           }
         }
       })
     })
-    console.log('total validator theta wei', totalThetaWei.toFixed())
+    console.log('total validator theta wei', totalThetaWei.toString())
     let guardianThetaWei = new BigNumber(0)
     console.log('guardian length', guardianList.length)
     guardianList.forEach((node) => {
