@@ -1,8 +1,8 @@
-import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Float, Int, Query, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 // import { StakeEntity } from './stake.entity'
-import { stakeStatistics } from './stake.model'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
+import BigNumber from 'bignumber.js'
 
 @Resolver()
 export class StakeResolver {
@@ -43,5 +43,26 @@ export class StakeResolver {
   @Query(() => Int)
   async getCurrentHeight() {
     return await this.stakeService.getLatestFinalizedBlock()
+  }
+
+  @Query(() => Float)
+  async getThetaStakeRatio() {
+    let totalThetaWei = new BigNumber(0)
+    let latestHeight = await this.stakeService.getLatestFinalizedBlock()
+    let validatorList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.validator)
+    let guardianList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.guardian)
+
+    validatorList.concat(guardianList).forEach((node) => {
+      node.stakes.forEach((stake) => {
+        if (stake.withdrawn == false) {
+          totalThetaWei.plus(new BigNumber(stake.amount))
+        } else {
+          if (stake.return_height < latestHeight) {
+            totalThetaWei.plus(new BigNumber(stake.amount))
+          }
+        }
+      })
+    })
+    return totalThetaWei.dividedBy('5e27')
   }
 }
