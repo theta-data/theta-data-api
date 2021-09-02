@@ -14,9 +14,19 @@ export class StakeService {
   }
 
   async getEdgeNodeNum() {
-    return await this.stakeRepository.count({
+    let effectNodeNum = 0
+    let stakeList = await this.stakeRepository.find({
       node_type: STAKE_NODE_TYPE_ENUM.edge_cache
     })
+    stakeList.forEach((node) => {
+      node.stakes.some((stake) => {
+        if (stake.withdrawn == false) {
+          effectNodeNum++
+          return true
+        }
+      })
+    })
+    return effectNodeNum
   }
 
   async updateVcp(height: string) {

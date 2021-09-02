@@ -20,6 +20,8 @@ export class StakeResolver {
     return await this.stakeService.getEdgeNodeNum()
   }
 
+  // @Query(())
+
   // @ResolveField('statistics.elite_edge_node_num', () => Int)
   // async getEliteEdgeNodeNum() {
   //   return await this.stakeService.getEdgeNodeNum()
