@@ -52,11 +52,11 @@ export class StakeResolver {
     let validatorList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.validator)
     let guardianList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.guardian)
 
-    validatorList.concat(guardianList).forEach((node) => {
+    validatorList.forEach((node) => {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
           totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
-          console.log('add theta wei', new BigNumber(stake.amount).toFixed())
+          // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
           if (stake.return_height > latestHeight) {
             totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
@@ -64,7 +64,20 @@ export class StakeResolver {
         }
       })
     })
-    console.log('total theta wei', totalThetaWei.toFixed())
+    console.log('total validator theta wei', totalThetaWei.toFixed())
+
+    guardianList.forEach((node) => {
+      node.stakes.forEach((stake) => {
+        if (stake.withdrawn === false) {
+          totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+          // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
+        } else {
+          if (stake.return_height > latestHeight) {
+            totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+          }
+        }
+      })
+    })
     return totalThetaWei.dividedBy('1e28').toFixed()
   }
 }
