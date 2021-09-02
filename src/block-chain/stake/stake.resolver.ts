@@ -17,13 +17,7 @@ export class StakeResolver {
 
   @Query(() => Int)
   async getEdgeNodeNum() {
-    return await this.stakeService.getEdgeNodeNum()
+    // let latestBlock =
+    return await this.stakeService.getEdgeNodeNum(await this.stakeService.getLatestFinalizedBlock())
   }
-
-  // @Query(())
-
-  // @ResolveField('statistics.elite_edge_node_num', () => Int)
-  // async getEliteEdgeNodeNum() {
-  //   return await this.stakeService.getEdgeNodeNum()
-  // }
 }

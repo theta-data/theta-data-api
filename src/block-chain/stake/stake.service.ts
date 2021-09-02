@@ -13,14 +13,17 @@ export class StakeService {
     return await this.stakeRepository.find()
   }
 
-  async getEdgeNodeNum() {
+  async getEdgeNodeNum(latestBlock: string) {
     let effectNodeNum = 0
     let stakeList = await this.stakeRepository.find({
       node_type: STAKE_NODE_TYPE_ENUM.edge_cache
     })
     stakeList.forEach((node) => {
       node.stakes.some((stake) => {
-        if (stake.withdrawn == false) {
+        if (
+          stake.withdrawn == false ||
+          (stake.withdrawn == true && Number(latestBlock) < Number(stake.return_height))
+        ) {
           effectNodeNum++
           return true
         }
@@ -96,6 +99,11 @@ export class StakeService {
           { stakes: een.Stakes }
         )
     }
+  }
+
+  async getLatestFinalizedBlock() {
+    let nodeInfo = await provider.getStatus()
+    return nodeInfo.result.latest_finalized_block_height
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
