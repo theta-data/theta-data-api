@@ -66,6 +66,7 @@ export class StakeResolver {
     })
     console.log('total validator theta wei', totalThetaWei.toFixed())
     let guardianThetaWei = new BigNumber(0)
+    console.log('guardian length', guardianList.length)
     guardianList.forEach((node) => {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
