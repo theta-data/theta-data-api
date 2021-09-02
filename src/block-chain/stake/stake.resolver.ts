@@ -39,4 +39,9 @@ export class StakeResolver {
       STAKE_NODE_TYPE_ENUM.validator
     )
   }
+
+  @Query(() => Int)
+  async getCurrentHeight() {
+    return await this.stakeService.getLatestFinalizedBlock()
+  }
 }
