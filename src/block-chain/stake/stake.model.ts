@@ -19,11 +19,11 @@ export class stakeStatistics {
   guardian_node_num: number
 }
 
-@ObjectType()
-export class stakeInfo {
-  @Field(() => [StakeEntity])
-  node_info: Array<StakeEntity>
-
-  @Field(() => stakeStatistics)
-  statistics: stakeStatistics
-}
+// @ObjectType()
+// export class stakeInfo {
+//   @Field(() => [StakeEntity])
+//   node_info: Array<StakeEntity>
+//
+//   @Field(() => stakeStatistics)
+//   statistics: stakeStatistics
+// }
