@@ -56,6 +56,7 @@ export class StakeResolver {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn == false) {
           totalThetaWei.plus(new BigNumber(stake.amount))
+          console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
           if (stake.return_height < latestHeight) {
             totalThetaWei.plus(new BigNumber(stake.amount))
