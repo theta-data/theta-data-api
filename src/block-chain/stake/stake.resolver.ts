@@ -63,6 +63,7 @@ export class StakeResolver {
         }
       })
     })
-    return totalThetaWei.dividedBy('5e27')
+    console.log('total theta wei', totalThetaWei.toFixed())
+    return totalThetaWei.dividedBy('5e27').toFixed()
   }
 }
