@@ -13,10 +13,10 @@ export class StakeService {
     return await this.stakeRepository.find()
   }
 
-  async getEdgeNodeNum(latestBlock: string) {
+  async getNodeNum(latestBlock: string, nodeType: STAKE_NODE_TYPE_ENUM) {
     let effectNodeNum = 0
     let stakeList = await this.stakeRepository.find({
-      node_type: STAKE_NODE_TYPE_ENUM.edge_cache
+      node_type: nodeType
     })
     stakeList.forEach((node) => {
       node.stakes.some((stake) => {
