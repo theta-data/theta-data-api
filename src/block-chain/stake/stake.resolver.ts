@@ -65,21 +65,22 @@ export class StakeResolver {
       })
     })
     console.log('total validator theta wei', totalThetaWei.toFixed())
-
+    let guardianThetaWei = new BigNumber(0)
     guardianList.forEach((node) => {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
-          totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+          guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
           // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
           if (stake.return_height > latestHeight) {
-            totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+            guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
           }
         }
       })
     })
-    console.log('total theta wei', totalThetaWei.toFixed())
+    console.log('total validator theta wei', totalThetaWei.toString())
+    console.log('total guardian wei', guardianThetaWei.toString())
 
-    return totalThetaWei.dividedBy('1e28').toFixed()
+    return totalThetaWei.plus(guardianThetaWei).dividedBy('1e28').toFixed()
   }
 }
