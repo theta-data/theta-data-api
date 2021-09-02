@@ -54,11 +54,11 @@ export class StakeResolver {
 
     validatorList.concat(guardianList).forEach((node) => {
       node.stakes.forEach((stake) => {
-        if (stake.withdrawn == false) {
+        if (stake.withdrawn === false) {
           totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
           console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
-          if (stake.return_height < latestHeight) {
+          if (stake.return_height > latestHeight) {
             totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
           }
         }
