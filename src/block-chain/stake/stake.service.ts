@@ -10,7 +10,7 @@ export class StakeService {
   constructor(@InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>) {}
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
-    if (nodeType)
+    if (typeof nodeType !== undefined)
       return await this.stakeRepository.find({
         node_type: nodeType
       })
