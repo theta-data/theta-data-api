@@ -52,7 +52,7 @@ export class StakeResolver {
     let validatorList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.validator)
     let guardianList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.guardian)
 
-    validatorList.forEach((node) => {
+    validatorList.concat(guardianList).forEach((node) => {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
           totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
@@ -64,24 +64,45 @@ export class StakeResolver {
         }
       })
     })
-    console.log('total validator theta wei', totalThetaWei.toString())
-    let guardianThetaWei = new BigNumber(0)
-    console.log('guardian length', guardianList.length)
-    guardianList.forEach((node) => {
+    // console.log('total validator theta wei', totalThetaWei.toString())
+    // let guardianThetaWei = new BigNumber(0)
+    // console.log('guardian length', guardianList.length)
+    // guardianList.forEach((node) => {
+    //   node.stakes.forEach((stake) => {
+    //     if (stake.withdrawn === false) {
+    //       guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
+    //       // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
+    //     } else {
+    //       if (stake.return_height > latestHeight) {
+    //         guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
+    //       }
+    //     }
+    //   })
+    // })
+    // console.log('total validator theta wei', totalThetaWei.toString())
+    // console.log('total guardian wei', guardianThetaWei.toString())
+
+    return totalThetaWei.dividedBy('1e27').toFixed()
+  }
+
+  @Query(() => Float)
+  async getTfuelStakeRatio() {
+    let nodeList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.edge_cache)
+    let totalTfuelStaked = new BigNumber(0)
+    let latestHeight = await this.stakeService.getLatestFinalizedBlock()
+
+    nodeList.forEach((node) => {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
-          guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
+          totalTfuelStaked = totalTfuelStaked.plus(new BigNumber(stake.amount))
           // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
-          if (stake.return_height > latestHeight) {
-            guardianThetaWei = guardianThetaWei.plus(new BigNumber(stake.amount))
+          if (Number(latestHeight) < Number(stake.return_height)) {
+            totalTfuelStaked = totalTfuelStaked.plus(new BigNumber(stake.amount))
           }
         }
       })
     })
-    console.log('total validator theta wei', totalThetaWei.toString())
-    console.log('total guardian wei', guardianThetaWei.toString())
-
-    return totalThetaWei.plus(guardianThetaWei).dividedBy('1e27').toFixed()
+    return totalTfuelStaked.dividedBy('5.3e27').toFixed()
   }
 }
