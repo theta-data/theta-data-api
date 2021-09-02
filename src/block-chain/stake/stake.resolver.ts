@@ -103,6 +103,6 @@ export class StakeResolver {
         }
       })
     })
-    return totalTfuelStaked.dividedBy('5.3e27').toFixed()
+    return totalTfuelStaked.dividedBy('5.399646029e27').toFixed()
   }
 }
