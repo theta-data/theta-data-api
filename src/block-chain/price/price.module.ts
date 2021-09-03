@@ -4,9 +4,18 @@ import { StakeService } from '../stake/stake.service'
 import { StakeResolver } from '../stake/stake.resolver'
 import { CacheModule, Module } from '@nestjs/common'
 import { PriceResolver } from './price.resolver'
+import * as redisStore from 'cache-manager-redis-store'
+const config = require('config')
+// import config from 'config'
 
 @Module({
-  imports: [CacheModule],
+  imports: [
+    CacheModule.register({
+      store: redisStore,
+      host: config.get('REDIS')['host'],
+      port: config.get('REDIS')['port']
+    })
+  ],
   providers: [PriceResolver],
   exports: []
 })
