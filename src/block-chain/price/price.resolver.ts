@@ -9,24 +9,24 @@ export class PriceResolver {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
   @Query(() => ThetaPriceModel)
   async theta() {
-    if (await this.cacheManager.get('theta-price'))
-      return await this.cacheManager.get('theta-price')
+    const key = 'theta-price-info'
+    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const cmc = new CmcHttpProvider('57a40db8-5488-4ed4-ab75-152fec2ed608')
     const res = await cmc.getInformation()
     if (res.theta.price) {
-      await this.cacheManager.set('theta-price', res, { ttl: 60 * 60 })
+      await this.cacheManager.set(key, res.theta, { ttl: 60 * 60 })
     }
     return res.theta
   }
 
   @Query(() => ThetaPriceModel)
   async tfuel() {
-    if (await this.cacheManager.get('tfuel-price'))
-      return await this.cacheManager.get('tfuel-price')
+    const key = 'tfuel-price-info'
+    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const cmc = new CmcHttpProvider('57a40db8-5488-4ed4-ab75-152fec2ed608')
     const res = await cmc.getInformation()
-    if (res.theta.price) {
-      await this.cacheManager.set('tfuel-price', res, { ttl: 60 * 60 })
+    if (res.tfuel.price) {
+      await this.cacheManager.set(key, res.tfuel, { ttl: 60 * 60 })
     }
     return res.tfuel
   }
