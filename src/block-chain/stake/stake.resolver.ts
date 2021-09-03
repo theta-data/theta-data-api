@@ -1,6 +1,5 @@
 import { Args, Float, Int, Query, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
-// import { StakeEntity } from './stake.entity'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import BigNumber from 'bignumber.js'
 
@@ -77,7 +76,6 @@ export class StakeResolver {
       node.stakes.forEach((stake) => {
         if (stake.withdrawn === false) {
           totalTfuelStaked = totalTfuelStaked.plus(new BigNumber(stake.amount))
-          // console.log('add theta wei', new BigNumber(stake.amount).toFixed())
         } else {
           if (Number(latestHeight) < Number(stake.return_height)) {
             totalTfuelStaked = totalTfuelStaked.plus(new BigNumber(stake.amount))

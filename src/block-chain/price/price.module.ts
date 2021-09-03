@@ -1,12 +1,7 @@
-import { TypeOrmModule } from '@nestjs/typeorm'
-import { StakeEntity } from '../stake/stake.entity'
-import { StakeService } from '../stake/stake.service'
-import { StakeResolver } from '../stake/stake.resolver'
 import { CacheModule, Module } from '@nestjs/common'
 import { PriceResolver } from './price.resolver'
 import * as redisStore from 'cache-manager-redis-store'
 const config = require('config')
-// import config from 'config'
 
 @Module({
   imports: [
