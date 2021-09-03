@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common'
+import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { getConnectionOptions } from 'typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -10,6 +10,8 @@ import { TxMonitorWidrawStakeModule } from './tx-monitor/withdraw-stake/tx-monit
 import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
 import { PriceModule } from './block-chain/price/price.module'
+import * as redisStore from 'cache-manager-redis-store'
+
 const config = require('config')
 
 @Module({
@@ -21,6 +23,11 @@ const config = require('config')
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       autoSchemaFile: 'schema.gql'
+    }),
+    CacheModule.register({
+      store: redisStore,
+      host: config.get('REDIS')['host'],
+      port: config.get('REDIS')['port']
     }),
     ScheduleModule.forRoot(),
     AuthModule,
