@@ -9,6 +9,7 @@ import { MicroTxMonitorModule } from './microservice/tx-monitor/micro-tx-monitor
 import { TxMonitorWidrawStakeModule } from './tx-monitor/withdraw-stake/tx-monitor-widraw-stake.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
+import { PriceModule } from './block-chain/price/price.module'
 const config = require('config')
 
 @Module({
@@ -27,7 +28,8 @@ const config = require('config')
     TxMonitorSendModule,
     MicroTxMonitorModule,
     TxMonitorWidrawStakeModule,
-    StakeModule
+    StakeModule,
+    PriceModule
   ],
   providers: []
 })
