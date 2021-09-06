@@ -20,7 +20,7 @@ export class AnalyseService {
     @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy
   ) {}
 
-  public async stopQueryData() {
+  public stopQueryData() {
     this.doLoop = false
   }
 

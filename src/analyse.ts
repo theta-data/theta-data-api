@@ -12,11 +12,10 @@ async function bootstrap() {
   // await taskService.run()
   process.on('SIGINT', () => {
     console.log('do sigint reload')
-    taskService.stopQueryData().then(() => {
-      setTimeout(() => {
-        process.exit(0)
-      }, 10000)
-    })
+    taskService.stopQueryData()
+    setTimeout(() => {
+      process.exit(0)
+    }, 10000)
   })
   await taskService.queryDataFromBlockChain()
   // await sleep(awaitHors * 200)
