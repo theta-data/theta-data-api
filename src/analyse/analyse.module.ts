@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common'
+import { CacheModule, Logger, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { getConnectionOptions } from 'typeorm'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
@@ -13,7 +13,7 @@ const config = require('config')
       useFactory: async () =>
         Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
     }),
-
+    Logger,
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity]),
     CacheModule.register({
       store: redisStore,
