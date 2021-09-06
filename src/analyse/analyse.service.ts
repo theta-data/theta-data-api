@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common'
+import { Inject, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { Logger, Repository } from 'typeorm'
+import { Repository } from 'typeorm'
 // import { ThetaHttpProvider } from 'theta-ts-sdk'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ClientProxy } from '@nestjs/microservices'
@@ -11,15 +11,15 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 const moment = require('moment')
 const sleep = require('await-sleep')
 thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
-
+// const logger = new Logger()
 @Injectable()
 export class AnalyseService {
   doLoop = true
+  logger = new Logger('analyse service')
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
-    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
-    private logger: Logger
+    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy
   ) {}
 
   public stopQueryData() {

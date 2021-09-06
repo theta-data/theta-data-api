@@ -32,6 +32,6 @@ const config = require('config')
       }
     ])
   ],
-  providers: [AnalyseService, Logger]
+  providers: [AnalyseService]
 })
 export class AnalyseModule {}
