@@ -17,7 +17,7 @@ async function bootstrap() {
       process.exit(0)
     }, 10000)
   })
-  // await taskService.queryDataFromBlockChain()
+  await taskService.queryDataFromBlockChain()
   // await sleep(awaitHors * 200)
   // }
 }

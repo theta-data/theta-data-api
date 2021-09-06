@@ -7,6 +7,7 @@ import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ClientProxy } from '@nestjs/microservices'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
+
 const moment = require('moment')
 const sleep = require('await-sleep')
 thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
@@ -39,7 +40,7 @@ export class AnalyseService {
     }
 
     while (this.doLoop) {
-      console.log('get height', height)
+      // console.log('get height', height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result
       if (!row || JSON.stringify(row) == '{}') {
@@ -101,7 +102,7 @@ export class AnalyseService {
             record.send_tx++
             transaction.raw.outputs.forEach((tx, index) => {
               if (tx.coins.thetawei !== '0') {
-                console.log('theta emit send')
+                // console.log('theta emit send')
                 this.client.emit('send-tx-monitor', {
                   token_type: 0,
                   amount: Number(tx.coins.thetawei) / Math.pow(10, 18),
@@ -111,7 +112,7 @@ export class AnalyseService {
                 })
               }
               if (tx.coins.tfuelwei !== '0') {
-                console.log('tf emit send')
+                // console.log('tf emit send')
                 this.client.emit('send-tx-monitor', {
                   token_type: 1,
                   amount: Number(tx.coins.tfuelwei) / Math.pow(10, 18),
