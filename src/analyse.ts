@@ -15,7 +15,7 @@ async function bootstrap() {
     taskService.stopQueryData()
     setTimeout(() => {
       process.exit(0)
-    }, 3000)
+    }, 10000)
   })
   await taskService.queryDataFromBlockChain()
   // await sleep(awaitHors * 200)
