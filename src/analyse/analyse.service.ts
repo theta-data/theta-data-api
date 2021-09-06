@@ -53,7 +53,7 @@ export class AnalyseService {
       const month = Number(moment(Number(row.timestamp) * 1000).format('MM'))
       const day = Number(moment(Number(row.timestamp) * 1000).format('DD'))
       const hour = Number(moment(Number(row.timestamp) * 1000).format('HH'))
-      const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD-HH')
+      const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD')
       let record = await this.thetaTxNumByHoursRepository.findOne({
         where: {
           year: Number(year),
@@ -148,7 +148,7 @@ export class AnalyseService {
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
             if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-              await this.cacheManager.set(hhStr + wallet.address, 1)
+              await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
               record.active_wallet++
             }
           }
@@ -157,7 +157,7 @@ export class AnalyseService {
         if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
           for (const wallet of transaction.raw.outputs) {
             if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-              await this.cacheManager.set(hhStr + wallet.address, 1)
+              await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
               record.active_wallet++
             }
           }
