@@ -13,7 +13,6 @@ const config = require('config')
       useFactory: async () =>
         Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
     }),
-    Logger,
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity]),
     CacheModule.register({
       store: redisStore,
@@ -33,6 +32,6 @@ const config = require('config')
       }
     ])
   ],
-  providers: [AnalyseService]
+  providers: [AnalyseService, Logger]
 })
 export class AnalyseModule {}
