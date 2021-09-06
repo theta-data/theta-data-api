@@ -1,8 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-// import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 import { Repository } from 'typeorm'
-// import { ThetaHttpProvider } from 'theta-ts-sdk'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ClientProxy } from '@nestjs/microservices'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
@@ -11,7 +9,7 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 const moment = require('moment')
 const sleep = require('await-sleep')
 thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
-// const logger = new Logger()
+
 @Injectable()
 export class AnalyseService {
   doLoop = true
@@ -27,8 +25,6 @@ export class AnalyseService {
   }
 
   public async queryDataFromBlockChain() {
-    // const provider = new ThetaHttpProvider('http://localhost:16888/rpc')
-    // const provider = new ThetaHttpProvider( "https://theta-bridge-rpc.thetatoken.org/rpc")
     let height = 9883000
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
@@ -47,9 +43,7 @@ export class AnalyseService {
       const row = block.result
       if (!row || JSON.stringify(row) == '{}') {
         await sleep(3000)
-        // this.
         this.logger.error('no data, height')
-        // this.logger.log('no data, height', height)
         continue
       }
 
