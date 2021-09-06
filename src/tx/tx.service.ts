@@ -42,6 +42,8 @@ export class TxService {
     let obj: {
       [propName: string]: {
         coin_base_tx: number
+        block_number: number
+        active_wallet: number
         slash_tx: number
         send_tx: number
         reserve_fund_tx: number
@@ -58,6 +60,8 @@ export class TxService {
       let date = moment(hourData.timestamp).format('YYYY_MM_DD')
       if (!obj.hasOwnProperty(date)) {
         obj[date] = {
+          block_number: hourData.block_number,
+          active_wallet: hourData.active_wallet,
           coin_base_tx: hourData.coin_base_tx,
           slash_tx: hourData.slash_tx,
           send_tx: hourData.send_tx,
@@ -73,6 +77,8 @@ export class TxService {
       } else {
         obj[date].coin_base_tx += hourData.coin_base_tx
         obj[date].slash_tx += hourData.slash_tx
+        obj[date].block_number += hourData.block_number
+        obj[date].active_wallet += hourData.active_wallet
         obj[date].send_tx += hourData.send_tx
         obj[date].reserve_fund_tx += hourData.reserve_fund_tx
         obj[date].release_fund_tx += hourData.release_fund_tx
