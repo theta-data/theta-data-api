@@ -15,7 +15,7 @@ thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
 @Injectable()
 export class AnalyseService {
   doLoop = true
-  logger = new Logger('analyse service')
+  private readonly logger = new Logger('analyse service')
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,

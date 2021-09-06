@@ -13,7 +13,8 @@ async function bootstrap() {
   // while (1) {
   // await taskService.run()
   process.on('SIGINT', () => {
-    console.log('do sigint reload')
+    logger.debug('do sigint reload')
+    // logger.log('')
     taskService.stopQueryData()
     setTimeout(() => {
       process.exit(0)
