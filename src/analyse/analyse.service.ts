@@ -147,7 +147,7 @@ export class AnalyseService {
             record.withdraw_stake_tx++
             break
           default:
-            console.log('no transaction.tx_type', transaction.type)
+            this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
       })

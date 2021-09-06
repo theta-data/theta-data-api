@@ -22,7 +22,6 @@ module.exports = {
       script: './dist/analyse.js',
       instances: 1,
       autorestart: true,
-      kill_timeout: 3000,
       watch: false,
       max_memory_restart: '2G',
       env_test: {
