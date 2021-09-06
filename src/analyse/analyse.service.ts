@@ -42,13 +42,13 @@ export class AnalyseService {
 
     while (this.doLoop) {
       // console.log('get height', height)
-      this.logger.log('info', 'get height: ' + height)
+      this.logger.debug('get height: ' + height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result
       if (!row || JSON.stringify(row) == '{}') {
         await sleep(3000)
         // this.
-        this.logger.log('warn', 'no data, height')
+        this.logger.error('no data, height')
         // this.logger.log('no data, height', height)
         continue
       }
