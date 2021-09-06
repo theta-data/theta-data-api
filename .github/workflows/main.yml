@@ -33,5 +33,4 @@ jobs:
         run: |
           npm ci
           npm run build
-          pm2 delete ecosystem.config.js
-          pm2 start ecosystem.config.js --env test
+          pm2 reload ecosystem.config.js --env test
