@@ -145,16 +145,21 @@ export class AnalyseService {
             this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
-        for (const wallet of transaction.raw.inputs) {
-          if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-            await this.cacheManager.set(hhStr + wallet.address, 1)
-            record.active_wallet++
+        if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
+          for (const wallet of transaction.raw.inputs) {
+            if (!(await this.cacheManager.get(hhStr + wallet.address))) {
+              await this.cacheManager.set(hhStr + wallet.address, 1)
+              record.active_wallet++
+            }
           }
         }
-        for (const wallet of transaction.raw.outputs) {
-          if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-            await this.cacheManager.set(hhStr + wallet.address, 1)
-            record.active_wallet++
+
+        if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
+          for (const wallet of transaction.raw.outputs) {
+            if (!(await this.cacheManager.get(hhStr + wallet.address))) {
+              await this.cacheManager.set(hhStr + wallet.address, 1)
+              record.active_wallet++
+            }
           }
         }
       }
