@@ -35,7 +35,8 @@ export class ThetaTxNumByHoursEntity {
   hour: number
 
   @Column({
-    type: 'int'
+    type: 'int',
+    default: 0
   })
   block_number: number
 
