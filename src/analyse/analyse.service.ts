@@ -90,7 +90,6 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             record.deposit_stake_tx++
-
             break
           case THETA_TRANSACTION_TYPE_ENUM.release_fund:
             record.release_fund_tx++
