@@ -37,7 +37,11 @@ export class TxService {
 
   public async getThetaDataByDay() {
     let hours = await this.thetaTxNumRepository.find({
-      order: { timestamp: 'ASC' }
+      order: { timestamp: 'ASC' },
+      where: {
+        timestamp: MoreThan(moment().subtract(3, 'month').format())
+      }
+      // take: 500
     })
     let obj: {
       [propName: string]: {
