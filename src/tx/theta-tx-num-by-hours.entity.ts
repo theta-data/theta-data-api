@@ -44,6 +44,12 @@ export class ThetaTxNumByHoursEntity {
     type: 'int',
     default: 0
   })
+  active_wallet: number
+
+  @Column({
+    type: 'int',
+    default: 0
+  })
   coin_base_tx: number
 
   @Column({
