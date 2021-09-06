@@ -1,10 +1,11 @@
-import { Inject, Injectable, Logger } from '@nestjs/common'
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ClientProxy } from '@nestjs/microservices'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
+import { Cache } from 'cache-manager'
 
 const moment = require('moment')
 const sleep = require('await-sleep')
@@ -17,7 +18,8 @@ export class AnalyseService {
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
-    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy
+    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   public stopQueryData() {
@@ -51,7 +53,7 @@ export class AnalyseService {
       const month = Number(moment(Number(row.timestamp) * 1000).format('MM'))
       const day = Number(moment(Number(row.timestamp) * 1000).format('DD'))
       const hour = Number(moment(Number(row.timestamp) * 1000).format('HH'))
-
+      const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD-HH')
       let record = await this.thetaTxNumByHoursRepository.findOne({
         where: {
           year: Number(year),
@@ -79,16 +81,16 @@ export class AnalyseService {
         record.split_rule_tx = 0
         record.withdraw_stake_tx = 0
         record.block_number = 0
+        record.active_wallet = 0
       }
-      row.transactions.forEach((transaction) => {
-        // transaction.type = Number(transaction.type.valueOf())
+      for (const transaction of row.transactions) {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             record.coin_base_tx++
-            // transaction.raw.
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             record.deposit_stake_tx++
+
             break
           case THETA_TRANSACTION_TYPE_ENUM.release_fund:
             record.release_fund_tx++
@@ -144,7 +146,19 @@ export class AnalyseService {
             this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
-      })
+        for (const wallet of transaction.raw.inputs) {
+          if (!(await this.cacheManager.get(hhStr + wallet.address))) {
+            await this.cacheManager.set(hhStr + wallet.address, 1)
+            record.active_wallet++
+          }
+        }
+        for (const wallet of transaction.raw.outputs) {
+          if (!(await this.cacheManager.get(hhStr + wallet.address))) {
+            await this.cacheManager.set(hhStr + wallet.address, 1)
+            record.active_wallet++
+          }
+        }
+      }
       record.latest_block_height = Number(row.height)
       record.block_number++
       await this.thetaTxNumByHoursRepository.save(record)
