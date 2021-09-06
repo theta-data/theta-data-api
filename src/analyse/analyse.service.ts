@@ -20,6 +20,10 @@ export class AnalyseService {
     @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy
   ) {}
 
+  public async stopQueryData() {
+    this.doLoop = false
+  }
+
   public async queryDataFromBlockChain() {
     // const provider = new ThetaHttpProvider('http://localhost:16888/rpc')
     // const provider = new ThetaHttpProvider( "https://theta-bridge-rpc.thetatoken.org/rpc")
@@ -33,13 +37,7 @@ export class AnalyseService {
     if (latestBlock) {
       height = latestBlock.latest_block_height + 1
     }
-    process.on('SIGINT', () => {
-      console.log('reload')
-      this.doLoop = false
-      setTimeout(() => {
-        process.exit(0)
-      }, 3000)
-    })
+
     while (this.doLoop) {
       console.log('get height', height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())

@@ -10,6 +10,13 @@ async function bootstrap() {
   const taskService = app.get(AnalyseService)
   // while (1) {
   // await taskService.run()
+  process.on('SIGINT', () => {
+    console.log('reload')
+    taskService.stopQueryData()
+    setTimeout(() => {
+      process.exit(0)
+    }, 3000)
+  })
   await taskService.queryDataFromBlockChain()
   // await sleep(awaitHors * 200)
   // }
