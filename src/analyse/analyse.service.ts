@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { Repository } from 'typeorm'
+import { Logger, Repository } from 'typeorm'
 // import { ThetaHttpProvider } from 'theta-ts-sdk'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ClientProxy } from '@nestjs/microservices'
@@ -18,7 +18,8 @@ export class AnalyseService {
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
-    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy
+    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
+    private logger: Logger
   ) {}
 
   public stopQueryData() {
@@ -41,11 +42,14 @@ export class AnalyseService {
 
     while (this.doLoop) {
       // console.log('get height', height)
+      this.logger.log('info', 'get height: ' + height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result
       if (!row || JSON.stringify(row) == '{}') {
         await sleep(3000)
-        console.log('no data, height', height)
+        // this.
+        this.logger.log('warn', 'no data, height')
+        // this.logger.log('no data, height', height)
         continue
       }
 
