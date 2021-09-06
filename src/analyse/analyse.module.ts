@@ -11,7 +11,7 @@ const config = require('config')
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () =>
-        Object.assign(await getConnectionOptions('THETA_DATA_DB'), config.get('THETA_DATA_DB'))
+        Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
     }),
 
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity]),

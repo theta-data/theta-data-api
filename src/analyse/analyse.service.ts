@@ -13,6 +13,7 @@ thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
 
 @Injectable()
 export class AnalyseService {
+  doLoop = true
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
@@ -32,7 +33,14 @@ export class AnalyseService {
     if (latestBlock) {
       height = latestBlock.latest_block_height + 1
     }
-    while (1) {
+    process.on('SIGINT', () => {
+      console.log('reload')
+      this.doLoop = false
+      setTimeout(() => {
+        process.exit(0)
+      }, 3000)
+    })
+    while (this.doLoop) {
       console.log('get height', height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result
