@@ -215,18 +215,18 @@ export class AnalyseService {
 
         total_edge_node_num: eenpTotalNodeNum,
         effective_edge_node_num: eenpEffectiveNodeNum,
-        total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e27').toFixed()),
-        effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e27').toFixed()),
+        total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e17').toFixed()),
+        effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e17').toFixed()),
 
         total_guardian_node_num: guTotalNodeNum,
         effective_guardian_node_num: guEffectiveNodeNum,
-        total_guardian_stake: parseInt(guTotalThetaWei.dividedBy('1e27').toFixed()),
-        effective_guardian_stake: parseInt(guEffectiveThetaWei.dividedBy('1e27').toFixed()),
+        total_guardian_stake: parseInt(guTotalThetaWei.dividedBy('1e17').toFixed()),
+        effective_guardian_stake: parseInt(guEffectiveThetaWei.dividedBy('1e17').toFixed()),
 
         total_validator_node_num: vaTotalNodeNum,
         effective_validator_node_num: vaEffectiveNodeNum,
-        effective_validator_stake: parseInt(vaEffectiveThetaWei.dividedBy('1e27').toFixed()),
-        total_validator_stake: parseInt(vaTotalThetaWei.dividedBy('1e27').toFixed())
+        effective_validator_stake: parseInt(vaEffectiveThetaWei.dividedBy('1e17').toFixed()),
+        total_validator_stake: parseInt(vaTotalThetaWei.dividedBy('1e17').toFixed())
       })
     }
   }
