@@ -50,7 +50,7 @@ export class StakeStatisticsEntity {
   })
   effective_guardian_node_num: number
 
-  @Field(() => Int)
+  @Field(() => String)
   @Column({
     type: 'bigint'
   })
