@@ -207,6 +207,7 @@ export class AnalyseService {
       block_height: Number(block.result.height)
     })
     if (!res) {
+      console.log('total guardian stake', parseInt(guTotalThetaWei.dividedBy('1e27').toFixed()))
       return await this.stakeStatisticsRepository.insert({
         block_height: Number(block.result.height),
 
