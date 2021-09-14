@@ -28,13 +28,13 @@ export class StakeStatisticsEntity {
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   total_edge_node_stake: number
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   effective_edge_node_stake: number
 
@@ -52,13 +52,13 @@ export class StakeStatisticsEntity {
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   total_guardian_stake: number
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   effective_guardian_stake: number
 
@@ -76,27 +76,15 @@ export class StakeStatisticsEntity {
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   total_validator_stake: number
 
   @Field(() => Int)
   @Column({
-    type: 'int'
+    type: 'bigint'
   })
   effective_validator_stake: number
-
-  @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
-  total_tfuel_stake: number
-
-  @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
-  effective_tfuel_stake: number
 
   @Field(() => Int)
   @Column({
