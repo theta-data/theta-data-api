@@ -51,7 +51,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.7",
-    "theta-ts-sdk": "^0.2.54",
+    "theta-ts-sdk": "^0.2.57",
     "typeorm": "^0.2.32"
   },
   "devDependencies": {

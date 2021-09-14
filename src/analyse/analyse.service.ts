@@ -6,6 +6,10 @@ import { ClientProxy } from '@nestjs/microservices'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
+import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
+import { StakeService } from '../block-chain/stake/stake.service'
+import BigNumber from 'bignumber.js'
+import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 
 const moment = require('moment')
 const sleep = require('await-sleep')
@@ -18,8 +22,11 @@ export class AnalyseService {
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
+    @InjectRepository(StakeStatisticsEntity)
+    private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
     @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
-    @Inject(CACHE_MANAGER) private cacheManager: Cache
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private stakeService: StakeService
   ) {}
 
   public async queryDataFromBlockChain() {
@@ -43,6 +50,9 @@ export class AnalyseService {
         await sleep(3000)
         this.logger.error('no data, height')
         continue
+      }
+      if (Number(block.result.height) % 100 === 1) {
+        await this.updateCheckPoint(block)
       }
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
@@ -165,5 +175,134 @@ export class AnalyseService {
       height++
       await sleep(10)
     }
+  }
+
+  async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
+    // block.result.
+    // block.result.guardian_votes.result
+    if (Number(block.result.height) % 100 !== 1) {
+      return
+    }
+    const [
+      vaTotalNodeNum,
+      vaEffectiveNodeNum,
+      vaTotalThetaWei,
+      vaEffectiveThetaWei
+    ] = await this.updateValidator(block)
+
+    const [
+      guTotalNodeNum,
+      guEffectiveNodeNum,
+      guTotalThetaWei,
+      guEffectiveThetaWei
+    ] = await this.updateGuardian(block)
+
+    const [eenpTotalNodeNum, eenpEffectiveNodeNum, eenpTotalTfWei, eenpEffectiveTfWei]: [
+      number,
+      number,
+      BigNumber,
+      BigNumber
+    ] = await this.updateEenp(block)
+    let res = await this.stakeStatisticsRepository.findOne({
+      block_height: Number(block.result.height)
+    })
+    if (!res) {
+      return await this.stakeStatisticsRepository.insert({
+        block_height: Number(block.result.height),
+
+        total_edge_node_num: eenpTotalNodeNum,
+        effective_edge_node_num: eenpEffectiveNodeNum,
+        total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e27').toFixed()),
+        effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e27').toFixed()),
+
+        total_guardian_node_num: guTotalNodeNum,
+        effective_guardian_node_num: guEffectiveNodeNum,
+        total_guardian_stake: parseInt(guTotalThetaWei.dividedBy('1e27').toFixed()),
+        effective_guardian_stake: parseInt(guEffectiveThetaWei.dividedBy('1e27').toFixed()),
+
+        total_validator_node_num: vaTotalNodeNum,
+        effective_validator_node_num: vaEffectiveNodeNum,
+        effective_validator_stake: parseInt(vaEffectiveThetaWei.dividedBy('1e27').toFixed()),
+        total_validator_stake: parseInt(vaTotalThetaWei.dividedBy('1e27').toFixed())
+      })
+    }
+  }
+
+  async updateValidator(
+    block: THETA_BLOCK_INTERFACE
+  ): Promise<[number, number, BigNumber, BigNumber]> {
+    let totalNodeNum = 0,
+      effectiveNodeNum = 0,
+      totalThetaWei = new BigNumber(0),
+      effectiveThetaWei = new BigNumber(0)
+    const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.result.height)
+    validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
+      totalNodeNum++
+      node.Stakes.forEach((stake) => {
+        // if (stake.withdrawn === false) {
+        totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+        block.result.hcc.Votes.forEach((vote) => {
+          if (vote.ID === node.Holder && !stake.withdrawn) {
+            effectiveNodeNum++
+            effectiveThetaWei = effectiveThetaWei.plus(new BigNumber(stake.amount))
+          }
+        })
+      })
+    })
+    return [totalNodeNum, effectiveNodeNum, totalThetaWei, effectiveThetaWei]
+  }
+
+  async updateGuardian(
+    block: THETA_BLOCK_INTERFACE
+  ): Promise<[number, number, BigNumber, BigNumber]> {
+    let totalNodeNum = 0,
+      effectiveNodeNum = 0,
+      totalThetaWei = new BigNumber(0),
+      effectiveThetaWei = new BigNumber(0)
+
+    const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.result.height)
+    for (const guardian of gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians) {
+      totalNodeNum++
+      guardian.Stakes.forEach((stake) => {
+        totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
+      })
+    }
+    for (let i = 0; i < block.result.guardian_votes.Multiplies.length; i++) {
+      if (block.result.guardian_votes.Multiplies[i] !== 0) {
+        // await this.stakeService.updateGcpStatus(
+        gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians[i].Stakes.forEach((stake) => {
+          if (stake.withdrawn == false) {
+            effectiveThetaWei = effectiveThetaWei.plus(new BigNumber(stake.amount))
+          }
+        })
+        effectiveNodeNum++
+      }
+    }
+    return [totalNodeNum, effectiveNodeNum, totalThetaWei, effectiveThetaWei]
+  }
+
+  async updateEenp(block: THETA_BLOCK_INTERFACE): Promise<[number, number, BigNumber, BigNumber]> {
+    let totalNodeNum = 0,
+      effectiveNodeNum = 0,
+      totalTfuelWei = new BigNumber(0),
+      effectiveTfuelWei = new BigNumber(0)
+    const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.result.height)
+    eenpList.result.BlockHashEenpPairs[0].EENs.forEach((eenp) => {
+      totalNodeNum++
+      let isEffectiveNode = false
+      block.result.elite_edge_node_votes.Multiplies.forEach((value, index) => {
+        if (block.result.elite_edge_node_votes.Addresses[index] == eenp.Holder && value !== 0) {
+          isEffectiveNode = true
+          effectiveNodeNum++
+        }
+      })
+      eenp.Stakes.forEach((stake) => {
+        totalTfuelWei = totalTfuelWei.plus(new BigNumber(stake.amount))
+        if (isEffectiveNode && !stake.withdrawn) {
+          effectiveTfuelWei = effectiveTfuelWei.plus(new BigNumber(stake.amount))
+        }
+      })
+    })
+    return [totalNodeNum, effectiveNodeNum, totalTfuelWei, effectiveTfuelWei]
   }
 }

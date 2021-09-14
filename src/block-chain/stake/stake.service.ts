@@ -3,11 +3,16 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import { Repository } from 'typeorm'
 import { Cron, CronExpression } from '@nestjs/schedule'
+import { StakeStatisticsEntity } from './stake-statistics.entity'
 
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
 export class StakeService {
-  constructor(@InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>) {}
+  constructor(
+    @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,
+    @InjectRepository(StakeStatisticsEntity)
+    private stakeStatisticsRepository: Repository<StakeStatisticsEntity>
+  ) {}
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
     if (typeof nodeType !== undefined)
@@ -108,6 +113,32 @@ export class StakeService {
   async getLatestFinalizedBlock() {
     let nodeInfo = await thetaTsSdk.blockchain.getStatus()
     return nodeInfo.result.latest_finalized_block_height
+  }
+
+  async getLatestStakeStatics() {
+    return await this.stakeStatisticsRepository.findOne({
+      order: {
+        block_height: 'DESC'
+      }
+    })
+  }
+
+  async updateGcpStatus(address: string, time: string) {
+    await this.stakeRepository.update(
+      { node_type: STAKE_NODE_TYPE_ENUM.guardian, holder: address },
+      {
+        last_signature: time
+      }
+    )
+  }
+
+  async updateEenpStatus(address: string, time: string) {
+    await this.stakeRepository.update(
+      { node_type: STAKE_NODE_TYPE_ENUM.edge_cache, holder: address },
+      {
+        last_signature: time
+      }
+    )
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)

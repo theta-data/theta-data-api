@@ -5,6 +5,8 @@ import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { AnalyseService } from './analyse.service'
 import * as redisStore from 'cache-manager-redis-store'
+import { StakeModule } from '../block-chain/stake/stake.module'
+import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 const config = require('config')
 
 @Module({
@@ -13,7 +15,7 @@ const config = require('config')
       useFactory: async () =>
         Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
     }),
-    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity]),
+    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity]),
     CacheModule.register({
       store: redisStore,
       host: config.get('REDIS')['host'],
@@ -30,7 +32,8 @@ const config = require('config')
           // url: 'redis://' + config.get('REDIS')['host'] + ':' + config.get('REDIS')['port']
         }
       }
-    ])
+    ]),
+    StakeModule
   ],
   providers: [AnalyseService]
 })

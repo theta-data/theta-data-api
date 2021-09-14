@@ -2,6 +2,7 @@ import { Args, Float, Int, Query, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import BigNumber from 'bignumber.js'
+import { StakeStatisticsEntity } from './stake-statistics.entity'
 
 @Resolver()
 export class StakeResolver {
@@ -84,5 +85,10 @@ export class StakeResolver {
       })
     })
     return totalTfuelStaked.dividedBy('5.399646029e27').toFixed()
+  }
+
+  @Query(() => StakeStatisticsEntity)
+  async stakeStatistics() {
+    return await this.stakeService.getLatestStakeStatics()
   }
 }

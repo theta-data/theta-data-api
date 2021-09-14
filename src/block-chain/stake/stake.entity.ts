@@ -52,6 +52,10 @@ export class StakeEntity {
   @Column({ type: 'json' })
   stakes: Array<Stake>
 
+  @Field()
+  @Column({type:'timestamp'})
+  last_signature : string
+
   @Field(() => Int)
   @Column({ type: 'int' })
   update_height: number
