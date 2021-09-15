@@ -7,7 +7,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { ColdObservable } from 'rxjs/internal/testing/ColdObservable'
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 @Entity()
@@ -46,6 +46,13 @@ export class ThetaTxNumByHoursEntity {
     default: 0
   })
   block_number: number
+
+  @Field(() => Float)
+  @Column({
+    type: 'float',
+    default: 0
+  })
+  tfuel_burnt: number
 
   @Field(() => Int)
   @Column({

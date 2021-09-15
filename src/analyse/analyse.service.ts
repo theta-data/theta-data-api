@@ -88,6 +88,7 @@ export class AnalyseService {
         record.withdraw_stake_tx = 0
         record.block_number = 0
         record.active_wallet = 0
+        record.tfuel_burnt = 0
       }
       for (const transaction of row.transactions) {
         switch (transaction.type) {
@@ -168,7 +169,14 @@ export class AnalyseService {
             }
           }
         }
+
+        if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+          record.tfuel_burnt += Number(
+            new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toFixed()
+          )
+        }
       }
+
       record.latest_block_height = Number(row.height)
       record.block_number++
       await this.thetaTxNumByHoursRepository.save(record)
