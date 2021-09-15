@@ -22,4 +22,9 @@ export class TxResolver {
     const listData = await this.txService.getThetaDataByDay()
     return listData.list
   }
+
+  @Query(() => [ThetaTxNumByHoursEntity])
+  async txListByHour() {
+    return await this.txService.getThetaByHour()
+  }
 }

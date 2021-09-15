@@ -96,4 +96,13 @@ export class TxService {
 
     return { list: Object.values(obj) }
   }
+
+  public async getThetaByHour(hours: number = 12) {
+    return await this.thetaTxNumRepository.find({
+      order: { timestamp: 'ASC' },
+      where: {
+        timestamp: MoreThan(moment().subtract(hours, 'hour').format())
+      }
+    })
+  }
 }
