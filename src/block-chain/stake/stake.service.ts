@@ -4,9 +4,11 @@ import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import { Repository } from 'typeorm'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
+import { Injectable } from '@nestjs/common'
 
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
+@Injectable()
 export class StakeService {
   constructor(
     @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,

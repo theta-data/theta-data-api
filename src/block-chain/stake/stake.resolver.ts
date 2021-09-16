@@ -8,7 +8,7 @@ import { StakeStatisticsEntity } from './stake-statistics.entity'
 export class StakeResolver {
   constructor(private stakeService: StakeService) {}
 
-  @Query(() => [StakeEntity])
+  @Query(() => [StakeEntity], { name: 'stake', description: 'get stake info' })
   async stakeInfo(
     @Args('node_type', { type: () => STAKE_NODE_TYPE_ENUM, nullable: true })
     node_type: STAKE_NODE_TYPE_ENUM | undefined
