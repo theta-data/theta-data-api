@@ -138,7 +138,7 @@ export class transactionRawType {
 
 @ObjectType()
 export class transactionType {
-  @Field(() => transactionRawType)
+  @Field(() => transactionRawType, { nullable: true })
   raw: transactionRawType
 
   @Field(() => THETA_TX_TYPE_ENUM)
@@ -149,6 +149,9 @@ export class transactionType {
 
   @Field()
   hash: string
+
+  @Field(() => [receiptType], { nullable: true })
+  receipt: receiptType
 }
 
 @ObjectType()
@@ -167,9 +170,6 @@ export class GetTransactionType {
 
   @Field(() => [transactionType])
   transaction: Array<transactionType>
-
-  @Field(() => [receiptType], { nullable: true })
-  receipt: receiptType
 }
 
 @ObjectType()
