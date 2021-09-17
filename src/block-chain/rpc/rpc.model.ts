@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../../tx/theta.enum'
+import { GraphQLInt, GraphQLString } from 'graphql'
 
 @ObjectType()
 export class GetVersionType {
@@ -166,4 +167,40 @@ export class GetTransactionType {
 
   @Field(() => [transactionType])
   transaction: Array<transactionType>
+
+  @Field(() => [receiptType], { nullable: true })
+  receipt: receiptType
+}
+
+@ObjectType()
+export class receiptType {
+  @Field()
+  TxHash: string
+
+  @Field(() => [receiptLogType], { nullable: true })
+  Logs: Array<receiptLogType>
+
+  @Field({ nullable: true })
+  EvmRet: string
+
+  @Field()
+  ContractAddress: string
+
+  @Field(() => GraphQLInt)
+  GasUsed: number
+
+  @Field({ nullable: true })
+  EvmErr: string
+}
+
+@ObjectType()
+export class receiptLogType {
+  @Field()
+  address: string
+
+  @Field(() => [GraphQLString])
+  topics: Array<string>
+
+  @Field({ nullable: true })
+  data: string
 }
