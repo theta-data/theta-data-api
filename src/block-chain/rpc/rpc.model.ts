@@ -149,6 +149,6 @@ export class GetTransactionType {
   @Field()
   hash: string //"0xf3cc94af7a1520b384999ad106ade9738b6cde66e2377ceab37067329d7173a0",
 
-  @Field()
+  @Field(() => [transactionType])
   transaction: Array<transactionType>
 }
