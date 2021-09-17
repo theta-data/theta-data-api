@@ -23,6 +23,39 @@ export class TokenType {
 }
 
 @ObjectType()
+export class receiptType {
+  @Field()
+  TxHash: string
+
+  @Field(() => [receiptLogType], { nullable: true })
+  Logs: Array<receiptLogType>
+
+  @Field({ nullable: true })
+  EvmRet: string
+
+  @Field()
+  ContractAddress: string
+
+  @Field(() => GraphQLInt)
+  GasUsed: number
+
+  @Field({ nullable: true })
+  EvmErr: string
+}
+
+@ObjectType()
+export class receiptLogType {
+  @Field()
+  address: string
+
+  @Field(() => [GraphQLString])
+  topics: Array<string>
+
+  @Field({ nullable: true })
+  data: string
+}
+
+@ObjectType()
 export class GetAccountType {
   @Field()
   sequence: string // "1",
@@ -151,7 +184,7 @@ export class transactionType {
   hash: string
 
   @Field(() => [receiptType], { nullable: true })
-  receipt: receiptType
+  receipt: Array<receiptType>
 }
 
 @ObjectType()
@@ -170,37 +203,4 @@ export class GetTransactionType {
 
   @Field(() => [transactionType])
   transaction: Array<transactionType>
-}
-
-@ObjectType()
-export class receiptType {
-  @Field()
-  TxHash: string
-
-  @Field(() => [receiptLogType], { nullable: true })
-  Logs: Array<receiptLogType>
-
-  @Field({ nullable: true })
-  EvmRet: string
-
-  @Field()
-  ContractAddress: string
-
-  @Field(() => GraphQLInt)
-  GasUsed: number
-
-  @Field({ nullable: true })
-  EvmErr: string
-}
-
-@ObjectType()
-export class receiptLogType {
-  @Field()
-  address: string
-
-  @Field(() => [GraphQLString])
-  topics: Array<string>
-
-  @Field({ nullable: true })
-  data: string
 }
