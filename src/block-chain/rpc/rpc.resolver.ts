@@ -2,6 +2,7 @@ import { Args, Int, Query, Resolver } from '@nestjs/graphql'
 import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
+import { BlockType, GetAccount, GetTransaction, GetVersion } from './rpc.model'
 // import { has } from 'config'
 thetaTsSdk.blockchain.setUrl('localhost:16888')
 
@@ -9,27 +10,27 @@ thetaTsSdk.blockchain.setUrl('localhost:16888')
 export class RpcResolver {
   constructor(private rpcService: RpcService) {}
 
-  @Query()
+  @Query((returns) => GetVersion)
   async GetVersion() {
     return await thetaTsSdk.blockchain.getVersion()
   }
 
-  @Query()
+  @Query(() => GetAccount)
   async getAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
     return await thetaTsSdk.blockchain.getAccount(address)
   }
 
-  @Query()
+  @Query(() => BlockType)
   async getBlock(@Args('hash', { type: () => GraphQLString! }) hash: string) {
     return await thetaTsSdk.blockchain.getBlock(hash)
   }
 
-  @Query()
+  @Query(() => BlockType)
   async getBlockByHeight(@Args('height', { type: () => GraphQLString! }) height: number) {
     return await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
   }
 
-  @Query()
+  @Query(() => GetTransaction)
   async getTransaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
     return await thetaTsSdk.blockchain.getTransaction(hash)
   }
