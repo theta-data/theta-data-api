@@ -4,7 +4,7 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
 import { BlockType, GetAccountType, GetTransactionType, GetVersionType } from './rpc.model'
 // import { has } from 'config'
-thetaTsSdk.blockchain.setUrl('localhost:16888')
+thetaTsSdk.blockchain.setUrl('http://localhost:16888')
 
 @Resolver()
 export class RpcResolver {
@@ -26,7 +26,7 @@ export class RpcResolver {
   }
 
   @Query(() => BlockType)
-  async getBlockByHeight(@Args('height', { type: () => GraphQLString! }) height: number) {
+  async getBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
     return await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
   }
 
