@@ -107,14 +107,23 @@ export class inputOutputType {
 
 @ObjectType()
 export class transactionRawType {
-  @Field(() => proposerType)
+  @Field(() => proposerType, { nullable: true })
   proposer: proposerType
 
-  @Field(() => [inputOutputType])
+  @Field(() => [inputOutputType], { nullable: true })
   outputs: Array<inputOutputType>
 
-  @Field(() => [inputOutputType])
+  @Field(() => [inputOutputType], { nullable: true })
   inputs: Array<inputOutputType>
+
+  @Field({ nullable: true })
+  gas_limit: string
+
+  @Field({ nullable: true })
+  gas_price: string
+
+  @Field({ nullable: true })
+  data: string
 
   @Field()
   block_height: string
