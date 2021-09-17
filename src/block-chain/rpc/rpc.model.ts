@@ -122,6 +122,12 @@ export class transactionRawType {
   @Field({ nullable: true })
   gas_price: string
 
+  @Field(() => [proposerType], { nullable: true })
+  from: Array<proposerType>
+
+  @Field(() => [proposerType], { nullable: true })
+  to: Array<proposerType>
+
   @Field({ nullable: true })
   data: string
 
