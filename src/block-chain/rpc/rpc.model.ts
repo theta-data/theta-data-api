@@ -2,7 +2,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../../tx/theta.enum'
 
 @ObjectType()
-export class GetVersion {
+export class GetVersionType {
   @Field()
   version: string //"1.0",
 
@@ -22,7 +22,7 @@ export class TokenType {
 }
 
 @ObjectType()
-export class GetAccount {
+export class GetAccountType {
   @Field()
   sequence: string // "1",
 
@@ -136,15 +136,15 @@ export class transactionType {
 }
 
 @ObjectType()
-export class GetTransaction {
+export class GetTransactionType {
   @Field()
   block_hash: string //"0x9f1e77b08c9fa8984096a735d0aae6b0e43aee297e42c54ce36334103ddd67a7",
 
   @Field()
   block_height: string //"3",
 
-  @Field(() => THETA_BLOCK_STATUS_ENUM)
-  status: THETA_BLOCK_STATUS_ENUM //"finalized",
+  @Field()
+  status: string //"finalized",
 
   @Field()
   hash: string //"0xf3cc94af7a1520b384999ad106ade9738b6cde66e2377ceab37067329d7173a0",
