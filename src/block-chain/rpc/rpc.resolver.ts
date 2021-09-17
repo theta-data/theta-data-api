@@ -3,13 +3,14 @@ import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
 import { BlockType, GetAccountType, GetTransactionType, GetVersionType } from './rpc.model'
+import { Logger } from '@nestjs/common'
 // import { has } from 'config'
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
 @Resolver()
 export class RpcResolver {
   constructor(private rpcService: RpcService) {}
-
+  private logger = new Logger()
   @Query((returns) => GetVersionType)
   async getVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result
@@ -27,7 +28,9 @@ export class RpcResolver {
 
   @Query(() => BlockType)
   async getBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
-    return (await thetaTsSdk.blockchain.getBlockByHeight(height.toString())).result
+    const res = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
+    this.logger.debug('get block by height: ' + JSON.stringify(res))
+    return res.result
   }
 
   @Query(() => GetTransactionType)
