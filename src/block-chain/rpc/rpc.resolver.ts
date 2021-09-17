@@ -12,26 +12,26 @@ export class RpcResolver {
 
   @Query((returns) => GetVersionType)
   async getVersion() {
-    return await thetaTsSdk.blockchain.getVersion()
+    return (await thetaTsSdk.blockchain.getVersion()).result
   }
 
   @Query(() => GetVersionType)
   async getAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
-    return await thetaTsSdk.blockchain.getAccount(address)
+    return (await thetaTsSdk.blockchain.getAccount(address)).result
   }
 
   @Query(() => BlockType)
   async getBlock(@Args('hash', { type: () => GraphQLString! }) hash: string) {
-    return await thetaTsSdk.blockchain.getBlock(hash)
+    return (await thetaTsSdk.blockchain.getBlock(hash)).result
   }
 
   @Query(() => BlockType)
   async getBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
-    return await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
+    return (await thetaTsSdk.blockchain.getBlockByHeight(height.toString())).result
   }
 
   @Query(() => GetTransactionType)
   async getTransaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
-    return await thetaTsSdk.blockchain.getTransaction(hash)
+    return (await thetaTsSdk.blockchain.getTransaction(hash)).result
   }
 }
