@@ -7,7 +7,7 @@ import { RpcResolver } from './rpc.resolver'
 
 @Module({
   imports: [],
-  providers: [RpcResolver],
+  providers: [RpcResolver, RpcService],
   exports: []
 })
 export class RpcModule {}
