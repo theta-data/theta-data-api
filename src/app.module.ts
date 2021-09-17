@@ -11,6 +11,7 @@ import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
 import { PriceModule } from './block-chain/price/price.module'
 import * as redisStore from 'cache-manager-redis-store'
+import { RpcModule } from './block-chain/rpc/rpc.module'
 
 const config = require('config')
 
@@ -36,7 +37,8 @@ const config = require('config')
     MicroTxMonitorModule,
     TxMonitorWidrawStakeModule,
     StakeModule,
-    PriceModule
+    PriceModule,
+    RpcModule
   ],
   providers: []
 })
