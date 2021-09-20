@@ -16,7 +16,7 @@ export class SmartContractService {
 
   async getSmartContract() {
     return await this.smartContractRecordRepository.find({
-      relations: ['SmartContractCallRecordEntity']
+      relations: ['record']
     })
   }
 
