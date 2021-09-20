@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { SmartContractEntity } from './smart-contract.entity'
 import { Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
-
+const moment = require('moment')
 @Injectable()
 export class SmartContractService {
   logger = new Logger()
@@ -38,13 +38,13 @@ export class SmartContractService {
       // await this.smartContractRecordRepository.save(smartContract)
 
       let smartContractRecord = new SmartContractCallRecordEntity()
-      smartContractRecord.timestamp = Number(timestamp)
+      smartContractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(smartContractRecord)
     } else {
       let contractRecord = new SmartContractCallRecordEntity()
       // smartContract.record.push(contractRecord)
-      contractRecord.timestamp = Number(timestamp)
+      contractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
       contractRecord.smart_contract = smartContract
       await this.smartContractRecordRepository.save(contractRecord)
     }
