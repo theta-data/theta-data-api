@@ -156,11 +156,11 @@ export class transactionRawType {
   @Field({ nullable: true })
   gas_price: string
 
-  @Field((type) => [proposerType], { nullable: 'itemsAndList' })
-  from: proposerType[]
+  @Field((type) => proposerType, { nullable: true })
+  from: proposerType
 
-  @Field((type) => [proposerType], { nullable: 'itemsAndList' })
-  to: proposerType[]
+  @Field((type) => proposerType, { nullable: true })
+  to: proposerType
 
   @Field({ nullable: true })
   data: string
@@ -183,8 +183,8 @@ export class transactionType {
   @Field()
   hash: string
 
-  @Field(() => [receiptType], { nullable: 'itemsAndList' })
-  receipt: Array<receiptType>
+  @Field(() => receiptType, { nullable: true })
+  receipt: receiptType
 }
 
 @ObjectType()
