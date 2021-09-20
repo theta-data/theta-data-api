@@ -23,7 +23,7 @@ export class SmartContractCallRecordEntity {
   smart_contract: SmartContractEntity
 
   @Field()
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: 0 })
   timestamp: string
 
   @CreateDateColumn()
