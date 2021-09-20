@@ -12,6 +12,7 @@ import { StakeModule } from './block-chain/stake/stake.module'
 import { PriceModule } from './block-chain/price/price.module'
 import * as redisStore from 'cache-manager-redis-store'
 import { RpcModule } from './block-chain/rpc/rpc.module'
+import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 
 const config = require('config')
 
@@ -38,7 +39,8 @@ const config = require('config')
     TxMonitorWidrawStakeModule,
     StakeModule,
     PriceModule,
-    RpcModule
+    RpcModule,
+    SmartContractModule
   ],
   providers: []
 })
