@@ -143,6 +143,7 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
             record.smart_contract_tx++
+            this.logger.debug('row:' + JSON.stringify(row))
             await this.smartContractService.updateSmartContractRecord(
               row.timestamp,
               transaction.receipt.ContractAddress
