@@ -33,22 +33,14 @@ export class SmartContractService {
     this.logger.debug('timestamp', timestamp)
     if (!smartContract) {
       let smartContract = new SmartContractEntity()
-      let smartContractRecord = new SmartContractCallRecordEntity()
-      smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
-      smartContractRecord.timestamp = timestamp
       smartContract.contract_address = contractAddress
       smartContract.call_times = 1
-      // smartContract.
+      // await this.smartContractRecordRepository.save(smartContract)
+
+      let smartContractRecord = new SmartContractCallRecordEntity()
+      smartContractRecord.timestamp = timestamp
+      smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(smartContractRecord)
-      // await this.smartContractRepository.insert({
-      //   contract_address: contractAddress,
-      //   call_times: 1,
-      //   record: [
-      //     {
-      //       timestamp: timestamp
-      //     }
-      //   ]
-      // })
     } else {
       let contractRecord = new SmartContractCallRecordEntity()
       // smartContract.record.push(contractRecord)
