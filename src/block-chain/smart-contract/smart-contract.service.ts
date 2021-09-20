@@ -22,5 +22,5 @@ export class SmartContractService {
     return await this.smartContractRecordRepository.find()
   }
 
-  async updateSmartContractRecord() {}
+  async updateSmartContractRecord(timestamp: string) {}
 }

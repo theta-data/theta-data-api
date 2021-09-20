@@ -117,16 +117,16 @@ export class BlockType {
 
 @ObjectType()
 export class proposerType {
-  @Field()
+  @Field({ nullable: true })
   address: string //'0x2e833968e5bb786ae419c4d13189fb081cc43bab'
 
-  @Field(() => TokenType)
+  @Field(() => TokenType, { nullable: true })
   coins: TokenType
 
-  @Field()
+  @Field({ nullable: true })
   sequence: string //"0",
 
-  @Field()
+  @Field({ nullable: true })
   signature: string // "0x31af035f0dc47ded00eb5139fd5e4bb76f82e89e2
 }
 
