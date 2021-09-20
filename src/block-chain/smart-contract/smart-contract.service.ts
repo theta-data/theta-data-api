@@ -15,12 +15,42 @@ export class SmartContractService {
   ) {}
 
   async getSmartContract() {
-    return await this.smartContractRecordRepository.find()
+    return await this.smartContractRecordRepository.find({
+      relations: ['SmartContractCallRecordEntity']
+    })
   }
 
   async getSmartContractRecord() {
     return await this.smartContractRecordRepository.find()
   }
 
-  async updateSmartContractRecord(timestamp: string) {}
+  async updateSmartContractRecord(timestamp: string, contractAddress) {
+    let smartContract = await this.smartContractRepository.findOne({
+      contract_address: contractAddress
+    })
+    if (!smartContract) {
+      await this.smartContractRepository.insert({
+        contract_address: contractAddress,
+        call_times: 1,
+        record: [
+          {
+            timestamp: timestamp
+          }
+        ]
+      })
+    } else {
+      let contractRecord = new SmartContractCallRecordEntity()
+      smartContract.record.push(contractRecord)
+      contractRecord.timestamp = timestamp
+      await this.smartContractRepository.update(
+        {
+          contract_address: contractAddress
+        },
+        {
+          call_times: smartContract.call_times + 1,
+          record: smartContract.record
+        }
+      )
+    }
+  }
 }

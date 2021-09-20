@@ -17,7 +17,9 @@ export class SmartContractCallRecordEntity {
   id!: number
 
   @Field(() => SmartContractEntity)
-  @ManyToOne(() => SmartContractEntity, (contract) => contract.record)
+  @ManyToOne(() => SmartContractEntity, (contract) => contract.record, {
+    onUpdate: 'CASCADE'
+  })
   smart_contract: SmartContractEntity
 
   @Field()

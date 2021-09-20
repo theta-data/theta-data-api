@@ -10,6 +10,7 @@ import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { StakeService } from '../block-chain/stake/stake.service'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
+import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
 
 const moment = require('moment')
 const sleep = require('await-sleep')
@@ -26,7 +27,8 @@ export class AnalyseService {
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
     @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private stakeService: StakeService
+    private stakeService: StakeService,
+    private smartContractService: SmartContractService
   ) {}
 
   public async queryDataFromBlockChain() {
@@ -141,6 +143,10 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
             record.smart_contract_tx++
+            await this.smartContractService.updateSmartContractRecord(
+              row.timestamp,
+              transaction.receipt.ContractAddress
+            )
             break
           case THETA_TRANSACTION_TYPE_ENUM.split_rule:
             record.split_rule_tx++

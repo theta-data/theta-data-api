@@ -7,6 +7,7 @@ import { AnalyseService } from './analyse.service'
 import * as redisStore from 'cache-manager-redis-store'
 import { StakeModule } from '../block-chain/stake/stake.module'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
+import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
 const config = require('config')
 
 @Module({
@@ -33,7 +34,8 @@ const config = require('config')
         }
       }
     ]),
-    StakeModule
+    StakeModule,
+    SmartContractModule
   ],
   providers: [AnalyseService]
 })

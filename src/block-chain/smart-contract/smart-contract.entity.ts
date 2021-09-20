@@ -18,7 +18,7 @@ export class SmartContractEntity {
 
   @Field()
   @Column()
-  address: string
+  contract_address: string
 
   @Field(() => Int)
   @Column({
@@ -27,7 +27,9 @@ export class SmartContractEntity {
   call_times: number
 
   @Field(() => [SmartContractCallRecordEntity])
-  @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract)
+  @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
+    cascade: true
+  })
   record: Array<SmartContractCallRecordEntity>
 
   @Field()
