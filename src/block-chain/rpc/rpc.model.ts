@@ -144,10 +144,10 @@ export class transactionRawType {
   @Field(() => proposerType, { nullable: true })
   proposer: proposerType
 
-  @Field(() => [inputOutputType], { nullable: true })
+  @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
   outputs: Array<inputOutputType>
 
-  @Field(() => [inputOutputType], { nullable: true })
+  @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
   inputs: Array<inputOutputType>
 
   @Field({ nullable: true })
@@ -156,10 +156,10 @@ export class transactionRawType {
   @Field({ nullable: true })
   gas_price: string
 
-  @Field(() => [proposerType], { nullable: 'itemsAndList' })
+  @Field((type) => [proposerType], { nullable: 'itemsAndList' })
   from: Array<proposerType>
 
-  @Field(() => [proposerType], { nullable: 'itemsAndList' })
+  @Field((type) => [proposerType], { nullable: 'itemsAndList' })
   to: Array<proposerType>
 
   @Field({ nullable: true })
