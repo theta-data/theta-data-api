@@ -160,7 +160,7 @@ export class transactionRawType {
   from: proposerType[]
 
   @Field((type) => [proposerType], { nullable: 'itemsAndList' })
-  to: Array<proposerType>
+  to: proposerType[]
 
   @Field({ nullable: true })
   data: string
@@ -183,7 +183,7 @@ export class transactionType {
   @Field()
   hash: string
 
-  @Field(() => [receiptType], { nullable: true })
+  @Field(() => [receiptType], { nullable: 'itemsAndList' })
   receipt: Array<receiptType>
 }
 
