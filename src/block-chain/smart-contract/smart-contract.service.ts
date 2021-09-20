@@ -14,9 +14,10 @@ export class SmartContractService {
     private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>
   ) {}
 
-  async getSmartContract() {
+  async getSmartContract(max: number = 500) {
     return await this.smartContractRepository.find({
-      relations: ['record']
+      relations: ['record'],
+      take: max
     })
   }
 
