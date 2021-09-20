@@ -38,13 +38,13 @@ export class SmartContractService {
       // await this.smartContractRecordRepository.save(smartContract)
 
       let smartContractRecord = new SmartContractCallRecordEntity()
-      smartContractRecord.timestamp = timestamp
+      smartContractRecord.timestamp = Number(timestamp)
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(smartContractRecord)
     } else {
       let contractRecord = new SmartContractCallRecordEntity()
       // smartContract.record.push(contractRecord)
-      contractRecord.timestamp = timestamp
+      contractRecord.timestamp = Number(timestamp)
       contractRecord.smart_contract = smartContract
       await this.smartContractRecordRepository.save(contractRecord)
     }

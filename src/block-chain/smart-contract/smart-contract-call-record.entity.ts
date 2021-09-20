@@ -24,7 +24,7 @@ export class SmartContractCallRecordEntity {
 
   @Field()
   @Column({ type: 'timestamp', default: 0 })
-  timestamp: string
+  timestamp: number
 
   @CreateDateColumn()
   create_date!: number
