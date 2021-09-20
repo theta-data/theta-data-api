@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SmartContractEntity } from './smart-contract.entity'
 import { Repository } from 'typeorm'
@@ -6,6 +6,7 @@ import { SmartContractCallRecordEntity } from './smart-contract-call-record.enti
 
 @Injectable()
 export class SmartContractService {
+  logger = new Logger()
   constructor(
     @InjectRepository(SmartContractEntity)
     private smartContractRepository: Repository<SmartContractEntity>,
@@ -29,6 +30,7 @@ export class SmartContractService {
     let smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
+    this.logger.debug('timestamp', timestamp)
     if (!smartContract) {
       let smartContract = new SmartContractEntity()
       let smartContractRecord = new SmartContractCallRecordEntity()
