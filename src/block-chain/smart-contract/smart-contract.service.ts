@@ -34,7 +34,9 @@ export class SmartContractService {
       let smartContractRecord = new SmartContractCallRecordEntity()
       smartContract.contract_address = contractAddress
       smartContract.call_times = 1
+      // smartContract.
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
+      smartContractRecord.timestamp = timestamp
       await this.smartContractRecordRepository.save(smartContractRecord)
       // await this.smartContractRepository.insert({
       //   contract_address: contractAddress,
