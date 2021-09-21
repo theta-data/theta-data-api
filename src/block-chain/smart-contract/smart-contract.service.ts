@@ -18,6 +18,9 @@ export class SmartContractService {
   async getSmartContract(max: number = 500) {
     return await this.smartContractRepository.find({
       relations: ['record'],
+      order: {
+        call_times: 'DESC'
+      },
       take: max
     })
   }
