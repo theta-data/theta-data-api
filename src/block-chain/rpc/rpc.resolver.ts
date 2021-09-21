@@ -18,6 +18,9 @@ export class RpcResolver {
 
   @Query(() => GetAccountType)
   async getAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
+    this.logger.debug(
+      'get account: ' + JSON.stringify(await thetaTsSdk.blockchain.getAccount(address))
+    )
     return (await thetaTsSdk.blockchain.getAccount(address)).result
   }
 
