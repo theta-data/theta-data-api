@@ -46,6 +46,8 @@ export class SmartContractService {
       // smartContract.record.push(contractRecord)
       contractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
       contractRecord.smart_contract = smartContract
+      smartContract.call_times++
+      await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(contractRecord)
     }
   }
