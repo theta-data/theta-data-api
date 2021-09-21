@@ -25,6 +25,10 @@ export class SmartContractService {
     })
   }
 
+  async getSmartContractNum() {
+    return await this.smartContractRepository.count()
+  }
+
   async getSmartContractRecord() {
     return await this.smartContractRecordRepository.find()
   }
