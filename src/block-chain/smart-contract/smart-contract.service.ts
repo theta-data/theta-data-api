@@ -33,7 +33,7 @@ export class SmartContractService {
     return await this.smartContractRecordRepository.find()
   }
 
-  async updateSmartContractRecord(timestamp: string, contractAddress) {
+  async updateSmartContractRecord(timestamp: string, contractAddress: string) {
     let smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })

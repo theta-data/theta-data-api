@@ -44,7 +44,6 @@ export class AnalyseService {
     }
 
     while (1) {
-      // console.log('get height', height)
       this.logger.debug('get height: ' + height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result

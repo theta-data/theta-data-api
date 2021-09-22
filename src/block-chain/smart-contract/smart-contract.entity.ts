@@ -26,6 +26,18 @@ export class SmartContractEntity {
   })
   call_times: number
 
+  @Field(() => Int)
+  @Column({
+    type: 'int'
+  })
+  last_seven_days_call_times: number
+
+  @Field(() => Int)
+  @Column({
+    type: 'int'
+  })
+  last_24h_call_times: number
+
   @Field(() => [SmartContractCallRecordEntity])
   @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
     cascade: true

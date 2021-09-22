@@ -4,7 +4,6 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
 import { BlockType, GetAccountType, GetTransactionType, GetVersionType } from './rpc.model'
 import { Logger } from '@nestjs/common'
-// import { has } from 'config'
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
 @Resolver()

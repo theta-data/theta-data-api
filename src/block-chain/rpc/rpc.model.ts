@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../../tx/theta.enum'
 import { GraphQLInt, GraphQLString } from 'graphql'
 
