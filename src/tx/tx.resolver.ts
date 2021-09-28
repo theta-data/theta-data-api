@@ -1,4 +1,4 @@
-import { Args, Query, Resolver } from '@nestjs/graphql'
+import { Query, Resolver } from '@nestjs/graphql'
 import { ThetaTxList } from './theta-tx-list.model'
 import { TxService } from './tx.service'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
