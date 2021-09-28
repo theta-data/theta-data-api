@@ -17,7 +17,7 @@ export class StakeResolver {
   }
 
   @Query(() => Int)
-  async getEdgeNodeNum() {
+  async edgeNodeNum() {
     return await this.stakeService.getNodeNum(
       await this.stakeService.getLatestFinalizedBlock(),
       STAKE_NODE_TYPE_ENUM.edge_cache
@@ -25,7 +25,7 @@ export class StakeResolver {
   }
 
   @Query(() => Int)
-  async getGuardianNodeNum() {
+  async guardianNodeNum() {
     return await this.stakeService.getNodeNum(
       await this.stakeService.getLatestFinalizedBlock(),
       STAKE_NODE_TYPE_ENUM.guardian
@@ -33,7 +33,7 @@ export class StakeResolver {
   }
 
   @Query(() => Int)
-  async getValidatorNodeNum() {
+  async validatorNodeNum() {
     return await this.stakeService.getNodeNum(
       await this.stakeService.getLatestFinalizedBlock(),
       STAKE_NODE_TYPE_ENUM.validator
@@ -41,12 +41,12 @@ export class StakeResolver {
   }
 
   @Query(() => Int)
-  async getCurrentHeight() {
+  async currentHeight() {
     return await this.stakeService.getLatestFinalizedBlock()
   }
 
   @Query(() => Float)
-  async getThetaStakeRatio() {
+  async thetaStakeRatio() {
     let totalThetaWei = new BigNumber(0)
     let latestHeight = await this.stakeService.getLatestFinalizedBlock()
     let validatorList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.validator)
@@ -68,7 +68,7 @@ export class StakeResolver {
   }
 
   @Query(() => Float)
-  async getTfuelStakeRatio() {
+  async tfuelStakeRatio() {
     let nodeList = await this.stakeService.getNodeList(STAKE_NODE_TYPE_ENUM.edge_cache)
     let totalTfuelStaked = new BigNumber(0)
     let latestHeight = await this.stakeService.getLatestFinalizedBlock()

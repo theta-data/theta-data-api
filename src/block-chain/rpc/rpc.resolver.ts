@@ -11,12 +11,12 @@ export class RpcResolver {
   constructor(private rpcService: RpcService) {}
   private logger = new Logger()
   @Query((returns) => GetVersionType)
-  async getVersion() {
+  async version() {
     return (await thetaTsSdk.blockchain.getVersion()).result
   }
 
   @Query(() => GetAccountType)
-  async getAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
+  async account(@Args('address', { type: () => GraphQLString! }) address: string) {
     this.logger.debug(
       'get account: ' + JSON.stringify(await thetaTsSdk.blockchain.getAccount(address))
     )
@@ -24,19 +24,19 @@ export class RpcResolver {
   }
 
   @Query(() => BlockType)
-  async getBlock(@Args('hash', { type: () => GraphQLString! }) hash: string) {
+  async block(@Args('hash', { type: () => GraphQLString! }) hash: string) {
     return (await thetaTsSdk.blockchain.getBlock(hash)).result
   }
 
   @Query(() => BlockType)
-  async getBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
+  async blockByHeight(@Args('height', { type: () => Int! }) height: number) {
     const res = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
     this.logger.debug('get block by height: ' + JSON.stringify(res))
     return res.result
   }
 
   @Query(() => GetTransactionType)
-  async getTransaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
+  async transaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
     return (await thetaTsSdk.blockchain.getTransaction(hash)).result
   }
 }
