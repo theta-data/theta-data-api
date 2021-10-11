@@ -27,7 +27,7 @@ export class StakeResolver {
     const res = await this.stakeService.getNodeList(node_type)
     res.map((item) => {
       if (item.last_signature == null) {
-        item.last_signature = ''
+        item.last_signature = String(item.last_signature)
       }
     })
     this.logger.debug(JSON.stringify(res))
