@@ -231,14 +231,16 @@ export class AnalyseService {
         effective_edge_node_num: eenpEffectiveNodeNum,
         total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
         effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e18').toFixed()),
-        tfuelStakeRatio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
+        tfuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
 
         total_guardian_node_num: guTotalNodeNum,
         effective_guardian_node_num: guEffectiveNodeNum,
         total_guardian_stake: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
         effective_guardian_stake: Number(guEffectiveThetaWei.dividedBy('1e18').toFixed()),
 
-        thetaStakeRatio: Number(guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()),
+        theta_stake_ratio: Number(
+          guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
+        ),
 
         total_validator_node_num: vaTotalNodeNum,
         effective_validator_node_num: vaEffectiveNodeNum,
