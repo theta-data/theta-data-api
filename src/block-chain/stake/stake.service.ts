@@ -4,12 +4,13 @@ import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import { Repository } from 'typeorm'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
-import { Injectable } from '@nestjs/common'
+import { Injectable, Logger } from '@nestjs/common'
 
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
 @Injectable()
 export class StakeService {
+  logger = new Logger()
   constructor(
     @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,
     @InjectRepository(StakeStatisticsEntity)
@@ -17,6 +18,7 @@ export class StakeService {
   ) {}
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined | '') {
+    this.logger.debug('node type:' + nodeType)
     if (typeof nodeType !== undefined && nodeType != '')
       return await this.stakeRepository.find({
         node_type: nodeType
