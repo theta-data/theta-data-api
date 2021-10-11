@@ -17,9 +17,9 @@ export class StakeService {
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>
   ) {}
 
-  async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined | '') {
+  async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
     this.logger.debug('node type:' + nodeType)
-    if (typeof nodeType !== 'undefined' && nodeType != '')
+    if (typeof nodeType !== 'undefined')
       return await this.stakeRepository.find({
         node_type: nodeType
       })
