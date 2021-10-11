@@ -1,6 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../../tx/theta.enum'
-import { GraphQLInt, GraphQLString } from 'graphql'
+import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
 
 @ObjectType()
 export class GetVersionType {
@@ -206,6 +206,45 @@ export class GetTransactionType {
 }
 
 @ObjectType()
+export class NodeStatusType {
+  @Field()
+  address: string //'0x1676d4D39cbC7519De75878765Fdde964B432732'
+
+  @Field()
+  chain_id: string //'mainnet'
+
+  @Field()
+  peer_id: string //'0x1676d4D39cbC7519De75878765Fdde964B432732'
+
+  @Field()
+  latest_finalized_block_hash: string //'0x6fc056d88b59285d3c1fadf192cb6aab7128ba3eb110bc076f69fd2230101117'
+
+  @Field()
+  latest_finalized_block_height: string //'11798375'
+
+  @Field()
+  latest_finalized_block_time: string //'1630400947'
+
+  @Field()
+  latest_finalized_block_epoch: string //'11880229'
+
+  @Field()
+  current_epoch: string //'11880231'
+
+  @Field()
+  current_height: string //'11798375'
+
+  @Field()
+  current_time: string //'1630400964'
+
+  @Field(() => GraphQLBoolean)
+  syncing: false
+
+  @Field()
+  genesis_block_hash: string
+}
+
+@ObjectType()
 export class ThetaRpcType {
   @Field(() => GetVersionType)
   GetVersion: GetVersionType
@@ -218,4 +257,7 @@ export class ThetaRpcType {
 
   @Field(() => BlockType)
   GetBlockByHeight: BlockType
+
+  @Field(() => NodeStatusType)
+  GetStatus: NodeStatusType
 }
