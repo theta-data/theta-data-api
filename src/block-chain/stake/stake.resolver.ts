@@ -40,10 +40,10 @@ export class StakeResolver {
     )
   }
 
-  @Query(() => Int)
-  async currentHeight() {
-    return await this.stakeService.getLatestFinalizedBlock()
-  }
+  // @Query(() => Int)
+  // async currentHeight() {
+  //   return await this.stakeService.getLatestFinalizedBlock()
+  // }
 
   @Query(() => Float)
   async thetaStakeRatio() {
