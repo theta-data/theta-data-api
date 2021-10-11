@@ -34,6 +34,18 @@ export class RpcResolver {
     )
     return (await thetaTsSdk.blockchain.getAccount(address)).result
   }
+
+  @ResolveField()
+  async GetBlock(@Args('hash', { type: () => GraphQLString! }) hash: string) {
+    return (await thetaTsSdk.blockchain.getBlock(hash)).result
+  }
+
+  @ResolveField()
+  async GetBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
+    const res = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
+    this.logger.debug('get block by height: ' + JSON.stringify(res))
+    return res.result
+  }
   // @Query((returns) => GetVersionType)
   // async version() {
   //   return (await thetaTsSdk.blockchain.getVersion()).result

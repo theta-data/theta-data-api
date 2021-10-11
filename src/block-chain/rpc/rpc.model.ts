@@ -212,4 +212,10 @@ export class ThetaRpcType {
 
   @Field(() => GetAccountType)
   GetAccount: GetAccountType
+
+  @Field(() => BlockType)
+  GetBlock: BlockType
+
+  @Field(() => BlockType)
+  GetBlockByHeight: BlockType
 }
