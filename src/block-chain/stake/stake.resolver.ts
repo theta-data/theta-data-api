@@ -25,6 +25,11 @@ export class StakeResolver {
     node_type: STAKE_NODE_TYPE_ENUM | undefined
   ) {
     const res = await this.stakeService.getNodeList(node_type)
+    res.map((item) => {
+      if (item.last_signature == null) {
+        item.last_signature = ''
+      }
+    })
     this.logger.debug(JSON.stringify(res))
     return res
   }
