@@ -16,29 +16,29 @@ export class StakeResolver {
     return await this.stakeService.getNodeList(node_type)
   }
 
-  @Query(() => Int)
-  async edgeNodeNum() {
-    return await this.stakeService.getNodeNum(
-      await this.stakeService.getLatestFinalizedBlock(),
-      STAKE_NODE_TYPE_ENUM.edge_cache
-    )
-  }
+  // @Query(() => Int)
+  // async edgeNodeNum() {
+  //   return await this.stakeService.getNodeNum(
+  //     await this.stakeService.getLatestFinalizedBlock(),
+  //     STAKE_NODE_TYPE_ENUM.edge_cache
+  //   )
+  // }
 
-  @Query(() => Int)
-  async guardianNodeNum() {
-    return await this.stakeService.getNodeNum(
-      await this.stakeService.getLatestFinalizedBlock(),
-      STAKE_NODE_TYPE_ENUM.guardian
-    )
-  }
+  // @Query(() => Int)
+  // async guardianNodeNum() {
+  //   return await this.stakeService.getNodeNum(
+  //     await this.stakeService.getLatestFinalizedBlock(),
+  //     STAKE_NODE_TYPE_ENUM.guardian
+  //   )
+  // }
 
-  @Query(() => Int)
-  async validatorNodeNum() {
-    return await this.stakeService.getNodeNum(
-      await this.stakeService.getLatestFinalizedBlock(),
-      STAKE_NODE_TYPE_ENUM.validator
-    )
-  }
+  // @Query(() => Int)
+  // async validatorNodeNum() {
+  //   return await this.stakeService.getNodeNum(
+  //     await this.stakeService.getLatestFinalizedBlock(),
+  //     STAKE_NODE_TYPE_ENUM.validator
+  //   )
+  // }
 
   // @Query(() => Int)
   // async currentHeight() {
