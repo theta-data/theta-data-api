@@ -59,7 +59,7 @@ export class StakeResolver {
   // }
 
   @Query(() => StakeStatisticsEntity)
-  async stakeStatistics() {
+  async StakeStatistics() {
     return await this.stakeService.getLatestStakeStatics()
   }
 }
