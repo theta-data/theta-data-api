@@ -231,7 +231,7 @@ export class AnalyseService {
         effective_edge_node_num: eenpEffectiveNodeNum,
         total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
         effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e18').toFixed()),
-        tfuelStakeRatio: eenpTotalTfWei.dividedBy('5.399646029e27').toFixed,
+        tfuelStakeRatio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
 
         total_guardian_node_num: guTotalNodeNum,
         effective_guardian_node_num: guEffectiveNodeNum,
