@@ -91,13 +91,13 @@ export class StakeStatisticsEntity {
   @Column({
     type: 'float'
   })
-  tfuelStakeRatio: number
+  tfuel_stake_ratio: number
 
   @Field(() => GraphQLFloat)
   @Column({
     type: 'float'
   })
-  thetaStakeRatio: number
+  theta_stake_ratio: number
 
   @Field(() => Int)
   @Column({
