@@ -24,7 +24,9 @@ export class StakeResolver {
     @Args('node_type', { type: () => STAKE_NODE_TYPE_ENUM, nullable: true })
     node_type: STAKE_NODE_TYPE_ENUM | undefined
   ) {
-    return await this.stakeService.getNodeList(node_type)
+    const res = await this.stakeService.getNodeList(node_type)
+    this.logger.debug(JSON.stringify(res))
+    return res
   }
 
   // @Query(() => Float)
@@ -71,8 +73,6 @@ export class StakeResolver {
 
   @Query(() => StakeStatisticsEntity)
   async StakeStatistics() {
-    const res = await this.stakeService.getLatestStakeStatics()
-    this.logger.debug(JSON.stringify(res))
-    return res
+    return await this.stakeService.getLatestStakeStatics()
   }
 }
