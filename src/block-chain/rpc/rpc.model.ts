@@ -3,6 +3,12 @@ import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../../tx/theta.enum
 import { GraphQLInt, GraphQLString } from 'graphql'
 
 @ObjectType()
+export class ThetaRpcType {
+  @Field(() => GetVersionType)
+  getVersion: GetVersionType
+}
+
+@ObjectType()
 export class GetVersionType {
   @Field()
   version: string //"1.0",
