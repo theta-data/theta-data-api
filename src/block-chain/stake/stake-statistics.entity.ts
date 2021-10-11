@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLFloat } from 'graphql'
 
 @Entity()
 @ObjectType()
@@ -85,6 +86,18 @@ export class StakeStatisticsEntity {
     type: 'bigint'
   })
   effective_validator_stake: number
+
+  @Field(() => GraphQLFloat)
+  @Column({
+    type: 'float'
+  })
+  tfuelStakeRatio: number
+
+  @Field(() => GraphQLFloat)
+  @Column({
+    type: 'float'
+  })
+  thetaStakeRatio: number
 
   @Field(() => Int)
   @Column({
