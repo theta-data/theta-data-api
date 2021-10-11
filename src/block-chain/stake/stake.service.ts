@@ -58,6 +58,7 @@ export class StakeService {
           node_type: STAKE_NODE_TYPE_ENUM.validator,
           holder: validator.Holder,
           stakes: validator.Stakes
+          // last_signature : validator.
         })
       else
         await this.stakeRepository.update(
