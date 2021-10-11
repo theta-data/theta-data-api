@@ -17,6 +17,11 @@ export class RpcResolver {
   constructor(private rpcService: RpcService) {}
   private logger = new Logger()
 
+  @Query(() => ThetaRpcType)
+  async thetaRpc() {
+    return {}
+  }
+
   @ResolveField()
   async getVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result
