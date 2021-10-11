@@ -40,4 +40,10 @@ export class RpcResolver {
     this.logger.debug('get block by height: ' + JSON.stringify(res))
     return res.result
   }
+
+  @ResolveField()
+  async GetStatus() {
+    const nodeInfo = await thetaTsSdk.blockchain.getStatus()
+    return nodeInfo.result
+  }
 }
