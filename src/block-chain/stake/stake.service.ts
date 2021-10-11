@@ -19,7 +19,7 @@ export class StakeService {
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined | '') {
     this.logger.debug('node type:' + nodeType)
-    if (typeof nodeType !== undefined && nodeType != '')
+    if (typeof nodeType !== 'undefined' && nodeType != '')
       return await this.stakeRepository.find({
         node_type: nodeType
       })
