@@ -12,7 +12,7 @@ export class RpcResolver {
   private logger = new Logger()
 
   @Query(() => ThetaRpcType)
-  async thetaRpc() {
+  async ThetaRpc() {
     return {}
   }
 
