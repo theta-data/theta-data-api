@@ -165,7 +165,7 @@ export class transactionRawType {
   @Field({ nullable: true })
   data: string
 
-  @Field()
+  @Field({ nullable: true })
   block_height: string
 }
 
