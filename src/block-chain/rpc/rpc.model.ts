@@ -208,5 +208,8 @@ export class GetTransactionType {
 @ObjectType()
 export class ThetaRpcType {
   @Field(() => GetVersionType)
-  getVersion: GetVersionType
+  GetVersion: GetVersionType
+
+  @Field(() => GetAccountType)
+  GetAccount: GetAccountType
 }

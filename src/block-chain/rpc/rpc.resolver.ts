@@ -23,8 +23,16 @@ export class RpcResolver {
   }
 
   @ResolveField()
-  async getVersion() {
+  async GetVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result
+  }
+
+  @ResolveField()
+  async GetAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
+    this.logger.debug(
+      'get account: ' + JSON.stringify(await thetaTsSdk.blockchain.getAccount(address))
+    )
+    return (await thetaTsSdk.blockchain.getAccount(address)).result
   }
   // @Query((returns) => GetVersionType)
   // async version() {
