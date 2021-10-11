@@ -53,7 +53,7 @@ export class StakeEntity {
   stakes: Array<Stake>
 
   @Field({ nullable: true })
-  @Column({ type: 'timestamp' })
+  @Column({ type: 'timestamp', default: 0 })
   last_signature: string
 
   @Field(() => Int)
