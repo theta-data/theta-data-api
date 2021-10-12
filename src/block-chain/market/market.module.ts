@@ -1,5 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common'
-import { PriceResolver } from './market.resolver'
+import { MarketResolver } from './market.resolver'
 import * as redisStore from 'cache-manager-redis-store'
 const config = require('config')
 
@@ -11,7 +11,7 @@ const config = require('config')
       port: config.get('REDIS')['port']
     })
   ],
-  providers: [PriceResolver],
+  providers: [MarketResolver],
   exports: []
 })
-export class PriceModule {}
+export class MarketModule {}

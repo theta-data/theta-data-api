@@ -1,5 +1,5 @@
 import { Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { MarketInformationType } from './price.model'
+import { MarketInformationType } from './market.model'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { CACHE_MANAGER, Inject } from '@nestjs/common'
 import { Cache } from 'cache-manager'

@@ -9,7 +9,7 @@ import { MicroTxMonitorModule } from './microservice/tx-monitor/micro-tx-monitor
 import { TxMonitorWidrawStakeModule } from './tx-monitor/withdraw-stake/tx-monitor-widraw-stake.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
-import { PriceModule } from './block-chain/market/price.module'
+import { MarketModule } from './block-chain/market/market.module'
 import * as redisStore from 'cache-manager-redis-store'
 import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
@@ -38,7 +38,7 @@ const config = require('config')
     MicroTxMonitorModule,
     // TxMonitorWidrawStakeModule,
     StakeModule,
-    PriceModule,
+    MarketModule,
     RpcModule,
     SmartContractModule
   ],
