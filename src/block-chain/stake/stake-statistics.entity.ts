@@ -22,7 +22,7 @@ export class StakeStatisticsEntity {
   })
   total_edge_node_num: number
 
-  @Field(() => Int)
+  // @Field(() => Int)
   @Column({
     type: 'int'
   })
@@ -34,7 +34,7 @@ export class StakeStatisticsEntity {
   })
   total_edge_node_stake: number
 
-  @Field(() => String)
+  // @Field(() => String)
   @Column({
     type: 'bigint'
   })
