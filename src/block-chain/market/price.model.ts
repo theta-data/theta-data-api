@@ -1,7 +1,7 @@
 import { Field, Float, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
-export class ThetaPriceModel {
+export class TokenMarketInformationType {
   @Field()
   name: string
 
@@ -22,4 +22,13 @@ export class ThetaPriceModel {
 
   @Field()
   last_updated: string
+}
+
+@ObjectType()
+export class MarketInformationType {
+  @Field(() => TokenMarketInformationType)
+  theta: TokenMarketInformationType
+
+  @Field(() => TokenMarketInformationType)
+  theta_fuel: TokenMarketInformationType
 }

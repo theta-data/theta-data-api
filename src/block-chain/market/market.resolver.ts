@@ -1,16 +1,22 @@
-import { Query, Resolver } from '@nestjs/graphql'
-import { ThetaPriceModel } from './price.model'
+import { Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { MarketInformationType } from './price.model'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { CACHE_MANAGER, Inject } from '@nestjs/common'
 import { Cache } from 'cache-manager'
 thetaTsSdk.cmc.setKey('57a40db8-5488-4ed4-ab75-152fec2ed608')
 
-@Resolver()
-export class PriceResolver {
+@Resolver(() => MarketInformationType)
+export class MarketResolver {
   constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {}
-  @Query(() => ThetaPriceModel)
+
+  @Query(() => MarketInformationType)
+  async MarketInformation() {
+    return {}
+  }
+
+  @ResolveField()
   async theta() {
-    const key = 'theta-price-info'
+    const key = 'theta-market-info'
     if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const res = await thetaTsSdk.cmc.getInformation()
     if (res.theta.price) {
@@ -19,9 +25,9 @@ export class PriceResolver {
     return res.theta
   }
 
-  @Query(() => ThetaPriceModel)
-  async tfuel() {
-    const key = 'tfuel-price-info'
+  @ResolveField()
+  async theta_fuel() {
+    const key = 'tfuel-market-info'
     if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const res = await thetaTsSdk.cmc.getInformation()
     if (res.tfuel.price) {

@@ -1,5 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common'
-import { PriceResolver } from './price.resolver'
+import { PriceResolver } from './market.resolver'
 import * as redisStore from 'cache-manager-redis-store'
 const config = require('config')
 
