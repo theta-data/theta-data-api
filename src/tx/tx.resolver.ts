@@ -18,13 +18,13 @@ export class TxResolver {
   }
 
   @Query(() => [ThetaTxNumByHoursEntity])
-  async txListByDate() {
+  async TransactionsNumberByDate() {
     const listData = await this.txService.getThetaDataByDay()
     return listData.list
   }
 
   @Query(() => [ThetaTxNumByHoursEntity])
-  async txListByHour() {
+  async TransactionsNumberByHour() {
     return await this.txService.getThetaByHour()
   }
 }
