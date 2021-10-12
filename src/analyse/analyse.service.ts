@@ -227,25 +227,25 @@ export class AnalyseService {
       return await this.stakeStatisticsRepository.insert({
         block_height: Number(block.result.height),
 
-        total_edge_node_num: eenpTotalNodeNum,
-        effective_edge_node_num: eenpEffectiveNodeNum,
-        total_edge_node_stake: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
-        effective_edge_node_stake: parseInt(eenpEffectiveTfWei.dividedBy('1e18').toFixed()),
-        tfuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
+        total_edge_node_number: eenpTotalNodeNum,
+        effective_edge_node_number: eenpEffectiveNodeNum,
+        total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
+        effective_edge_node_stake_amount: parseInt(eenpEffectiveTfWei.dividedBy('1e18').toFixed()),
+        theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
 
-        total_guardian_node_num: guTotalNodeNum,
-        effective_guardian_node_num: guEffectiveNodeNum,
-        total_guardian_stake: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
-        effective_guardian_stake: Number(guEffectiveThetaWei.dividedBy('1e18').toFixed()),
+        total_guardian_node_number: guTotalNodeNum,
+        effective_guardian_node_number: guEffectiveNodeNum,
+        total_guardian_stake_amount: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
+        effective_guardian_stake_amount: Number(guEffectiveThetaWei.dividedBy('1e18').toFixed()),
 
         theta_stake_ratio: Number(
           guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
         ),
 
-        total_validator_node_num: vaTotalNodeNum,
-        effective_validator_node_num: vaEffectiveNodeNum,
-        effective_validator_stake: parseInt(vaEffectiveThetaWei.dividedBy('1e18').toFixed()),
-        total_validator_stake: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
+        total_validator_node_number: vaTotalNodeNum,
+        effective_validator_node_number: vaEffectiveNodeNum,
+        effective_validator_stake_amount: parseInt(vaEffectiveThetaWei.dividedBy('1e18').toFixed()),
+        total_validator_stake_amount: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
       })
     }
   }

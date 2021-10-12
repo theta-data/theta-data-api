@@ -20,79 +20,79 @@ export class StakeStatisticsEntity {
   @Column({
     type: 'int'
   })
-  total_edge_node_num: number
+  total_edge_node_number: number
 
   // @Field(() => Int)
   @Column({
     type: 'int'
   })
-  effective_edge_node_num: number
+  effective_edge_node_number: number
 
   @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  total_edge_node_stake: number
+  total_edge_node_stake_amount: number
 
   // @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  effective_edge_node_stake: number
+  effective_edge_node_stake_amount: number
 
   @Field(() => Int)
   @Column({
     type: 'int'
   })
-  total_guardian_node_num: number
+  total_guardian_node_number: number
 
   @Field(() => Int)
   @Column({
     type: 'int'
   })
-  effective_guardian_node_num: number
+  effective_guardian_node_number: number
 
   @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  total_guardian_stake: number
+  total_guardian_stake_amount: number
 
   @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  effective_guardian_stake: number
+  effective_guardian_stake_amount: number
 
   @Field(() => Int)
   @Column({
     type: 'int'
   })
-  total_validator_node_num: number
+  total_validator_node_number: number
 
   @Field(() => Int)
   @Column({
     type: 'int'
   })
-  effective_validator_node_num: number
+  effective_validator_node_number: number
 
   @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  total_validator_stake: number
+  total_validator_stake_amount: number
 
   @Field(() => String)
   @Column({
     type: 'bigint'
   })
-  effective_validator_stake: number
+  effective_validator_stake_amount: number
 
   @Field(() => GraphQLFloat)
   @Column({
     type: 'float'
   })
-  tfuel_stake_ratio: number
+  theta_fuel_stake_ratio: number
 
   @Field(() => GraphQLFloat)
   @Column({
