@@ -32,7 +32,7 @@ export class ThetaTxNumByHoursEntity {
   @Column({
     type: 'int'
   })
-  day: number
+  date: number
 
   @Field(() => Int)
   @Column({

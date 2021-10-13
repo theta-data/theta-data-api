@@ -101,7 +101,7 @@ export class TxService {
     return await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(moment().subtract(hours, 'hour').format())
+        timestamp: MoreThan(moment().subtract(hours, 'hours').format())
       }
     })
   }

@@ -58,14 +58,14 @@ export class AnalyseService {
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
       const month = Number(moment(Number(row.timestamp) * 1000).format('MM'))
-      const day = Number(moment(Number(row.timestamp) * 1000).format('DD'))
+      const date = Number(moment(Number(row.timestamp) * 1000).format('DD'))
       const hour = Number(moment(Number(row.timestamp) * 1000).format('HH'))
       const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD')
       let record = await this.thetaTxNumByHoursRepository.findOne({
         where: {
           year: Number(year),
           month: Number(month),
-          day: Number(day),
+          day: Number(date),
           hour: Number(hour)
         }
       })
@@ -74,7 +74,7 @@ export class AnalyseService {
         record = new ThetaTxNumByHoursEntity()
         record.year = year
         record.month = month
-        record.day = day
+        record.date = date
         record.hour = hour
         record.timestamp = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
         record.coin_base_transaction = 0
