@@ -1,7 +1,6 @@
-import { Args, Float, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
-// import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Logger } from '@nestjs/common'
 
@@ -10,14 +9,6 @@ export class StakeResolver {
   logger = new Logger()
 
   constructor(private stakeService: StakeService) {}
-
-  // @Query(() => [StakeEntity], { name: 'stake', description: 'get stake info' })
-  // async stakeInfo(
-  //   @Args('node_type', { type: () => STAKE_NODE_TYPE_ENUM, nullable: true })
-  //   node_type: STAKE_NODE_TYPE_ENUM | undefined
-  // ) {
-  //   return await this.stakeService.getNodeList(node_type)
-  // }
 
   @ResolveField()
   async stakes(
