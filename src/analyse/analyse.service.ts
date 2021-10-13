@@ -65,7 +65,7 @@ export class AnalyseService {
         where: {
           year: Number(year),
           month: Number(month),
-          day: Number(date),
+          date: Number(date),
           hour: Number(hour)
         }
       })
