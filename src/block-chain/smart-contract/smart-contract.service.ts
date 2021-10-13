@@ -66,10 +66,12 @@ export class SmartContractService {
     let smartContractList = await this.smartContractRepository.find()
     for (const contract of smartContractList) {
       contract.last_24h_call_times = await this.smartContractRecordRepository.count({
-        timestamp: MoreThan(moment().subtract(24, 'hours').format())
+        timestamp: MoreThan(moment().subtract(24, 'hours').format()),
+        smart_contract: contract
       })
       contract.last_seven_days_call_times = await this.smartContractRecordRepository.count({
-        timestamp: MoreThan(moment().subtract(7, 'days').format())
+        timestamp: MoreThan(moment().subtract(7, 'days').format()),
+        smart_contract: contract
       })
       await this.smartContractRepository.save(contract)
     }
