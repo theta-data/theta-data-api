@@ -11,7 +11,7 @@ import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 @Entity()
-@Unique(['year', 'month', 'day', 'hour'])
+@Unique(['year', 'month', 'date', 'hour'])
 export class ThetaTxNumByHoursEntity {
   @PrimaryGeneratedColumn()
   id!: number
