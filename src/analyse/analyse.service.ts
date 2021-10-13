@@ -77,36 +77,36 @@ export class AnalyseService {
         record.day = day
         record.hour = hour
         record.timestamp = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-        record.coin_base_tx = 0
-        record.deposit_stake_tx = 0
-        record.release_fund_tx = 0
-        record.reserve_fund_tx = 0
-        record.send_tx = 0
-        record.service_payment_tx = 0
-        record.slash_tx = 0
-        record.smart_contract_tx = 0
-        record.split_rule_tx = 0
-        record.withdraw_stake_tx = 0
+        record.coin_base_transaction = 0
+        record.deposit_stake_transaction = 0
+        record.release_fund_transaction = 0
+        record.reserve_fund_transaction = 0
+        record.send_transaction = 0
+        record.service_payment_transaction = 0
+        record.slash_transaction = 0
+        record.smart_contract_transaction = 0
+        record.split_rule_transaction = 0
+        record.withdraw_stake_transaction = 0
         record.block_number = 0
         record.active_wallet = 0
-        record.tfuel_burnt = 0
+        record.theta_fuel_burnt = 0
       }
       for (const transaction of row.transactions) {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
-            record.coin_base_tx++
+            record.coin_base_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
-            record.deposit_stake_tx++
+            record.deposit_stake_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.release_fund:
-            record.release_fund_tx++
+            record.release_fund_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
-            record.reserve_fund_tx++
+            record.reserve_fund_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.send:
-            record.send_tx++
+            record.send_transaction++
             transaction.raw.outputs.forEach((tx, index) => {
               if (tx.coins.thetawei !== '0') {
                 // console.log('theta emit send')
@@ -135,13 +135,13 @@ export class AnalyseService {
             // transaction.
             break
           case THETA_TRANSACTION_TYPE_ENUM.service_payment:
-            record.service_payment_tx++
+            record.service_payment_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.slash:
-            record.slash_tx++
+            record.slash_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
-            record.smart_contract_tx++
+            record.smart_contract_transaction++
             this.logger.debug('row:' + JSON.stringify(row))
             await this.smartContractService.updateSmartContractRecord(
               row.timestamp,
@@ -149,10 +149,10 @@ export class AnalyseService {
             )
             break
           case THETA_TRANSACTION_TYPE_ENUM.split_rule:
-            record.split_rule_tx++
+            record.split_rule_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
-            record.withdraw_stake_tx++
+            record.withdraw_stake_transaction++
             break
           default:
             this.logger.error('no transaction.tx_type:' + transaction.type)
@@ -177,7 +177,7 @@ export class AnalyseService {
         }
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-          record.tfuel_burnt += Number(
+          record.theta_fuel_burnt += Number(
             new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toFixed()
           )
         }

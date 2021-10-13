@@ -45,18 +45,18 @@ export class TxService {
     })
     let obj: {
       [propName: string]: {
-        coin_base_tx: number
+        coin_base_transaction: number
         block_number: number
         active_wallet: number
-        slash_tx: number
-        send_tx: number
-        reserve_fund_tx: number
-        release_fund_tx: number
-        service_payment_tx: number
-        split_rule_tx: number
-        deposit_stake_tx: number
-        withdraw_stake_tx: number
-        smart_contract_tx: number
+        slash_transaction: number
+        send_transaction: number
+        reserve_fund_transaction: number
+        release_fund_transaction: number
+        service_payment_transaction: number
+        split_rule_transaction: number
+        deposit_stake_transaction: number
+        withdraw_stake_transaction: number
+        smart_contract_transaction: number
         timestamp: string
       }
     } = {}
@@ -66,31 +66,31 @@ export class TxService {
         obj[date] = {
           block_number: hourData.block_number,
           active_wallet: hourData.active_wallet,
-          coin_base_tx: hourData.coin_base_tx,
-          slash_tx: hourData.slash_tx,
-          send_tx: hourData.send_tx,
-          reserve_fund_tx: hourData.reserve_fund_tx,
-          release_fund_tx: hourData.reserve_fund_tx,
-          service_payment_tx: hourData.service_payment_tx,
-          split_rule_tx: hourData.split_rule_tx,
-          deposit_stake_tx: hourData.deposit_stake_tx,
-          withdraw_stake_tx: hourData.withdraw_stake_tx,
-          smart_contract_tx: hourData.smart_contract_tx,
+          coin_base_transaction: hourData.coin_base_transaction,
+          slash_transaction: hourData.slash_transaction,
+          send_transaction: hourData.send_transaction,
+          reserve_fund_transaction: hourData.reserve_fund_transaction,
+          release_fund_transaction: hourData.reserve_fund_transaction,
+          service_payment_transaction: hourData.service_payment_transaction,
+          split_rule_transaction: hourData.split_rule_transaction,
+          deposit_stake_transaction: hourData.deposit_stake_transaction,
+          withdraw_stake_transaction: hourData.withdraw_stake_transaction,
+          smart_contract_transaction: hourData.smart_contract_transaction,
           timestamp: hourData.timestamp
         }
       } else {
-        obj[date].coin_base_tx += hourData.coin_base_tx
-        obj[date].slash_tx += hourData.slash_tx
+        obj[date].coin_base_transaction += hourData.coin_base_transaction
+        obj[date].slash_transaction += hourData.slash_transaction
         obj[date].block_number += hourData.block_number
         obj[date].active_wallet += hourData.active_wallet
-        obj[date].send_tx += hourData.send_tx
-        obj[date].reserve_fund_tx += hourData.reserve_fund_tx
-        obj[date].release_fund_tx += hourData.release_fund_tx
-        obj[date].service_payment_tx += hourData.service_payment_tx
-        obj[date].split_rule_tx += hourData.split_rule_tx
-        obj[date].deposit_stake_tx += hourData.deposit_stake_tx
-        obj[date].withdraw_stake_tx += hourData.withdraw_stake_tx
-        obj[date].smart_contract_tx += hourData.smart_contract_tx
+        obj[date].send_transaction += hourData.send_transaction
+        obj[date].reserve_fund_transaction += hourData.reserve_fund_transaction
+        obj[date].release_fund_transaction += hourData.release_fund_transaction
+        obj[date].service_payment_transaction += hourData.service_payment_transaction
+        obj[date].split_rule_transaction += hourData.split_rule_transaction
+        obj[date].deposit_stake_transaction += hourData.deposit_stake_transaction
+        obj[date].withdraw_stake_transaction += hourData.withdraw_stake_transaction
+        obj[date].smart_contract_transaction += hourData.smart_contract_transaction
       }
     })
 

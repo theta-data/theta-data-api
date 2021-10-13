@@ -52,7 +52,7 @@ export class ThetaTxNumByHoursEntity {
     type: 'float',
     default: 0
   })
-  tfuel_burnt: number
+  theta_fuel_burnt: number
 
   @Field(() => Int)
   @Column({
@@ -66,70 +66,70 @@ export class ThetaTxNumByHoursEntity {
     type: 'int',
     default: 0
   })
-  coin_base_tx: number
+  coin_base_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  slash_tx: number
+  slash_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  send_tx: number
+  send_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  reserve_fund_tx: number
+  reserve_fund_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  release_fund_tx: number
+  release_fund_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  service_payment_tx: number
+  service_payment_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  split_rule_tx: number
+  split_rule_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  deposit_stake_tx: number
+  deposit_stake_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  withdraw_stake_tx: number
+  withdraw_stake_transaction: number
 
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
-  smart_contract_tx: number
+  smart_contract_transaction: number
 
   @Field(() => Int)
   @Column({
