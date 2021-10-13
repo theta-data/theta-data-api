@@ -6,7 +6,6 @@ import {
   Unique,
   UpdateDateColumn
 } from 'typeorm'
-import { ColdObservable } from 'rxjs/internal/testing/ColdObservable'
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()

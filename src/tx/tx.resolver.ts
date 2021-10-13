@@ -7,16 +7,15 @@ import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 export class TxResolver {
   constructor(private readonly txService: TxService) {}
 
-  @Query((returns) => ThetaTxList)
-  async thetaTxList() {
-    return await this.txService.getThetaData()
-  }
-
-  @Query((returns) => ThetaTxList)
-  async thetaTxListByDay() {
-    return await this.txService.getThetaDataByDay()
-  }
-
+  // @Query((returns) => ThetaTxList)
+  // async thetaTxList() {
+  //   return await this.txService.getThetaData()
+  // }
+  //
+  // @Query((returns) => ThetaTxList)
+  // async thetaTxListByDay() {
+  //   return await this.txService.getThetaDataByDay()
+  // }
   @Query(() => [ThetaTxNumByHoursEntity])
   async TransactionsNumberByDate() {
     const listData = await this.txService.getThetaDataByDay()
