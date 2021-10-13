@@ -4,7 +4,8 @@ import { SmartContractEntity } from './smart-contract.entity'
 import { MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { Cron, CronExpression } from '@nestjs/schedule'
-import { thetaTsSdk } from 'theta-ts-sdk'
+import { RankByEnum } from './smart-contract.model'
+
 const moment = require('moment')
 @Injectable()
 export class SmartContractService {
@@ -17,14 +18,28 @@ export class SmartContractService {
     private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>
   ) {}
 
-  async getSmartContract(max: number = 500) {
-    return await this.smartContractRepository.find({
-      relations: ['record'],
-      order: {
-        call_times: 'DESC'
-      },
-      take: max
-    })
+  async getSmartContract(rankBy: RankByEnum, max: number = 500) {
+    // const orderKey = 'call_times'
+    switch (rankBy) {
+      case RankByEnum.last_seven_days_call_times:
+        return await this.smartContractRepository.find({
+          relations: ['record'],
+          order: { last_seven_days_call_times: 'DESC' },
+          take: max
+        })
+      case RankByEnum.last_24h_call_times:
+        return await this.smartContractRepository.find({
+          relations: ['record'],
+          order: { last_24h_call_times: 'DESC' },
+          take: max
+        })
+      default:
+        return await this.smartContractRepository.find({
+          relations: ['record'],
+          order: { call_times: 'DESC' },
+          take: max
+        })
+    }
   }
 
   async getSmartContractNum() {

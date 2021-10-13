@@ -1,7 +1,7 @@
-import { Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { SmartContractService } from './smart-contract.service'
 import { SmartContractEntity } from './smart-contract.entity'
-import { SmartContractStatisticsType } from './smart-contract.model'
+import { RankByEnum, SmartContractStatisticsType } from './smart-contract.model'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
@@ -13,8 +13,10 @@ export class SmartContractResolver {
   }
 
   @ResolveField()
-  async call_rank() {
-    return await this.smartContractService.getSmartContract()
+  async call_rank(
+    @Args('rank_by', { type: () => RankByEnum, nullable: true }) rank_by: RankByEnum
+  ) {
+    return await this.smartContractService.getSmartContract(rank_by)
   }
 
   @ResolveField()
