@@ -258,6 +258,7 @@ export class AnalyseService {
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
     const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.result.height)
+    if (!validatorList.result.BlockHashVcpPairs) return undefined
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
       totalNodeNum++
       node.Stakes.forEach((stake) => {
