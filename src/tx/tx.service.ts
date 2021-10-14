@@ -97,7 +97,7 @@ export class TxService {
     return { list: Object.values(obj) }
   }
 
-  public async getThetaByHour(hours: number = 24 * 7) {
+  public async getThetaByHour(hours: number = 24 * 2) {
     return await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
