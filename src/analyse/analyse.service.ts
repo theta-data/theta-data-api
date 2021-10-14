@@ -14,8 +14,8 @@ import { SmartContractService } from '../block-chain/smart-contract/smart-contra
 
 const moment = require('moment')
 const sleep = require('await-sleep')
-// thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
-thetaTsSdk.blockchain.setUrl(' http://localhost:16888/rpc')
+thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
+// thetaTsSdk.blockchain.setUrl(' http://localhost:16888/rpc')
 
 @Injectable()
 export class AnalyseService {
