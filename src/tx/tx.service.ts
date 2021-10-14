@@ -39,7 +39,7 @@ export class TxService {
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(moment().subtract(3, 'month').format())
+        timestamp: MoreThan(moment().subtract(14, 'days').format())
       }
       // take: 500
     })
