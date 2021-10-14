@@ -53,7 +53,11 @@ export class AnalyseService {
         continue
       }
       if (Number(block.result.height) % 100 === 1) {
-        await this.updateCheckPoint(block)
+        try {
+          await this.updateCheckPoint(block)
+        } catch (e) {
+          this.logger.debug(e)
+        }
       }
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
