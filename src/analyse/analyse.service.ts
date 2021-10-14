@@ -191,7 +191,7 @@ export class AnalyseService {
       record.block_number++
       await this.thetaTxNumByHoursRepository.save(record)
       height++
-      // await sleep(1)
+      await sleep(1)
     }
   }
 
