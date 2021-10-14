@@ -32,7 +32,7 @@ export class AnalyseService {
   ) {}
 
   public async queryDataFromBlockChain() {
-    let height = 9883000
+    let height = 12303000
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
