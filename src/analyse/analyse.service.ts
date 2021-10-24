@@ -231,10 +231,12 @@ export class AnalyseService {
       return await this.stakeStatisticsRepository.insert({
         block_height: Number(block.result.height),
 
-        total_edge_node_number: eenpTotalNodeNum,
-        effective_edge_node_number: eenpEffectiveNodeNum,
+        total_elite_edge_node_number: eenpTotalNodeNum,
+        effective_elite_edge_node_number: eenpEffectiveNodeNum,
         total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
-        effective_edge_node_stake_amount: parseInt(eenpEffectiveTfWei.dividedBy('1e18').toFixed()),
+        effective_elite_edge_node_stake_amount: parseInt(
+          eenpEffectiveTfWei.dividedBy('1e18').toFixed()
+        ),
         theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
 
         total_guardian_node_number: guTotalNodeNum,

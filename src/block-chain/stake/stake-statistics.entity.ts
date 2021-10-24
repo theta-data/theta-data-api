@@ -20,13 +20,13 @@ export class StakeStatisticsEntity {
   @Column({
     type: 'int'
   })
-  total_edge_node_number: number
+  total_elite_edge_node_number: number
 
   // @Field(() => Int)
   @Column({
     type: 'int'
   })
-  effective_edge_node_number: number
+  effective_elite_edge_node_number: number
 
   @Field(() => String)
   @Column({
@@ -38,7 +38,7 @@ export class StakeStatisticsEntity {
   @Column({
     type: 'bigint'
   })
-  effective_edge_node_stake_amount: number
+  effective_elite_edge_node_stake_amount: number
 
   @Field(() => Int)
   @Column({
