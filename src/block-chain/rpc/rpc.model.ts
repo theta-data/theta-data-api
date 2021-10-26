@@ -19,6 +19,7 @@ export class TokenType {
   @Field()
   thetawei: string // "994999990000000000000000000",
 
+  @Field()
   tfuelwei: string //"4999999979999999000000000000"
 }
 
