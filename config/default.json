@@ -1,28 +1,29 @@
 {
   "THETA_DATA_DB": {
-    "host": "",
+    "host": "localhost",
     "port": 3306,
     "username": "root",
-    "password": "",
+    "password": "root",
     "database": "theta_db",
     "synchronize": true,
     "autoLoadEntities": true,
     "logging": false,
+    "entities": ["src/**/*.entity{.ts,.js}"],
     "extra": {
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "LOG_PATH": "",
+  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
+  "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "MAIL": {
-    "USER": "",
-    "PASS": ""
+    "USER": "ron1993219@gmail.com",
+    "PASS": "Larry1993@google"
   },
 
   "REDIS": {
-    "host": "",
+    "host": "127.0.0.1",
     "port": 6379
   },
-
   "JWT_CONSTANTS" : {
     "secret" : "secretKey"
   }

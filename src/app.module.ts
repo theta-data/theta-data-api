@@ -2,20 +2,15 @@ import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { getConnectionOptions } from 'typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
-import { AuthModule } from './auth/auth.module'
 import { TxModule } from './tx/tx.module'
-import { TxMonitorSendModule } from './tx-monitor/send/tx-monitor-send.module'
 import { MicroTxMonitorModule } from './microservice/tx-monitor/micro-tx-monitor.module'
-import { TxMonitorWidrawStakeModule } from './tx-monitor/withdraw-stake/tx-monitor-widraw-stake.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
 import { MarketModule } from './block-chain/market/market.module'
 import * as redisStore from 'cache-manager-redis-store'
 import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
-
 const config = require('config')
-
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -32,11 +27,8 @@ const config = require('config')
       port: config.get('REDIS')['port']
     }),
     ScheduleModule.forRoot(),
-    // AuthModule,
     TxModule,
-    // TxMonitorSendModule,
-    MicroTxMonitorModule,
-    // TxMonitorWidrawStakeModule,
+    // MicroTxMonitorModule,
     StakeModule,
     MarketModule,
     RpcModule,

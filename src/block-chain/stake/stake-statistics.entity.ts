@@ -102,7 +102,8 @@ export class StakeStatisticsEntity {
 
   @Field(() => Int)
   @Column({
-    type: 'bigint'
+    type: 'bigint',
+    default: 0
   })
   timestamp: number
 

@@ -11,11 +11,17 @@ import { StakeService } from '../block-chain/stake/stake.service'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
-
+// import { config } from 'rxjs'
+const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
 // thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
-thetaTsSdk.blockchain.setUrl(' http://localhost:16888/rpc')
+// if(config.)
+if (config.get('THETA_NODE_HOST')) {
+  thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+} else {
+  thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+}
 
 @Injectable()
 export class AnalyseService {
@@ -32,14 +38,14 @@ export class AnalyseService {
   ) {}
 
   public async queryDataFromBlockChain() {
-    let height = 12303000
+    let height = 12563010
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
       }
     })
 
-    if (latestBlock) {
+    if (latestBlock.latest_block_height > height) {
       height = latestBlock.latest_block_height + 1
     }
 
@@ -48,8 +54,8 @@ export class AnalyseService {
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
       const row = block.result
       if (!row || JSON.stringify(row) == '{}') {
-        await sleep(3000)
-        this.logger.error('no data, height')
+        this.logger.error('no data, height: ' + height)
+        await sleep(60000)
         continue
       }
       if (Number(block.result.height) % 100 === 1) {

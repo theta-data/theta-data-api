@@ -2,110 +2,258 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type UserInfo {
-  status: Int!
-  email: String!
-}
-
-type ResInfo {
-  code: CODE_ENUM!
-  message: String
-  userInfo: UserInfo
-}
-
-enum CODE_ENUM {
-  invalid_request
-  too_many_request
-  sys_err
-  db_operate_err
-  success
-  params_format_error
-  register_password_repeat_error
-  register_user_exist
-  login_no_user
-  login_password_error
-  login_not_verified
-  mail_check_invalid_auth_token
+type ThetaTxNumByHoursEntity {
+  year: Int!
+  month: Int!
+  date: Int!
+  hour: Int!
+  block_number: Int!
+  theta_fuel_burnt: Float!
+  active_wallet: Int!
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
+  latest_block_height: Int!
+  timestamp: String!
 }
 
 type ThetaTx {
-  coin_base_tx: Int!
-  slash_tx: Int!
-  send_tx: Int!
-  reserve_fund_tx: Int!
-  release_fund_tx: Int!
-  service_payment_tx: Int!
-  split_rule_tx: Int!
-  deposit_stake_tx: Int!
-  withdraw_stake_tx: Int!
-  smart_contract_tx: Int!
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
   timestamp: String
 }
 
-type ThetaTxList {
-  list: [ThetaTx!]!
+type Stake {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
 }
 
-type SendTxMonitorResIno {
-  code: CODE_ENUM!
-  message: String
-  list: [SendTxMonitorResList!]!
-}
-
-type SendTxMonitorResList {
+type StakeEntity {
   id: Int!
-  min: Int!
-  notify_email: String!
-  token_type: SendTxMonitorTokenTypeEnum!
-  status: SendTxMonitorStatusEnum!
-  create_date: String!
-  update_date: String!
+  node_type: STAKE_NODE_TYPE_ENUM!
+  holder: String
+  stakes: [Stake!]!
+  last_signature: String
+  update_height: Int!
 }
 
-enum SendTxMonitorTokenTypeEnum {
-  THETA
-  TFUEL
+enum STAKE_NODE_TYPE_ENUM {
+  validator
+  guardian
+  edge_cache
 }
 
-enum SendTxMonitorStatusEnum {
-  deleted
-  success
+type StakeStatisticsEntity {
+  block_height: Int!
+  total_elite_edge_node_number: Int!
+  total_edge_node_stake_amount: String!
+  total_guardian_node_number: Int!
+  effective_guardian_node_number: Int!
+  total_guardian_stake_amount: String!
+  effective_guardian_stake_amount: String!
+  total_validator_node_number: Int!
+  effective_validator_node_number: Int!
+  total_validator_stake_amount: String!
+  effective_validator_stake_amount: String!
+  theta_fuel_stake_ratio: Float!
+  theta_stake_ratio: Float!
+  timestamp: Int!
+  stakes(node_type: STAKE_NODE_TYPE_ENUM): [StakeEntity!]!
 }
 
-type TxMonitorWithdrawStakeResIno {
-  code: CODE_ENUM!
-  message: String
-  list: [TxMonitorWithdrawStakeResList!]!
+type TokenMarketInformationType {
+  name: String!
+  price: Float!
+  volume_24h: Float!
+  market_cap: Float!
+  total_supply: Float!
+  circulating_supply: Float!
+  last_updated: String!
 }
 
-type TxMonitorWithdrawStakeResList {
+type MarketInformationType {
+  theta: TokenMarketInformationType!
+  theta_fuel: TokenMarketInformationType!
+}
+
+type GetVersionType {
+  version: String!
+  git_hash: String!
+  timestamp: String!
+}
+
+type TokenType {
+  thetawei: String!
+}
+
+type receiptType {
+  TxHash: String!
+  Logs: [receiptLogType!]
+  EvmRet: String
+  ContractAddress: String!
+  GasUsed: Int!
+  EvmErr: String
+}
+
+type receiptLogType {
+  address: String!
+  topics: [String!]!
+  data: String
+}
+
+type GetAccountType {
+  sequence: String!
+  coins: TokenType!
+  reserved_funds: [String!]!
+  last_updated_block_height: String!
+  root: String!
+  code: String!
+}
+
+type BlockType {
+  chain_id: String!
+  epoch: String!
+  height: String!
+  parent: String!
+  transactions_hash: String!
+  state_hash: String!
+  timestamp: String!
+  proposer: String!
+  children: [String!]!
+  status: THETA_BLOCK_STATUS_ENUM!
+  hash: String!
+  transactions: [transactionType!]!
+}
+
+enum THETA_BLOCK_STATUS_ENUM {
+  pending
+  valid
+  invalid
+  committed
+  directly_finalized
+  indirectly_finalized
+  trusted
+}
+
+type proposerType {
+  address: String
+  coins: TokenType
+  sequence: String
+  signature: String
+}
+
+type inputOutputType {
+  address: String!
+  coins: TokenType!
+}
+
+type transactionRawType {
+  proposer: proposerType
+  outputs: [inputOutputType]
+  inputs: [inputOutputType]
+  gas_limit: String
+  gas_price: String
+  from: proposerType
+  to: proposerType
+  data: String
+  block_height: String
+}
+
+type transactionType {
+  raw: transactionRawType
+  type: THETA_TX_TYPE_ENUM!
+  fee: TokenType
+  hash: String!
+  receipt: receiptType
+}
+
+enum THETA_TX_TYPE_ENUM {
+  TxCoinbase
+  TxSlash
+  TxSend
+  TxReserveFund
+  TxReleaseFund
+  TxServicePayment
+  TxSplitRule
+  TxSmartContract
+  TxDepositStake
+  TxWithdrawStake
+  TxDepositStakeV2
+  TxStakeRewardDistribution
+}
+
+type NodeStatusType {
+  address: String!
+  chain_id: String!
+  peer_id: String!
+  latest_finalized_block_hash: String!
+  latest_finalized_block_height: String!
+  latest_finalized_block_time: String!
+  latest_finalized_block_epoch: String!
+  current_epoch: String!
+  current_height: String!
+  current_time: String!
+  syncing: Boolean!
+  genesis_block_hash: String!
+}
+
+type ThetaRpcType {
+  GetVersion: GetVersionType!
+  GetAccount(address: String!): GetAccountType!
+  GetBlock(hash: String!): BlockType!
+  GetBlockByHeight(height: Int!): BlockType!
+  GetStatus: NodeStatusType!
+}
+
+type SmartContractCallRecordEntity {
   id: Int!
-  min: Int!
-  notify_email: String!
-  status: TxMonitorWithdrawStakeStatusEnum!
-  create_date: String!
-  update_date: String!
+  timestamp: Float!
 }
 
-enum TxMonitorWithdrawStakeStatusEnum {
-  success
-  deleted
+type SmartContractEntity {
+  id: Int!
+  contract_address: String!
+  call_times: Int!
+  last_seven_days_call_times: Int!
+  last_24h_call_times: Int!
+  record: [SmartContractCallRecordEntity!]!
+  create_date: Float!
+  update_date: Float!
+}
+
+type SmartContractStatisticsType {
+  call_rank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
+  total_number: Int!
+}
+
+enum RankByEnum {
+  call_times
+  last_24h_call_times
+  last_seven_days_call_times
 }
 
 type Query {
-  whoAmI: UserInfo!
-  thetaTxList: ThetaTxList!
-  thetaTxListByDay: ThetaTxList!
-  sendTxMonitorList: SendTxMonitorResIno!
-  txWithdrawMonitorList: TxMonitorWithdrawStakeResIno!
-}
-
-type Mutation {
-  register(password: String!, email: String!): ResInfo!
-  login(password: String!, email: String!): ResInfo!
-  confirmEmail: ResInfo!
-  addSendTxMonitor(token_type: SendTxMonitorTokenTypeEnum!, min: Int!, notify_email: String!): SendTxMonitorResIno!
-  delTxMonitor(id: Int!): SendTxMonitorResIno!
-  addTxWithdrawStakeMonitor(min: Int!, notify_email: String!): TxMonitorWithdrawStakeResIno!
-  delTxWithdrawStakeMonitor(id: Int!): TxMonitorWithdrawStakeResIno!
+  TransactionsNumberByDate: [ThetaTxNumByHoursEntity!]!
+  TransactionsNumberByHour: [ThetaTxNumByHoursEntity!]!
+  StakeStatistics: StakeStatisticsEntity!
+  MarketInformation: MarketInformationType!
+  ThetaRpc: ThetaRpcType!
+  SmartContractStatistics: SmartContractStatisticsType!
 }

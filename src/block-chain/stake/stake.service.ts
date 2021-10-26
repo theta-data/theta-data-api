@@ -5,8 +5,7 @@ import { Repository } from 'typeorm'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Injectable, Logger } from '@nestjs/common'
-
-thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+const config = require('config')
 
 @Injectable()
 export class StakeService {
@@ -15,7 +14,14 @@ export class StakeService {
     @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,
     @InjectRepository(StakeStatisticsEntity)
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>
-  ) {}
+  ) {
+    if (config.get('THETA_NODE_HOST')) {
+      thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    } else {
+      console.log('no theta node host')
+      thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+    }
+  }
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
     this.logger.debug('node type:' + nodeType)
@@ -57,8 +63,8 @@ export class StakeService {
         await this.stakeRepository.insert({
           node_type: STAKE_NODE_TYPE_ENUM.validator,
           holder: validator.Holder,
-          stakes: validator.Stakes
-          // last_signature : validator.
+          stakes: validator.Stakes,
+          last_signature: '2000-01-01 00:00:01'
         })
       else
         await this.stakeRepository.update(
