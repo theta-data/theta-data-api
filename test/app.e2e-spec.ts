@@ -48,7 +48,7 @@ describe('AppController (e2e)', () => {
         return done()
       })
   })
-  it('should get the stake statistics', async (done) => {
+  it('should get the stake statistics', (done) => {
     return request(app.getHttpServer())
       .post(gql)
       .send({
@@ -96,7 +96,7 @@ describe('AppController (e2e)', () => {
       })
   })
 
-  it('should get the theta and theta fuel market information', async (done) => {
+  it('should get the theta and theta fuel market information', (done) => {
     return request(app.getHttpServer())
       .post(gql)
       .send({
