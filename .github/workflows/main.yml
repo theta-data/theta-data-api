@@ -29,8 +29,13 @@ jobs:
 #        run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: install and build
+      - name: install and test
         run: |
           npm ci
+          NODE_CONFIG_DIR = '/home/ubuntu/actions-runner/_work/config/config/theta-data-api' npm run test
+
+      # Runs a set of commands using the runners shell
+      - name: build
+        run: |
           npm run build
-          pm2 reload ecosystem.config.js --env test
+          pm2 reload ecosystem.config.js --env production
