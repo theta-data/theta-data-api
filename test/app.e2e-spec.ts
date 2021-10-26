@@ -95,7 +95,6 @@ describe('AppController (e2e)', () => {
         return done()
       })
   })
-
   it('should get the theta and theta fuel market information', (done) => {
     return request(app.getHttpServer())
       .post(gql)
@@ -135,6 +134,8 @@ describe('AppController (e2e)', () => {
         return done()
       })
   })
+
+  it('')
 
   afterAll(async () => {
     await app.close()

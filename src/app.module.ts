@@ -19,7 +19,8 @@ const config = require('config')
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
-      autoSchemaFile: 'schema.gql'
+      autoSchemaFile: 'schema.gql',
+      introspection: true
     }),
     CacheModule.register({
       store: redisStore,
