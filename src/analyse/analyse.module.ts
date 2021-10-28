@@ -1,4 +1,4 @@
-import { CacheModule, Logger, Module } from '@nestjs/common'
+import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { getConnectionOptions } from 'typeorm'
 import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
@@ -10,8 +10,6 @@ import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.ent
 import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 const config = require('config')
-// console.log('entity path', join(__dirname, '**', '*.entity.{ts,js}'))
-
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({

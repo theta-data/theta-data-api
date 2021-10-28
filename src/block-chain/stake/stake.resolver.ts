@@ -1,6 +1,6 @@
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
-import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
+import { STAKE_NODE_TYPE_ENUM } from './stake.entity'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Logger } from '@nestjs/common'
 

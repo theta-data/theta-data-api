@@ -52,6 +52,7 @@ export class TxService {
         send_transaction: number
         reserve_fund_transaction: number
         release_fund_transaction: number
+        date: number
         service_payment_transaction: number
         split_rule_transaction: number
         deposit_stake_transaction: number
@@ -66,6 +67,7 @@ export class TxService {
         obj[date] = {
           block_number: hourData.block_number,
           active_wallet: hourData.active_wallet,
+          date: hourData.date,
           coin_base_transaction: hourData.coin_base_transaction,
           slash_transaction: hourData.slash_transaction,
           send_transaction: hourData.send_transaction,

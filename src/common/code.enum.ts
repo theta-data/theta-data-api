@@ -1,4 +1,3 @@
-import { register } from 'tsconfig-paths'
 import { registerEnumType } from '@nestjs/graphql'
 
 export enum CODE_ENUM {

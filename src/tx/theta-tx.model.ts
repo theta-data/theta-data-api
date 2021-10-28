@@ -1,5 +1,4 @@
-import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
-import { THETA_TX_TYPE_ENUM } from './theta.enum'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class ThetaTx {
