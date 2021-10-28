@@ -24,20 +24,6 @@ type ThetaTxNumByHoursEntity {
   timestamp: String!
 }
 
-type ThetaTx {
-  coin_base_transaction: Int!
-  slash_transaction: Int!
-  send_transaction: Int!
-  reserve_fund_transaction: Int!
-  release_fund_transaction: Int!
-  service_payment_transaction: Int!
-  split_rule_transaction: Int!
-  deposit_stake_transaction: Int!
-  withdraw_stake_transaction: Int!
-  smart_contract_transaction: Int!
-  timestamp: String
-}
-
 type ThetaTxNumByDateModel {
   year: Int!
   month: Int!
@@ -57,6 +43,25 @@ type ThetaTxNumByDateModel {
   smart_contract_transaction: Int!
   latest_block_height: Int!
   timestamp: String!
+}
+
+type ThetaTx {
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
+  timestamp: String
+}
+
+type ThetaTransactionStatisticsType {
+  by_date: [ThetaTxNumByDateModel!]!
+  by_hour: [ThetaTxNumByHoursEntity!]!
 }
 
 type Stake {
@@ -272,8 +277,7 @@ enum RankByEnum {
 }
 
 type Query {
-  TransactionsNumberByDate: [ThetaTxNumByDateModel!]!
-  TransactionsNumberByHour: [ThetaTxNumByHoursEntity!]!
+  TransactionsStatistics: ThetaTransactionStatisticsType!
   StakeStatistics: StakeStatisticsEntity!
   MarketInformation: MarketInformationType!
   ThetaRpc: ThetaRpcType!

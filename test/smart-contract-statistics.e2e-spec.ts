@@ -51,7 +51,5 @@ describe('AppController (e2e)', () => {
 
   afterAll(async () => {
     await app.close()
-    // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error
-    // done().catch(() => {})
   })
 })
