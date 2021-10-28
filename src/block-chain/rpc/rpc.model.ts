@@ -208,7 +208,7 @@ export class GetTransactionType {
   @Field(() => transactionRawType)
   transaction: transactionRawType
 
-  @Field(() => receiptType)
+  @Field(() => receiptType, { nullable: true })
   receipt: receiptType
 }
 

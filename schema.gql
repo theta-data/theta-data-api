@@ -219,7 +219,7 @@ type GetTransactionType {
   status: String!
   hash: String!
   transaction: transactionRawType!
-  receipt: receiptType!
+  receipt: receiptType
 }
 
 type NodeStatusType {
