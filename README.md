@@ -68,3 +68,6 @@ $ node dist/main
 # run analyse server
 $ node dist/analyse
 ```
+
+## License
+The Theta Data Api is licensed under the [MIT License](https://opensource.org/licenses/MIT).
