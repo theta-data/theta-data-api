@@ -196,14 +196,20 @@ export class GetTransactionType {
   @Field()
   block_height: string //"3",
 
+  @Field(() => THETA_TX_TYPE_ENUM)
+  type: THETA_TX_TYPE_ENUM
+
   @Field()
   status: string //"finalized",
 
   @Field()
   hash: string //"0xf3cc94af7a1520b384999ad106ade9738b6cde66e2377ceab37067329d7173a0",
 
-  @Field(() => [transactionType])
-  transaction: Array<transactionType>
+  @Field(() => transactionRawType)
+  transaction: transactionRawType
+
+  @Field(() => receiptType)
+  receipt: receiptType
 }
 
 @ObjectType()
@@ -261,4 +267,7 @@ export class ThetaRpcType {
 
   @Field(() => NodeStatusType)
   GetStatus: NodeStatusType
+
+  @Field(() => GetTransactionType)
+  GetTransaction: GetTransactionType
 }

@@ -307,6 +307,94 @@ describe('Theta RPC', () => {
       })
   }, 10000)
 
+  it('should get transaction by hash', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          ' {\n' +
+          '  ThetaRpc {\n' +
+          '    GetTransaction(\n' +
+          '      hash: "0x8ce09ea8aba4e0bffdf4f8746bc6b6ba605c35b1f7c35d702e4344846cddb224"\n' +
+          '    ) {\n' +
+          '      block_hash\n' +
+          '      block_height\n' +
+          '      hash\n' +
+          '      transaction {\n' +
+          '        block_height\n' +
+          '        data\n' +
+          '        from {\n' +
+          '          address\n' +
+          '          coins {\n' +
+          '            tfuelwei\n' +
+          '            thetawei\n' +
+          '          }\n' +
+          '          sequence\n' +
+          '          signature\n' +
+          '        }\n' +
+          '        gas_limit\n' +
+          '        gas_price\n' +
+          '        inputs {\n' +
+          '          address\n' +
+          '          coins {\n' +
+          '            tfuelwei\n' +
+          '            thetawei\n' +
+          '          }\n' +
+          '        }\n' +
+          '        outputs {\n' +
+          '          address\n' +
+          '          coins {\n' +
+          '            tfuelwei\n' +
+          '            thetawei\n' +
+          '          }\n' +
+          '        }\n' +
+          '        proposer {\n' +
+          '          coins {\n' +
+          '            tfuelwei\n' +
+          '            thetawei\n' +
+          '          }\n' +
+          '          address\n' +
+          '          sequence\n' +
+          '          signature\n' +
+          '        }\n' +
+          '        to {\n' +
+          '          address\n' +
+          '          coins {\n' +
+          '            tfuelwei\n' +
+          '            thetawei\n' +
+          '          }\n' +
+          '          sequence\n' +
+          '          signature\n' +
+          '        }\n' +
+          '      }\n' +
+          '      type\n' +
+          '      status\n' +
+          '      receipt {\n' +
+          '        EvmRet\n' +
+          '        EvmErr\n' +
+          '        ContractAddress\n' +
+          '        GasUsed\n' +
+          '        Logs {\n' +
+          '          address\n' +
+          '          data\n' +
+          '          topics\n' +
+          '        }\n' +
+          '        TxHash\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetTransaction).toHaveProperty('hash')
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 10000)
+
   afterAll(async () => {
     await app.close()
     // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error

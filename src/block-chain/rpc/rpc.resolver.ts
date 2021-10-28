@@ -46,4 +46,10 @@ export class RpcResolver {
     const nodeInfo = await thetaTsSdk.blockchain.getStatus()
     return nodeInfo.result
   }
+
+  @ResolveField()
+  async GetTransaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
+    const nodeInfo = await thetaTsSdk.blockchain.getTransaction(hash)
+    return nodeInfo.result
+  }
 }

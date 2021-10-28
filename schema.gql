@@ -212,6 +212,16 @@ enum THETA_TX_TYPE_ENUM {
   TxStakeRewardDistribution
 }
 
+type GetTransactionType {
+  block_hash: String!
+  block_height: String!
+  type: THETA_TX_TYPE_ENUM!
+  status: String!
+  hash: String!
+  transaction: transactionRawType!
+  receipt: receiptType!
+}
+
 type NodeStatusType {
   address: String!
   chain_id: String!
@@ -233,6 +243,7 @@ type ThetaRpcType {
   GetBlock(hash: String!): BlockType!
   GetBlockByHeight(height: Int!): BlockType!
   GetStatus: NodeStatusType!
+  GetTransaction(hash: String!): GetTransactionType!
 }
 
 type SmartContractCallRecordEntity {
