@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ThetaTxList } from 'src/tx/theta-tx-list.model'
 import { MoreThan, Repository } from 'typeorm'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { ThetaTxNumByDateModel } from './theta-tx-num-by-date.model'
+import { ThetaTxNumByDateModel } from './theta-tx.model'
+// import { ThetaTxNumByDateModel } from './theta-tx-num-by-date.model'
 const moment = require('moment')
 @Injectable()
 export class TxService {
@@ -11,18 +11,6 @@ export class TxService {
     @InjectRepository(ThetaTxNumByHoursEntity)
     private thetaTxNumRepository: Repository<ThetaTxNumByHoursEntity>
   ) {}
-
-  async getThetaData(): Promise<ThetaTxList> {
-    let hours = await this.thetaTxNumRepository.find({
-      where: {
-        timestamp: MoreThan(moment(moment().unix() * 1000 - 7 * 24 * 60 * 60 * 1000).format())
-      },
-      order: { timestamp: 'ASC' }
-    })
-    return {
-      list: hours
-    }
-  }
 
   public async getThetaDataByDate() {
     let hours = await this.thetaTxNumRepository.find({

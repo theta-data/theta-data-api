@@ -1,7 +1,7 @@
 import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { getConnectionOptions } from 'typeorm'
-import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
+import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours.entity'
 import { ClientsModule, Transport } from '@nestjs/microservices'
 import { AnalyseService } from './analyse.service'
 import * as redisStore from 'cache-manager-redis-store'

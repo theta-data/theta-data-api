@@ -1,8 +1,5 @@
 import { Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { ThetaTxList } from './theta-tx-list.model'
 import { TxService } from './tx.service'
-import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { ThetaTxNumByDateModel } from './theta-tx-num-by-date.model'
 import { ThetaTransactionStatisticsType } from './theta-tx.model'
 
 @Resolver((of) => ThetaTransactionStatisticsType)

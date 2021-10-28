@@ -1,4 +1,15 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+// import { ThetaTxNumByDateModel } from './theta-tx-num-by-date.model'
+import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
+
+@ObjectType()
+export class ThetaTransactionStatisticsType {
+  @Field(() => [ThetaTxNumByDateModel])
+  by_date: Array<ThetaTxNumByDateModel>
+
+  @Field(() => [ThetaTxNumByHoursEntity])
+  by_hour: ThetaTxNumByHoursEntity
+}
 
 @ObjectType()
 export class ThetaTxNumByDateModel {

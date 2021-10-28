@@ -146,7 +146,7 @@ describe('Theta RPC', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 10000)
 
   it('should get block by height', (done) => {
     return request(app.getHttpServer())
@@ -246,7 +246,7 @@ describe('Theta RPC', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 10000)
 
   it('should get node status', (done) => {
     return request(app.getHttpServer())
@@ -280,7 +280,7 @@ describe('Theta RPC', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 10000)
 
   it('should get node version', (done) => {
     return request(app.getHttpServer())
@@ -305,7 +305,7 @@ describe('Theta RPC', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 10000)
 
   afterAll(async () => {
     await app.close()
