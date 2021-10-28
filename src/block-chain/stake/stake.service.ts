@@ -18,7 +18,7 @@ export class StakeService {
     if (config.get('THETA_NODE_HOST')) {
       thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     } else {
-      console.log('no theta node host')
+      // console.log('no theta node host')
       thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
     }
   }
@@ -53,7 +53,7 @@ export class StakeService {
 
   async updateVcp(height: string) {
     let vcpList = await thetaTsSdk.blockchain.getVcpByHeight(height)
-    console.log('height', height, 'vcp list', JSON.stringify(vcpList))
+    // console.log('height', height, 'vcp list', JSON.stringify(vcpList))
     for (const validator of vcpList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates) {
       let res = await this.stakeRepository.findOne({
         holder: validator.Holder,
@@ -155,8 +155,7 @@ export class StakeService {
   @Cron(CronExpression.EVERY_10_MINUTES)
   async updateStakeInfo() {
     let nodeInfo = await thetaTsSdk.blockchain.getStatus()
-    console.log('node info', JSON.stringify(nodeInfo))
-
+    // console.log('node info', JSON.stringify(nodeInfo))
     await this.updateVcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateGcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateEenp(nodeInfo.result.latest_finalized_block_height)

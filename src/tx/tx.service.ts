@@ -26,7 +26,7 @@ export class TxService {
       },
       order: { timestamp: 'ASC' }
     })
-    console.log('start', moment(moment().unix() * 1000 - 7 * 24 * 60 * 60 * 1000).format())
+    // console.log('start', moment(moment().unix() * 1000 - 7 * 24 * 60 * 60 * 1000).format())
     // let hour1List = hours.map((txEntity)=>{
     //   return txEntity[THETA_TX_TYPE_ENUM[txType]]
     // })

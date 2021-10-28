@@ -11,7 +11,7 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 const config = require('config')
-console.log('entity path', join(__dirname, '**', '*.entity.{ts,js}'))
+// console.log('entity path', join(__dirname, '**', '*.entity.{ts,js}'))
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({

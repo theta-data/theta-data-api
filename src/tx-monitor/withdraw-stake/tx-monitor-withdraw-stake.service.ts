@@ -30,7 +30,7 @@ export class TxMonitorWithdrawStakeService {
 
   public async delete(email: string, id: number) {
     let user = await this.usersRepository.findOne({ email: email })
-    console.log('email', email, 'id', id)
+    // console.log('email', email, 'id', id)
     await this.withdrawStakeRepository.update(
       { user: user, id: id },
 

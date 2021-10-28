@@ -18,7 +18,7 @@ export class AuthService {
       login_time: moment().format(),
       email: checkRes.userInfo.email
     }
-    console.log('jwt test', this.jwtService.decode(this.jwtService.sign(payload)))
+    // console.log('jwt test', this.jwtService.decode(this.jwtService.sign(payload)))
     return { code: CODE_ENUM.success, message: this.jwtService.sign(payload) }
   }
 

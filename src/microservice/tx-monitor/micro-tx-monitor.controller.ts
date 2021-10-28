@@ -33,7 +33,7 @@ export class MicroTxMonitorController {
     to: string
     hash: string
   }) {
-    console.log('get send tx', token_type, amount, from, to, hash)
+    // console.log('get send tx', token_type, amount, from, to, hash)
     let monitorToSend = await this.sendTxMonitorRepository.find({
       where: {
         token_type: token_type,
