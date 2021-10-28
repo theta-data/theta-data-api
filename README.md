@@ -46,6 +46,14 @@ $ npm run analyse
 # watch mode
 $ npm run start:dev
 
+
+```
+
+## PlayGround
+you can then open your web browser and navigate to http://localhost:3000/graphql (host and port may vary depending on your configuration). You will then see the GraphQL playground.
+
+## Build
+```bash
 # build
 $ npm run build
 
@@ -54,8 +62,4 @@ $ node dist/main
 
 # run analyse server
 $ node dist/analyse
-
 ```
-
-## PlayGround
-you can then open your web browser and navigate to http://localhost:3000/graphql (host and port may vary depending on your configuration). You will then see the GraphQL playground.
