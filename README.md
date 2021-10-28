@@ -58,4 +58,4 @@ $ node dist/analyse
 ```
 
 ## PlayGround
-open http://localhost:3000/graphql to test your api.
+visit http://localhost:3000/graphql to the graphql api.
