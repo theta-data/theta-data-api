@@ -38,6 +38,27 @@ type ThetaTx {
   timestamp: String
 }
 
+type ThetaTxNumByDateModel {
+  year: Int!
+  month: Int!
+  date: Int!
+  block_number: Int!
+  theta_fuel_burnt: Float!
+  active_wallet: Int!
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
+  latest_block_height: Int!
+  timestamp: String!
+}
+
 type Stake {
   source: String!
   amount: String!
@@ -251,7 +272,7 @@ enum RankByEnum {
 }
 
 type Query {
-  TransactionsNumberByDate: [ThetaTxNumByHoursEntity!]!
+  TransactionsNumberByDate: [ThetaTxNumByDateModel!]!
   TransactionsNumberByHour: [ThetaTxNumByHoursEntity!]!
   StakeStatistics: StakeStatisticsEntity!
   MarketInformation: MarketInformationType!
