@@ -5,7 +5,7 @@
     "host": "localhost",
     "port": 3306,
     "username": "root",
-    "password": "",
+    "password": "root",
     "database": "theta_db",
     "bigNumberStrings": false,
     "synchronize": true,

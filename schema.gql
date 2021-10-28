@@ -101,6 +101,7 @@ type GetVersionType {
 
 type TokenType {
   thetawei: String!
+  tfuelwei: String!
 }
 
 type receiptType {

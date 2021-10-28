@@ -8,13 +8,18 @@ import * as redisStore from 'cache-manager-redis-store'
 import { StakeModule } from '../block-chain/stake/stake.module'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
+import { join } from 'path'
 const config = require('config')
+console.log('entity path', join(__dirname, '**', '*.entity.{ts,js}'))
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () =>
-        Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB'))
+        Object.assign(
+          Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB')),
+          { entities: [join(__dirname, '/../**', '*.entity.{ts,js}')] }
+        )
     }),
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity]),
     CacheModule.register({

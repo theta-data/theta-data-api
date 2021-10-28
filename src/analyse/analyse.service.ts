@@ -11,12 +11,9 @@ import { StakeService } from '../block-chain/stake/stake.service'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
-// import { config } from 'rxjs'
 const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
-// thetaTsSdk.blockchain.setUrl('https://theta-bridge-rpc.thetatoken.org/rpc')
-// if(config.)
 if (config.get('THETA_NODE_HOST')) {
   thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
 } else {
@@ -38,14 +35,14 @@ export class AnalyseService {
   ) {}
 
   public async queryDataFromBlockChain() {
-    let height = 12563010
+    let height = 12598090
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
       }
     })
 
-    if (latestBlock.latest_block_height > height) {
+    if (latestBlock && latestBlock.latest_block_height > height) {
       height = latestBlock.latest_block_height + 1
     }
 
