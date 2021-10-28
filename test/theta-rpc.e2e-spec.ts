@@ -39,7 +39,7 @@ describe('Theta RPC', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.GetAccount).toHaveProperty('code')
+        expect(res.body.data.ThetaRpc.GetAccount).toHaveProperty('code')
         // done()
       })
       .end(function (err, res) {
