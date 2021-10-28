@@ -58,4 +58,4 @@ $ node dist/analyse
 ```
 
 ## PlayGround
-visit http://localhost:3000/graphql to test the graphql api.
+you can then open your web browser and navigate to http://localhost:3000/graphql (host and port may vary depending on your configuration). You will then see the GraphQL playground.
