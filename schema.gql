@@ -150,6 +150,16 @@ type GetGcpByHeightModel {
   BlockHashGcpPairs: [BlockHashGcpPairType!]!
 }
 
+type BlockHashEenpPairType {
+  BlockHash: String!
+  EENs: [CandidateType!]!
+  HeightList: HeightListType
+}
+
+type GetEenpByHeightModel {
+  BlockHashEenpPairs: [BlockHashEenpPairType!]!
+}
+
 type GetVersionType {
   version: String!
   git_hash: String!
@@ -291,6 +301,7 @@ type ThetaRpcType {
   GetTransaction(hash: String!): GetTransactionType!
   GetVcpByHeight(height: Int!): GetVcpByHeightModel!
   GetGcpByHeight(height: Int!): GetGcpByHeightModel!
+  GetEenpByHeight(height: Int!): GetEenpByHeightModel!
 }
 
 type SmartContractCallRecordEntity {

@@ -3,6 +3,7 @@ import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
 import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
+import { GetEenpByHeightModel } from './rpc-eenp.model'
 
 @ObjectType()
 export class GetVersionType {
@@ -278,4 +279,7 @@ export class ThetaRpcType {
 
   @Field(() => GetGcpByHeightModel)
   GetGcpByHeight: GetGcpByHeightModel
+
+  @Field(() => GetEenpByHeightModel)
+  GetEenpByHeight: GetEenpByHeightModel
 }

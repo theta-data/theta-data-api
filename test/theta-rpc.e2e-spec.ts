@@ -484,6 +484,45 @@ describe('Theta RPC', () => {
       })
   }, 20000)
 
+  it('should get eenp by height', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          ' {\n' +
+          '  ThetaRpc {\n' +
+          '    GetEenpByHeight(height: ' +
+          latestBlockHeight +
+          ') {\n' +
+          '      BlockHashEenpPairs {\n' +
+          '        BlockHash\n' +
+          '        EENs {\n' +
+          '          Holder\n' +
+          '          Stakes {\n' +
+          '            amount\n' +
+          '            return_height\n' +
+          '            source\n' +
+          '            withdrawn\n' +
+          '          }\n' +
+          '        }\n' +
+          '        HeightList {\n' +
+          '          Heights\n' +
+          '        }\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetEenpByHeight).toHaveProperty('BlockHashEenpPairs')
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 60000)
+
   afterAll(async () => {
     await app.close()
     // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error

@@ -5,6 +5,7 @@ import { GraphQLString } from 'graphql'
 import { ThetaRpcType } from './rpc.model'
 import { Logger } from '@nestjs/common'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
+import { json } from 'express'
 thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
 
 @Resolver((of) => ThetaRpcType)
@@ -63,6 +64,13 @@ export class RpcResolver {
   @ResolveField()
   async GetGcpByHeight(@Args('height', { type: () => Int! }) height: number) {
     const nodeInfo = await thetaTsSdk.blockchain.getGcpByHeight(height.toString())
+    return nodeInfo.result
+  }
+
+  @ResolveField()
+  async GetEenpByHeight(@Args('height', { type: () => Int! }) height: number) {
+    const nodeInfo = await thetaTsSdk.blockchain.getEenpByHeight(height.toString())
+    // console.log(JSON.stringify(nodeInfo.result))
     return nodeInfo.result
   }
 }
