@@ -1,6 +1,5 @@
-import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { SmartContractService } from './smart-contract.service'
-import { SmartContractEntity } from './smart-contract.entity'
 import { RankByEnum, SmartContractStatisticsType } from './smart-contract.model'
 import { GraphQLInt } from 'graphql'
 

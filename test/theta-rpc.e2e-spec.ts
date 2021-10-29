@@ -2,16 +2,22 @@ import { Test, TestingModule } from '@nestjs/testing'
 import * as request from 'supertest'
 import { AppModule } from '../src/app.module'
 import { INestApplication } from '@nestjs/common'
+import { thetaTsSdk } from 'theta-ts-sdk'
+// import config from 'config'
 const gql = '/graphql/'
+const config = require('config')
 
 describe('Theta RPC', () => {
   let app: INestApplication
-
+  let latestBlockHeight = 0
   beforeAll(async () => {
+    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
     }).compile()
-
+    latestBlockHeight = Number(
+      (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+    )
     app = moduleFixture.createNestApplication()
     await app.init()
     // done().catch(() => {})
@@ -394,6 +400,48 @@ describe('Theta RPC', () => {
         return done()
       })
   }, 10000)
+
+  it('should get vcp by height', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          ' {\n' +
+          '  ThetaRpc {\n' +
+          '    GetVcpByHeight(height: ' +
+          latestBlockHeight +
+          ') {\n' +
+          '      BlockHashVcpPairs {\n' +
+          '        BlockHash\n' +
+          '        HeightList {\n' +
+          '          Heights\n' +
+          '        }\n' +
+          '        Vcp {\n' +
+          '          BlockHash\n' +
+          '          SortedCandidates {\n' +
+          '            Holder\n' +
+          '            Stakes {\n' +
+          '              amount\n' +
+          '              return_height\n' +
+          '              source\n' +
+          '              withdrawn\n' +
+          '            }\n' +
+          '          }\n' +
+          '        }\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetVcpByHeight).toHaveProperty('BlockHashVcpPairs')
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 20000)
 
   afterAll(async () => {
     await app.close()

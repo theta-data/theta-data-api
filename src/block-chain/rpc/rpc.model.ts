@@ -1,6 +1,7 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
 import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
+import { GetVcpByHeightModel } from './rpc-vcp.model'
 
 @ObjectType()
 export class GetVersionType {
@@ -270,4 +271,7 @@ export class ThetaRpcType {
 
   @Field(() => GetTransactionType)
   GetTransaction: GetTransactionType
+
+  @Field(() => GetVcpByHeightModel)
+  GetVcpByHeight: GetVcpByHeightModel
 }

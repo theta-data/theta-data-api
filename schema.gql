@@ -105,6 +105,37 @@ type MarketInformationType {
   theta_fuel: TokenMarketInformationType!
 }
 
+type CandidateStakeTyep {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
+}
+
+type CandidateType {
+  Holder: String!
+  Stakes: [CandidateStakeTyep!]!
+}
+
+type VcpPairType {
+  BlockHash: String
+  SortedCandidates: [CandidateType!]!
+}
+
+type HeightListType {
+  Heights: [Int!]!
+}
+
+type BlockHashVcpPair {
+  BlockHash: String!
+  Vcp: VcpPairType!
+  HeightList: HeightListType!
+}
+
+type GetVcpByHeightModel {
+  BlockHashVcpPairs: [BlockHashVcpPair!]!
+}
+
 type GetVersionType {
   version: String!
   git_hash: String!
@@ -244,6 +275,7 @@ type ThetaRpcType {
   GetBlockByHeight(height: Int!): BlockType!
   GetStatus: NodeStatusType!
   GetTransaction(hash: String!): GetTransactionType!
+  GetVcpByHeight(height: Int!): GetVcpByHeightModel!
 }
 
 type SmartContractCallRecordEntity {
