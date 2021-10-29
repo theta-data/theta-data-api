@@ -59,4 +59,10 @@ export class RpcResolver {
     const nodeInfo = await thetaTsSdk.blockchain.getVcpByHeight(height.toString())
     return nodeInfo.result
   }
+
+  @ResolveField()
+  async GetGcpByHeight(@Args('height', { type: () => Int! }) height: number) {
+    const nodeInfo = await thetaTsSdk.blockchain.getGcpByHeight(height.toString())
+    return nodeInfo.result
+  }
 }

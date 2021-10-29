@@ -443,6 +443,47 @@ describe('Theta RPC', () => {
       })
   }, 20000)
 
+  it('should get gcp by height', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          '{\n' +
+          '  ThetaRpc {\n' +
+          '    GetGcpByHeight(height: ' +
+          latestBlockHeight +
+          ') {\n' +
+          '      BlockHashGcpPairs {\n' +
+          '        BlockHash\n' +
+          '        Gcp {\n' +
+          '          SortedGuardians {\n' +
+          '            Holder\n' +
+          '            Stakes {\n' +
+          '              amount\n' +
+          '              return_height\n' +
+          '              source\n' +
+          '              withdrawn\n' +
+          '            }\n' +
+          '          }\n' +
+          '        }\n' +
+          '        HeightList {\n' +
+          '          Heights\n' +
+          '        }\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}\n'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetGcpByHeight).toHaveProperty('BlockHashVcpPairs')
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 20000)
+
   afterAll(async () => {
     await app.close()
     // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error

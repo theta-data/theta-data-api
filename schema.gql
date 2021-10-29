@@ -136,6 +136,20 @@ type GetVcpByHeightModel {
   BlockHashVcpPairs: [BlockHashVcpPair!]!
 }
 
+type GcpType {
+  SortedGuardians: [CandidateType!]!
+}
+
+type BlockHashGcpPairType {
+  BlockHash: String!
+  Gcp: GcpType!
+  HeightList: HeightListType
+}
+
+type GetGcpByHeightModel {
+  BlockHashGcpPairs: [BlockHashGcpPairType!]!
+}
+
 type GetVersionType {
   version: String!
   git_hash: String!
@@ -276,6 +290,7 @@ type ThetaRpcType {
   GetStatus: NodeStatusType!
   GetTransaction(hash: String!): GetTransactionType!
   GetVcpByHeight(height: Int!): GetVcpByHeightModel!
+  GetGcpByHeight(height: Int!): GetGcpByHeightModel!
 }
 
 type SmartContractCallRecordEntity {

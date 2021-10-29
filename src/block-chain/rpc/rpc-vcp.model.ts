@@ -2,7 +2,7 @@ import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 import { GraphQLBoolean, GraphQLInt } from 'graphql'
 
 @ObjectType()
-class CandidateStakeTyep {
+export class CandidateStakeTyep {
   @Field()
   source: string
 
@@ -17,7 +17,7 @@ class CandidateStakeTyep {
 }
 
 @ObjectType()
-class CandidateType {
+export class CandidateType {
   @Field()
   Holder: string
 
@@ -35,7 +35,7 @@ export class VcpPairType {
 }
 
 @ObjectType()
-class HeightListType {
+export class HeightListType {
   @Field(() => [Int])
   Heights: Array<number>
 }
