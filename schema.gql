@@ -160,6 +160,11 @@ type GetEenpByHeightModel {
   BlockHashEenpPairs: [BlockHashEenpPairType!]!
 }
 
+"""
+This API returns the version of the blockchain software.
+
+
+"""
 type GetVersionType {
   version: String!
   git_hash: String!

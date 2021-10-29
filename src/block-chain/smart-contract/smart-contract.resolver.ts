@@ -20,10 +20,10 @@ export class SmartContractResolver {
     return await this.smartContractService.getSmartContract(rank_by, take)
   }
 
-  @ResolveField()
-  async total_number() {
-    return await this.smartContractService.getSmartContractNum()
-  }
+  // @ResolveField()
+  // async total_number() {
+  //   return await this.smartContractService.getSmartContractNum()
+  // }
 
   // @Query(() => [SmartContractEntity])
   // async smartContract() {

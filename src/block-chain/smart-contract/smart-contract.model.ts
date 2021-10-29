@@ -7,8 +7,8 @@ export class SmartContractStatisticsType {
   @Field(() => [SmartContractEntity])
   call_rank: Array<SmartContractEntity>
 
-  @Field(() => GraphQLInt)
-  total_number: number
+  // @Field(() => GraphQLInt)
+  // total_number: number
 }
 
 export enum RankByEnum {

@@ -5,7 +5,7 @@ import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
 
-@ObjectType()
+@ObjectType({ description: 'This API returns the version of the blockchain software.\n' + '\n' })
 export class GetVersionType {
   @Field()
   version: string //"1.0",

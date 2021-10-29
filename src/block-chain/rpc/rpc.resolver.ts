@@ -2,7 +2,7 @@ import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
-import { ThetaRpcType } from './rpc.model'
+import { GetVersionType, NodeStatusType, ThetaRpcType } from './rpc.model'
 import { Logger } from '@nestjs/common'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { json } from 'express'
@@ -18,7 +18,9 @@ export class RpcResolver {
     return {}
   }
 
-  @ResolveField()
+  @ResolveField(() => GetVersionType, {
+    description: 'This API returns the version of the blockchain software.\n' + '\n'
+  })
   async GetVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result
   }
@@ -43,7 +45,7 @@ export class RpcResolver {
     return res.result
   }
 
-  @ResolveField()
+  @ResolveField(() => NodeStatusType, { description: '' })
   async GetStatus() {
     const nodeInfo = await thetaTsSdk.blockchain.getStatus()
     return nodeInfo.result
