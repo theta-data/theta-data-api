@@ -35,12 +35,11 @@ describe('AppController (e2e)', () => {
           '      }\n' +
           '      update_date\n' +
           '    }\n' +
-          '    total_number\n' +
           '  }}'
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.SmartContractStatistics).toHaveProperty('total_number')
+        expect(res.body.data.SmartContractStatistics).toHaveProperty('call_rank')
         // done()
       })
       .end(function (err, res) {

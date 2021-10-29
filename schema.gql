@@ -327,7 +327,6 @@ type SmartContractEntity {
 
 type SmartContractStatisticsType {
   call_rank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
-  total_number: Int!
 }
 
 enum RankByEnum {
