@@ -476,7 +476,7 @@ describe('Theta RPC', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.ThetaRpc.GetGcpByHeight).toHaveProperty('BlockHashVcpPairs')
+        expect(res.body.data.ThetaRpc.GetGcpByHeight).toHaveProperty('BlockHashGcpPairs')
       })
       .end(function (err, res) {
         if (err) return done(err)
