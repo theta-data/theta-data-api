@@ -1,0 +1,22 @@
+{
+  "THETA_DATA_DB": {
+    "host": "127.0.0.1",
+    "port": 3306,
+    "username": "root",
+    "password": "root",
+    "database": "theta_db",
+    "synchronize": true,
+    "autoLoadEntities": true,
+    "entities": ["src/**/*.entity{.ts,.js}"],
+    "logging": false,
+    "extra": {
+      "charset": "utf8mb4_unicode_ci"
+    }
+  },
+  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
+  "LOG_PATH": "/home/ubuntu/theta-data/logs/",
+  "REDIS": {
+    "host": "127.0.0.1",
+    "port": 6379
+  }
+}
