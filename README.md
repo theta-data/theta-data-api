@@ -69,5 +69,8 @@ $ node dist/main
 $ node dist/analyse
 ```
 
+## Contact
+contact@thetadata.io
+
 ## License
 The Theta Data Api is licensed under the [MIT License](https://opensource.org/licenses/MIT).
