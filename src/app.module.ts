@@ -10,7 +10,10 @@ import * as redisStore from 'cache-manager-redis-store'
 import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
+import { ServeStaticModule } from '@nestjs/serve-static'
+
 const config = require('config')
+
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
@@ -29,6 +32,11 @@ const config = require('config')
       store: redisStore,
       host: config.get('REDIS')['host'],
       port: config.get('REDIS')['port']
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'playground'),
+      // serveRoot: 'playground',
+      exclude: ['/graphql*']
     }),
     ScheduleModule.forRoot(),
     TxModule,

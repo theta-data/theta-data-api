@@ -24,6 +24,7 @@
     "@nestjs/passport": "^7.1.5",
     "@nestjs/platform-express": "^7.5.1",
     "@nestjs/schedule": "^1.0.1",
+    "@nestjs/serve-static": "^2.2.2",
     "@nestjs/typeorm": "^7.1.5",
     "@thetalabs/theta-js": "0.0.56",
     "@types/config": "0.0.38",
