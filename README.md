@@ -51,6 +51,7 @@ $ npm run start:dev
 
 ## PlayGround
 you can then open your web browser and navigate to http://localhost:3000 (host and port may vary depending on your configuration). You will then see the GraphQL playground.
+
 ![avatar](https://github.com/larryro/image/blob/main/playground_20211101112605.png?raw=true)
 ## Test
 ```bash
