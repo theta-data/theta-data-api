@@ -15,12 +15,12 @@ export class StakeService {
     @InjectRepository(StakeStatisticsEntity)
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>
   ) {
-    if (config.get('THETA_NODE_HOST')) {
-      thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-    } else {
-      // console.log('no theta node host')
-      thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
-    }
+    // if (config.get('THETA_NODE_HOST')) {
+    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // } else {
+    //   // console.log('no theta node host')
+    //   thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+    // }
   }
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {

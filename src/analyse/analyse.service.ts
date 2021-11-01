@@ -14,11 +14,11 @@ import { SmartContractService } from '../block-chain/smart-contract/smart-contra
 const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
-if (config.get('THETA_NODE_HOST')) {
-  thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-} else {
-  thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
-}
+// if (config.get('THETA_NODE_HOST')) {
+thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+// } else {
+//   thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+// }
 
 @Injectable()
 export class AnalyseService {

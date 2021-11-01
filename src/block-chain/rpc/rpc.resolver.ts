@@ -4,13 +4,13 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
 import { GetVersionType, NodeStatusType, ThetaRpcType } from './rpc.model'
 import { Logger } from '@nestjs/common'
-import { GetVcpByHeightModel } from './rpc-vcp.model'
-import { json } from 'express'
-thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
+const config = require('config')
 
 @Resolver((of) => ThetaRpcType)
 export class RpcResolver {
-  constructor(private rpcService: RpcService) {}
+  constructor(private rpcService: RpcService) {
+    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+  }
   private logger = new Logger()
 
   @Query(() => ThetaRpcType)
