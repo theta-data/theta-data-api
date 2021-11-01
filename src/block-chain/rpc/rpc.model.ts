@@ -255,6 +255,12 @@ export class NodeStatusType {
 }
 
 @ObjectType()
+export class GetPendingTransactionsType {
+  @Field(() => [String])
+  tx_hashes: Array<string>
+}
+
+@ObjectType()
 export class ThetaRpcType {
   @Field(() => GetVersionType)
   GetVersion: GetVersionType
@@ -282,4 +288,7 @@ export class ThetaRpcType {
 
   @Field(() => GetEenpByHeightModel)
   GetEenpByHeight: GetEenpByHeightModel
+
+  @Field(() => GetPendingTransactionsType)
+  GetPendingTransactions: GetPendingTransactionsType
 }

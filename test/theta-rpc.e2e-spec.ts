@@ -523,6 +523,29 @@ describe('Theta RPC', () => {
       })
   }, 60000)
 
+  it('should get pending transactions', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          ' {\n' +
+          '  ThetaRpc {\n' +
+          '    GetPendingTransactions {\n' +
+          '      tx_hashes\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetPendingTransactions).toHaveProperty('tx_hashes')
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 60000)
+
   afterAll(async () => {
     await app.close()
     // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error

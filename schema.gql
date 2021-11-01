@@ -297,6 +297,10 @@ type NodeStatusType {
   genesis_block_hash: String!
 }
 
+type GetPendingTransactionsType {
+  tx_hashes: [String!]!
+}
+
 type ThetaRpcType {
   GetVersion: GetVersionType!
   GetAccount(address: String!): GetAccountType!
@@ -307,6 +311,7 @@ type ThetaRpcType {
   GetVcpByHeight(height: Int!): GetVcpByHeightModel!
   GetGcpByHeight(height: Int!): GetGcpByHeightModel!
   GetEenpByHeight(height: Int!): GetEenpByHeightModel!
+  GetPendingTransactions: GetPendingTransactionsType!
 }
 
 type SmartContractCallRecordEntity {

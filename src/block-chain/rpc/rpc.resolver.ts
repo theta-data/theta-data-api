@@ -2,7 +2,12 @@ import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
-import { GetVersionType, NodeStatusType, ThetaRpcType } from './rpc.model'
+import {
+  GetPendingTransactionsType,
+  GetVersionType,
+  NodeStatusType,
+  ThetaRpcType
+} from './rpc.model'
 import { Logger } from '@nestjs/common'
 const config = require('config')
 
@@ -74,5 +79,10 @@ export class RpcResolver {
     const nodeInfo = await thetaTsSdk.blockchain.getEenpByHeight(height.toString())
     // console.log(JSON.stringify(nodeInfo.result))
     return nodeInfo.result
+  }
+
+  @ResolveField()
+  async GetPendingTransactions() {
+    return (await thetaTsSdk.blockchain.getPendingTransactions()).result
   }
 }

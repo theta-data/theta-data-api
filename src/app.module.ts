@@ -11,7 +11,6 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
-
 const config = require('config')
 
 @Module({
