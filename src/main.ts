@@ -3,7 +3,7 @@ import { AppModule } from './app.module'
 import { MicroserviceOptions, Transport } from '@nestjs/microservices'
 const config = require('config')
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule)
+  const app = await NestFactory.create(AppModule, { cors: true })
   const microservice = app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.REDIS,
     options: {
