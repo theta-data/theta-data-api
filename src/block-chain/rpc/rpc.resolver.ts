@@ -2,6 +2,8 @@ import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
+import { Headers } from '@nestjs/common'
+
 import {
   GetPendingTransactionsType,
   GetVersionType,
@@ -19,7 +21,8 @@ export class RpcResolver {
   private logger = new Logger()
 
   @Query(() => ThetaRpcType)
-  async ThetaRpc() {
+  async ThetaRpc(@Headers() headers) {
+    this.logger.debug(headers)
     return {}
   }
 
