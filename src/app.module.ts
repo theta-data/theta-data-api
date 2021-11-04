@@ -11,6 +11,10 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
+import { ThrottlerModule } from '@nestjs/throttler'
+import { APP_GUARD } from '@nestjs/core'
+import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
+
 const config = require('config')
 
 @Module({
@@ -25,7 +29,8 @@ const config = require('config')
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
       autoSchemaFile: 'schema.gql',
-      introspection: true
+      introspection: true,
+      context: ({ req, res }) => ({ req, res })
     }),
     CacheModule.register({
       store: redisStore,
@@ -38,12 +43,21 @@ const config = require('config')
       exclude: ['/graphql*']
     }),
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 100
+    }),
     TxModule,
     StakeModule,
     MarketModule,
     RpcModule,
     SmartContractModule
   ],
-  providers: []
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerBehindProxyGuard
+    }
+  ]
 })
 export class AppModule {}
