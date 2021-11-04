@@ -44,8 +44,8 @@ const config = require('config')
     }),
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
-      ttl: 60,
-      limit: 100
+      ttl: config.get('RATE_LIMIT')['ttl'],
+      limit: config.get('RATE_LIMIT')['limit']
     }),
     TxModule,
     StakeModule,
