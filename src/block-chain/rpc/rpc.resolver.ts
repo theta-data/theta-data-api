@@ -22,12 +22,12 @@ export class RpcResolver {
 
   @Query(() => ThetaRpcType)
   async ThetaRpc(@Context() context) {
-    this.logger.debug(
-      'real ip: ' +
-        (context.req.headers['x-forwarded-for']
-          ? context.req.headers['x-forwarded-for'].toString().split(',')[0]
-          : context.req.connection.remoteAddress)
-    )
+    // this.logger.debug(
+    //   'real ip: ' +
+    //     (context.req.headers['x-forwarded-for']
+    //       ? context.req.headers['x-forwarded-for'].toString().split(',')[0]
+    //       : context.req.connection.remoteAddress)
+    // )
     // this.logger.debug('get header')
     // this.logger.debug(context)
     return {}

@@ -5,7 +5,7 @@ import { GqlExecutionContext } from '@nestjs/graphql'
 @Injectable()
 export class GqlThrottlerBehindProxyGuard extends ThrottlerGuard {
   protected getTracker(req: Record<string, any>): string {
-    console.log('req ip', req.ips.length ? req.ips[0] : req.ip)
+    // console.log('req ip', req.ips.length ? req.ips[0] : req.ip)
     return req.ips.length ? req.ips[0] : req.ip // individualize IP extraction to meet your own needs
   }
 
