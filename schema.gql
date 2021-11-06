@@ -200,6 +200,31 @@ type GetAccountType {
   code: String!
 }
 
+type HccVoteType {
+  Block: String!
+  Height: Int!
+  Epoch: Int!
+  ID: String!
+  Signature: String!
+}
+
+type HccType {
+  Votes: [HccVoteType!]!
+  BlockHash: String!
+}
+
+type GuardianVotesType {
+  Block: String!
+  Gcp: String!
+  Multiplies: [Int!]!
+}
+
+type EliteEdgeNodeVotesType {
+  Block: String!
+  Multiplies: [Int!]!
+  Addresses: [String!]!
+}
+
 type BlockType {
   chain_id: String!
   epoch: String!
@@ -213,6 +238,9 @@ type BlockType {
   status: THETA_BLOCK_STATUS_ENUM!
   hash: String!
   transactions: [transactionType!]!
+  hcc: HccType
+  guardian_votes: GuardianVotesType
+  elite_edge_node_votes: EliteEdgeNodeVotesType
 }
 
 enum THETA_BLOCK_STATUS_ENUM {

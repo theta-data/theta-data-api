@@ -1,4 +1,4 @@
-import { Field, ObjectType } from '@nestjs/graphql'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
 import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
@@ -81,6 +81,57 @@ export class GetAccountType {
 }
 
 @ObjectType()
+export class HccVoteType {
+  @Field()
+  Block: string
+
+  @Field(() => Int)
+  Height: number
+
+  @Field(() => Int)
+  Epoch: number
+
+  @Field()
+  ID: string
+
+  @Field()
+  Signature: string
+}
+
+@ObjectType()
+export class HccType {
+  @Field(() => [HccVoteType])
+  Votes: Array<HccVoteType>
+
+  @Field()
+  BlockHash: string
+}
+
+@ObjectType()
+export class GuardianVotesType {
+  @Field()
+  Block: string
+
+  @Field()
+  Gcp: string
+
+  @Field(() => [Int])
+  Multiplies: Array<number>
+}
+
+@ObjectType()
+export class EliteEdgeNodeVotesType {
+  @Field()
+  Block: string
+
+  @Field(() => [Int])
+  Multiplies: Array<number>
+
+  @Field(() => [GraphQLString])
+  Addresses: Array<string>
+}
+
+@ObjectType()
 export class BlockType {
   @Field()
   chain_id: string //"privatenet",
@@ -117,6 +168,15 @@ export class BlockType {
 
   @Field(() => [transactionType])
   transactions: Array<transactionType>
+
+  @Field(() => HccType, { nullable: true })
+  hcc: HccType
+
+  @Field(() => GuardianVotesType, { nullable: true })
+  guardian_votes: GuardianVotesType
+
+  @Field(() => EliteEdgeNodeVotesType, { nullable: true })
+  elite_edge_node_votes: EliteEdgeNodeVotesType
 }
 
 @ObjectType()
