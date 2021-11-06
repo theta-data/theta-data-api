@@ -546,6 +546,38 @@ describe('Theta RPC', () => {
       })
   }, 60000)
 
+  it('should get stake reward distribution by height', (done) => {
+    return request(app.getHttpServer())
+      .post(gql)
+      .send({
+        query:
+          ' {\n' +
+          '  ThetaRpc {\n' +
+          '    GetStakeRewardDistributionByHeight(height: 12722401) {\n' +
+          '      BlockHashStakeRewardDistributionRuleSetPairs {\n' +
+          '        BlockHash\n' +
+          '        StakeRewardDistributionRuleSet {\n' +
+          '          Beneficiary\n' +
+          '          StakeHolder\n' +
+          '          SplitBasisPoint\n' +
+          '        }\n' +
+          '      }\n' +
+          '    }\n' +
+          '  }\n' +
+          '}'
+      })
+      .expect(200)
+      .expect((res) => {
+        expect(res.body.data.ThetaRpc.GetStakeRewardDistributionByHeight).toHaveProperty(
+          'BlockHashStakeRewardDistributionRuleSetPairs'
+        )
+      })
+      .end(function (err, res) {
+        if (err) return done(err)
+        return done()
+      })
+  }, 60000)
+
   afterAll(async () => {
     await app.close()
     // await new Promise((resolve) => setTimeout(() => resolve(0), 500)) // avoid jest open handle error

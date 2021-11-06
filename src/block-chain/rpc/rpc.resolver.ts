@@ -4,23 +4,23 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
 import { Headers } from '@nestjs/common'
 
-import {
-  GetPendingTransactionsType,
-  GetVersionType,
-  NodeStatusType,
-  ThetaRpcType
-} from './rpc.model'
+import // GetPendingTransactionsType,
+// GetVersionType,
+// NodeStatusType,
+// ThetaRpcType
+'./rpc.model'
 import { Logger } from '@nestjs/common'
+import { GetVersionModel, NodeStatusModel, ThetaRpcModel } from './rpc.model'
 const config = require('config')
 
-@Resolver((of) => ThetaRpcType)
+@Resolver((of) => ThetaRpcModel)
 export class RpcResolver {
   constructor(private rpcService: RpcService) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
   private logger = new Logger()
 
-  @Query(() => ThetaRpcType)
+  @Query(() => ThetaRpcModel)
   async ThetaRpc(@Context() context) {
     // this.logger.debug(
     //   'real ip: ' +
@@ -33,7 +33,7 @@ export class RpcResolver {
     return {}
   }
 
-  @ResolveField(() => GetVersionType, {
+  @ResolveField(() => GetVersionModel, {
     description: 'This API returns the version of the blockchain software.\n' + '\n'
   })
   async GetVersion() {
@@ -60,7 +60,7 @@ export class RpcResolver {
     return res.result
   }
 
-  @ResolveField(() => NodeStatusType, { description: '' })
+  @ResolveField(() => NodeStatusModel, { description: '' })
   async GetStatus() {
     const nodeInfo = await thetaTsSdk.blockchain.getStatus()
     return nodeInfo.result
@@ -94,5 +94,11 @@ export class RpcResolver {
   @ResolveField()
   async GetPendingTransactions() {
     return (await thetaTsSdk.blockchain.getPendingTransactions()).result
+  }
+
+  @ResolveField()
+  async GetStakeRewardDistributionByHeight(@Args('height', { type: () => Int! }) height: number) {
+    return (await thetaTsSdk.blockchain.getStakeRewardDistributionByHeight(height.toString()))
+      .result
   }
 }

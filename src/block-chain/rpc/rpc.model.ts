@@ -4,9 +4,10 @@ import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
+import { BlockHashStakeRewardDistributionRuleSetPairsModel } from './rpc-stake-reward-distribution-by-height.model'
 
 @ObjectType({ description: 'This API returns the version of the blockchain software.\n' + '\n' })
-export class GetVersionType {
+export class GetVersionModel {
   @Field()
   version: string //"1.0",
 
@@ -60,7 +61,7 @@ export class receiptLogType {
 }
 
 @ObjectType()
-export class GetAccountType {
+export class GetAccountModel {
   @Field()
   sequence: string // "1",
 
@@ -132,7 +133,7 @@ export class EliteEdgeNodeVotesType {
 }
 
 @ObjectType()
-export class BlockType {
+export class BlockModel {
   @Field()
   chain_id: string //"privatenet",
 
@@ -252,7 +253,7 @@ export class transactionType {
 }
 
 @ObjectType()
-export class GetTransactionType {
+export class GetTransactionModel {
   @Field()
   block_hash: string //"0x9f1e77b08c9fa8984096a735d0aae6b0e43aee297e42c54ce36334103ddd67a7",
 
@@ -276,7 +277,7 @@ export class GetTransactionType {
 }
 
 @ObjectType()
-export class NodeStatusType {
+export class NodeStatusModel {
   @Field()
   address: string //'0x1676d4D39cbC7519De75878765Fdde964B432732'
 
@@ -315,30 +316,30 @@ export class NodeStatusType {
 }
 
 @ObjectType()
-export class GetPendingTransactionsType {
+export class GetPendingTransactionsModel {
   @Field(() => [String])
   tx_hashes: Array<string>
 }
 
 @ObjectType()
-export class ThetaRpcType {
-  @Field(() => GetVersionType)
-  GetVersion: GetVersionType
+export class ThetaRpcModel {
+  @Field(() => GetVersionModel)
+  GetVersion: GetVersionModel
 
-  @Field(() => GetAccountType)
-  GetAccount: GetAccountType
+  @Field(() => GetAccountModel)
+  GetAccount: GetAccountModel
 
-  @Field(() => BlockType)
-  GetBlock: BlockType
+  @Field(() => BlockModel)
+  GetBlock: BlockModel
 
-  @Field(() => BlockType)
-  GetBlockByHeight: BlockType
+  @Field(() => BlockModel)
+  GetBlockByHeight: BlockModel
 
-  @Field(() => NodeStatusType)
-  GetStatus: NodeStatusType
+  @Field(() => NodeStatusModel)
+  GetStatus: NodeStatusModel
 
-  @Field(() => GetTransactionType)
-  GetTransaction: GetTransactionType
+  @Field(() => GetTransactionModel)
+  GetTransaction: GetTransactionModel
 
   @Field(() => GetVcpByHeightModel)
   GetVcpByHeight: GetVcpByHeightModel
@@ -349,6 +350,9 @@ export class ThetaRpcType {
   @Field(() => GetEenpByHeightModel)
   GetEenpByHeight: GetEenpByHeightModel
 
-  @Field(() => GetPendingTransactionsType)
-  GetPendingTransactions: GetPendingTransactionsType
+  @Field(() => GetPendingTransactionsModel)
+  GetPendingTransactions: GetPendingTransactionsModel
+
+  @Field(() => BlockHashStakeRewardDistributionRuleSetPairsModel)
+  GetStakeRewardDistributionByHeight: BlockHashStakeRewardDistributionRuleSetPairsModel
 }

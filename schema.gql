@@ -160,12 +160,27 @@ type GetEenpByHeightModel {
   BlockHashEenpPairs: [BlockHashEenpPairType!]!
 }
 
+type StakeRewardDistributionRuleType {
+  Beneficiary: String!
+  SplitBasisPoint: String!
+  StakeHolder: String!
+}
+
+type StakeRewardDistributionRuleSetType {
+  BlockHash: String!
+  StakeRewardDistributionRuleSet: [StakeRewardDistributionRuleType!]!
+}
+
+type BlockHashStakeRewardDistributionRuleSetPairsModel {
+  BlockHashStakeRewardDistributionRuleSetPairs: [StakeRewardDistributionRuleSetType!]!
+}
+
 """
 This API returns the version of the blockchain software.
 
 
 """
-type GetVersionType {
+type GetVersionModel {
   version: String!
   git_hash: String!
   timestamp: String!
@@ -191,7 +206,7 @@ type receiptLogType {
   data: String
 }
 
-type GetAccountType {
+type GetAccountModel {
   sequence: String!
   coins: TokenType!
   reserved_funds: [String!]!
@@ -225,7 +240,7 @@ type EliteEdgeNodeVotesType {
   Addresses: [String!]!
 }
 
-type BlockType {
+type BlockModel {
   chain_id: String!
   epoch: String!
   height: String!
@@ -300,7 +315,7 @@ enum THETA_TX_TYPE_ENUM {
   TxStakeRewardDistribution
 }
 
-type GetTransactionType {
+type GetTransactionModel {
   block_hash: String!
   block_height: String!
   type: THETA_TX_TYPE_ENUM!
@@ -310,7 +325,7 @@ type GetTransactionType {
   receipt: receiptType
 }
 
-type NodeStatusType {
+type NodeStatusModel {
   address: String!
   chain_id: String!
   peer_id: String!
@@ -325,21 +340,22 @@ type NodeStatusType {
   genesis_block_hash: String!
 }
 
-type GetPendingTransactionsType {
+type GetPendingTransactionsModel {
   tx_hashes: [String!]!
 }
 
-type ThetaRpcType {
-  GetVersion: GetVersionType!
-  GetAccount(address: String!): GetAccountType!
-  GetBlock(hash: String!): BlockType!
-  GetBlockByHeight(height: Int!): BlockType!
-  GetStatus: NodeStatusType!
-  GetTransaction(hash: String!): GetTransactionType!
+type ThetaRpcModel {
+  GetVersion: GetVersionModel!
+  GetAccount(address: String!): GetAccountModel!
+  GetBlock(hash: String!): BlockModel!
+  GetBlockByHeight(height: Int!): BlockModel!
+  GetStatus: NodeStatusModel!
+  GetTransaction(hash: String!): GetTransactionModel!
   GetVcpByHeight(height: Int!): GetVcpByHeightModel!
   GetGcpByHeight(height: Int!): GetGcpByHeightModel!
   GetEenpByHeight(height: Int!): GetEenpByHeightModel!
-  GetPendingTransactions: GetPendingTransactionsType!
+  GetPendingTransactions: GetPendingTransactionsModel!
+  GetStakeRewardDistributionByHeight(height: Int!): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }
 
 type SmartContractCallRecordEntity {
@@ -372,6 +388,6 @@ type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   StakeStatistics: StakeStatisticsEntity!
   MarketInformation: MarketInformationType!
-  ThetaRpc: ThetaRpcType!
+  ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
 }
