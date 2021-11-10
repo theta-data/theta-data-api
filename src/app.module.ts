@@ -14,6 +14,7 @@ import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
+import { WalletModule } from './block-chain/wallet/wallet.module'
 
 const config = require('config')
 
@@ -51,7 +52,8 @@ const config = require('config')
     StakeModule,
     MarketModule,
     RpcModule,
-    SmartContractModule
+    SmartContractModule,
+    WalletModule
   ],
   providers: [
     {

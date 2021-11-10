@@ -553,7 +553,9 @@ describe('Theta RPC', () => {
         query:
           ' {\n' +
           '  ThetaRpc {\n' +
-          '    GetStakeRewardDistributionByHeight(height: 12722401) {\n' +
+          '    GetStakeRewardDistributionByHeight(height: ' +
+          latestBlockHeight +
+          ') {\n' +
           '      BlockHashStakeRewardDistributionRuleSetPairs {\n' +
           '        BlockHash\n' +
           '        StakeRewardDistributionRuleSet {\n' +
