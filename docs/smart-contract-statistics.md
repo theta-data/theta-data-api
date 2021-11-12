@@ -16,24 +16,49 @@
 * last_24h_call_times ： 智能合约过去24小时的调用次数
 * last_seven_days_call_times：智能合约过去7天的调用次数
 * update_date ： 记录更新时间
+* record : 调用记录
+  * id : 记录id
+  * timestamp : 调用时间
 
 ## 示例
 ```graphql
 {
   SmartContractStatistics {
-    call_rank(rank_by: last_24h_call_times, take: 10) {
+    call_rank(rank_by: last_24h_call_times, take: 1) {
       contract_address
       call_times
       create_date
       id
       last_24h_call_times
       last_seven_days_call_times
+      update_date
       record {
         id
         timestamp
       }
-      update_date
     }
   }
 }
+```
+**返回**
+```shell
+{
+  "data": {
+    "SmartContractStatistics": {
+      "call_rank": [
+        {
+          "contract_address": "0x14ca082c412bf5530aadb07d54aaa64b6e205a74",
+          "call_times": 32520,
+          "create_date": 1634197751031,
+          "id": 6,
+          "last_24h_call_times": 977,
+          "last_seven_days_call_times": 5383,
+          "update_date": 1636704063000,
+          "record": [...]
+        }
+      ]
+    }
+  }
+}
+
 ```
