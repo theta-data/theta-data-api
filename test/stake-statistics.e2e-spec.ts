@@ -31,7 +31,6 @@ describe('AppController (e2e)', () => {
           '    effective_validator_node_number\n' +
           '    effective_validator_stake_amount\n' +
           '    stakes(node_type: validator) {\n' +
-          '      id\n' +
           '      holder\n' +
           '      node_type\n' +
           '      last_signature\n' +
