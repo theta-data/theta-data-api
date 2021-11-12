@@ -1,4 +1,5 @@
-# Theta Data是什么
+#介绍
+## Theta Data是什么
 Theta Data从自己运行的Guardian Node查询theta网络相关数据，
 并进行一定的分析整理，再通过graphql接口提供出来。让对相关数据感兴趣
 的社区成员可以通过一条简单的语句查出自己关心的数据。
@@ -116,3 +117,13 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
   }
 }
 ```
+## 你们提供的数据服务可靠么，我们怎么保证数据是准确的，服务是稳定的
+我们的核心代码全部是开源的。可以直接通过查看源码来了解相关的数据是怎么进行统计的。
+[https://github.com/theta-data/theta-data-api](https://github.com/theta-data/theta-data-api)
+
+除了市场相关的数据是从coinmarketcap查询获取的，我们所有的其他数据都是从我们自己运行的
+Guardian Node查询分析得来，所以我们的数据服务几乎不依赖第三方数据接口的服务稳定性。
+
+如果你有非常大规模的数据请求量，认为我们目前的服务部署不足以支撑你的数据服务，由于我们现在
+还没有收取接口调用的服务费用，您也可以直接将我们的数据服务部署到你的私人服务器上面。我们的数据服务代码
+是基于MIT协议。
