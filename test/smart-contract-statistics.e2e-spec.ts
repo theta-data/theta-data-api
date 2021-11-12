@@ -25,13 +25,11 @@ describe('AppController (e2e)', () => {
           '    call_rank(take: 10, rank_by: call_times) {\n' +
           '      call_times\n' +
           '      contract_address\n' +
-          '      create_date\n' +
           '      last_24h_call_times\n' +
           '      last_seven_days_call_times\n' +
           '      record {\n' +
           '        timestamp\n' +
           '      }\n' +
-          '      update_date\n' +
           '    }\n' +
           '  }}'
       })
