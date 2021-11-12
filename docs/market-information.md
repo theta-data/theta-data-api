@@ -18,7 +18,7 @@ market信息的相关数据来源于 [https://coinmarketcap.com/](https://coinma
 * total_supply : theta的总的供应量
 * volume_24h : theta的24小时交易量
 
-# 实例
+# 示例
 **请求**
 ```graphql
 {
