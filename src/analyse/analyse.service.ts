@@ -241,6 +241,7 @@ export class AnalyseService {
           eenpEffectiveTfWei.dividedBy('1e18').toFixed()
         ),
         theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
+        timestamp: Number(block.result.timestamp),
 
         total_guardian_node_number: guTotalNodeNum,
         effective_guardian_node_number: guEffectiveNodeNum,
