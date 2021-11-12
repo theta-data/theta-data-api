@@ -10,21 +10,21 @@ export class StakeResolver {
 
   constructor(private stakeService: StakeService) {}
 
-  @ResolveField()
-  async stakes(
-    @Args('node_type', { type: () => STAKE_NODE_TYPE_ENUM, nullable: true })
-    node_type: STAKE_NODE_TYPE_ENUM | undefined
-  ) {
-    let res = await this.stakeService.getNodeList(node_type)
-    res = res.map((item) => {
-      // this.logger.debug(JSON.stringify(item.last_signature))
-      // item.last_signature = new Date(item.last_signature).toISOString()
-      item.last_signature = String(item.last_signature)
-      return item
-    })
-    this.logger.debug(JSON.stringify(res))
-    return res
-  }
+  // @ResolveField()
+  // async stakes(
+  //   @Args('node_type', { type: () => STAKE_NODE_TYPE_ENUM, nullable: true })
+  //   node_type: STAKE_NODE_TYPE_ENUM | undefined
+  // ) {
+  //   let res = await this.stakeService.getNodeList(node_type)
+  //   res = res.map((item) => {
+  //     // this.logger.debug(JSON.stringify(item.last_signature))
+  //     // item.last_signature = new Date(item.last_signature).toISOString()
+  //     item.last_signature = String(item.last_signature)
+  //     return item
+  //   })
+  //   this.logger.debug(JSON.stringify(res))
+  //   return res
+  // }
 
   // @Query(() => Float)
   // async thetaStakeRatio() {

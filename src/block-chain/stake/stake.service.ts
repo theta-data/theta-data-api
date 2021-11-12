@@ -63,8 +63,9 @@ export class StakeService {
         await this.stakeRepository.insert({
           node_type: STAKE_NODE_TYPE_ENUM.validator,
           holder: validator.Holder,
-          stakes: validator.Stakes,
-          last_signature: '2000-01-01 00:00:01'
+          stakes: validator.Stakes
+          // last_signature: '2000-01-01 00:00:01'
+          // last_signature: validator.
         })
       else
         await this.stakeRepository.update(
@@ -152,7 +153,7 @@ export class StakeService {
     )
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  // @Cron(CronExpression.EVERY_10_MINUTES)
   async updateStakeInfo() {
     let nodeInfo = await thetaTsSdk.blockchain.getStatus()
     // console.log('node info', JSON.stringify(nodeInfo))

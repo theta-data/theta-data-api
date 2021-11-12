@@ -112,7 +112,6 @@ export class StakeStatisticsEntity {
 
   @UpdateDateColumn()
   update_date!: number
-
-  @Field(() => [StakeEntity])
-  stakes: Array<StakeEntity>
+  // @Field(() => [StakeEntity])
+  // stakes: Array<StakeEntity>
 }

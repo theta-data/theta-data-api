@@ -57,20 +57,6 @@ type Stake {
   return_height: String!
 }
 
-type StakeEntity {
-  node_type: STAKE_NODE_TYPE_ENUM!
-  holder: String
-  stakes: [Stake!]!
-  last_signature: String
-  update_height: Int!
-}
-
-enum STAKE_NODE_TYPE_ENUM {
-  validator
-  guardian
-  edge_cache
-}
-
 type StakeStatisticsEntity {
   block_height: Int!
   total_elite_edge_node_number: Int!
@@ -86,7 +72,6 @@ type StakeStatisticsEntity {
   theta_fuel_stake_ratio: Float!
   theta_stake_ratio: Float!
   timestamp: Int!
-  stakes(node_type: STAKE_NODE_TYPE_ENUM): [StakeEntity!]!
 }
 
 type TokenMarketInformationType {

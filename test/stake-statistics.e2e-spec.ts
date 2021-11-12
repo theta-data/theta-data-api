@@ -30,18 +30,18 @@ describe('AppController (e2e)', () => {
           '    effective_guardian_stake_amount\n' +
           '    effective_validator_node_number\n' +
           '    effective_validator_stake_amount\n' +
-          '    stakes(node_type: validator) {\n' +
-          '      holder\n' +
-          '      node_type\n' +
-          '      last_signature\n' +
-          '      stakes {\n' +
-          '        amount\n' +
-          '        return_height\n' +
-          '        source\n' +
-          '        withdrawn\n' +
-          '      }\n' +
-          '      update_height\n' +
-          '    }\n' +
+          // '    stakes(node_type: validator) {\n' +
+          // '      holder\n' +
+          // '      node_type\n' +
+          // '      last_signature\n' +
+          // '      stakes {\n' +
+          // '        amount\n' +
+          // '        return_height\n' +
+          // '        source\n' +
+          // '        withdrawn\n' +
+          // '      }\n' +
+          // '      update_height\n' +
+          // '    }\n' +
           '    theta_fuel_stake_ratio\n' +
           '    theta_stake_ratio\n' +
           '    total_edge_node_stake_amount\n' +
