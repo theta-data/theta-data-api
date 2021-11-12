@@ -117,7 +117,7 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
   }
 }
 ```
-## 你们提供的数据服务可靠么，我们怎么保证数据是准确的，服务是稳定的
+## 你们提供的数据服务可靠么，你们怎么保证数据是准确的，服务是稳定的
 我们的核心代码全部是开源的。可以直接通过查看源码来了解相关的数据是怎么进行统计的。
 [https://github.com/theta-data/theta-data-api](https://github.com/theta-data/theta-data-api)
 
@@ -125,5 +125,5 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
 Guardian Node查询分析得来，所以我们的数据服务几乎不依赖第三方数据接口的服务稳定性。
 
 如果你有非常大规模的数据请求量，认为我们目前的服务部署不足以支撑你的数据服务，由于我们现在
-还没有收取接口调用的服务费用，您也可以直接将我们的数据服务部署到你的私人服务器上面。我们的数据服务代码
+还没有收取接口调用的服务费用，您也可以直接将我们的数据服务部署到你的私人服务器上面，直接从您的Guardian Node来查询统计获得相关数据。我们的数据服务代码
 是基于MIT协议。
