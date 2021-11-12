@@ -12,7 +12,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql'
 @ObjectType()
 @Entity()
 export class SmartContractCallRecordEntity {
-  @Field(() => Int)
+  // @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number
 

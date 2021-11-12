@@ -58,7 +58,6 @@ type Stake {
 }
 
 type StakeEntity {
-  id: Int!
   node_type: STAKE_NODE_TYPE_ENUM!
   holder: String
   stakes: [Stake!]!
@@ -359,19 +358,15 @@ type ThetaRpcModel {
 }
 
 type SmartContractCallRecordEntity {
-  id: Int!
   timestamp: Float!
 }
 
 type SmartContractEntity {
-  id: Int!
   contract_address: String!
   call_times: Int!
   last_seven_days_call_times: Int!
   last_24h_call_times: Int!
   record: [SmartContractCallRecordEntity!]!
-  create_date: Float!
-  update_date: Float!
 }
 
 type SmartContractStatisticsType {

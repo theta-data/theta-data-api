@@ -12,7 +12,7 @@ import { Field, Int, ObjectType } from '@nestjs/graphql'
 @ObjectType()
 @Entity()
 export class SmartContractEntity {
-  @Field(() => Int)
+  // @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number
 
@@ -44,11 +44,11 @@ export class SmartContractEntity {
   })
   record: Array<SmartContractCallRecordEntity>
 
-  @Field()
+  // @Field()
   @CreateDateColumn()
   create_date!: number
 
-  @Field()
+  // @Field()
   @UpdateDateColumn()
   update_date!: number
 }

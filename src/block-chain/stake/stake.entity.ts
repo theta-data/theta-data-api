@@ -36,7 +36,7 @@ export class Stake {
 @Index(['node_type'])
 @ObjectType()
 export class StakeEntity {
-  @Field(() => Int)
+  // @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number
 
