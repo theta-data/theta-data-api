@@ -21,6 +21,7 @@
   * timestamp : 调用时间
 
 ## 示例
+**请求：**
 ```graphql
 {
   SmartContractStatistics {
