@@ -73,19 +73,31 @@ export class RpcResolver {
   }
 
   @ResolveField()
-  async GetVcpByHeight(@Args('height', { type: () => Int! }) height: number) {
+  async GetVcpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
+    if (!height)
+      height = Number(
+        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      )
     const nodeInfo = await thetaTsSdk.blockchain.getVcpByHeight(height.toString())
     return nodeInfo.result
   }
 
   @ResolveField()
-  async GetGcpByHeight(@Args('height', { type: () => Int! }) height: number) {
+  async GetGcpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
+    if (!height)
+      height = Number(
+        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      )
     const nodeInfo = await thetaTsSdk.blockchain.getGcpByHeight(height.toString())
     return nodeInfo.result
   }
 
   @ResolveField()
-  async GetEenpByHeight(@Args('height', { type: () => Int! }) height: number) {
+  async GetEenpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
+    if (!height)
+      height = Number(
+        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      )
     const nodeInfo = await thetaTsSdk.blockchain.getEenpByHeight(height.toString())
     // console.log(JSON.stringify(nodeInfo.result))
     return nodeInfo.result

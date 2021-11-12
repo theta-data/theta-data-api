@@ -335,9 +335,9 @@ type ThetaRpcModel {
   GetBlockByHeight(height: Int!): BlockModel!
   GetStatus: NodeStatusModel!
   GetTransaction(hash: String!): GetTransactionModel!
-  GetVcpByHeight(height: Int!): GetVcpByHeightModel!
-  GetGcpByHeight(height: Int!): GetGcpByHeightModel!
-  GetEenpByHeight(height: Int!): GetEenpByHeightModel!
+  GetVcpByHeight(height: Int): GetVcpByHeightModel!
+  GetGcpByHeight(height: Int): GetGcpByHeightModel!
+  GetEenpByHeight(height: Int): GetEenpByHeightModel!
   GetPendingTransactions: GetPendingTransactionsModel!
   GetStakeRewardDistributionByHeight(height: Int!): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }
