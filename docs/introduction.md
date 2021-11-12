@@ -1,0 +1,115 @@
+# Theta Data是什么
+Theta Data从自己运行的Guardian Node查询theta网络相关数据，
+并进行一定的分析整理，再通过graphql接口提供出来。让对相关数据感兴趣
+的社区成员可以通过一条简单的语句查出自己关心的数据。
+
+同时我们有一个简单易用的Playground，供对代码不熟悉的用户通过简单勾选，就
+能查到自己感兴趣的相关数据。
+
+对于开发者，相比官方现在提供出来的js sdk或者RPC接口或者浏览器接口，我们提供了一种更见简单，高效的
+数据获取方式。
+
+假设我们需要在主页显示最新的区块高度和当前的theta质押信息以及theta和theta fuel的流通量，
+
+### 通过目前的方式，需要做这些网络查询操作
+
+**1、通过js sdk查出最新的区块高度**
+```javascript
+const provider = new thetajs.providers.HttpProvider();
+const blockHeight = await provider.getBlockNumber();
+```
+**2、通过浏览器接口查询出Theta的质押信息(很遗憾，目前没有找到查询theta fuel质押信息的接口)**
+```shell
+// Request 
+curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
+
+// Result
+{
+  "type":"stakeTotalAmout",
+  "body":{
+    "totalAmount":"644011157483502419243726104",
+    "totalNodes":3457,
+    "type":"theta"
+    }
+}
+```
+
+**3、 通过explorer api查询theta的供应量和流通量**
+```shell
+// Request 
+curl https://explorer.thetatoken.org:8443/api/supply/theta
+
+// Result
+{
+   "total_supply":1000000000,
+   "circulation_supply":1000000000
+}
+```
+
+**4、通过explorer api查询theta fuel的供应量和流通量**
+```shell
+// Request 
+curl https://explorer.thetatoken.org:8443/api/supply/tfuel
+
+// Result
+{
+   "circulation_supply":5000000000
+}
+```
+可以看到上面至少做了4次网络查询，并且接口分布在不同的地方，如果将来提供了theta fuel的质押信息接口，
+那么可能就是5次数据接口查询了
+
+### 那么如果使用theta data呢？
+通过Graphql 语句，就能精确得到你所需要的所有数据，只需要向服务器做一次网络请求。同时还有一个优势，不知道大家有没有注意到，就是通过
+这种方式查出来的数据，返回的数据就是你需要的数据，没有任何冗余字段，通过传统的数据接口，多多少少会返回一些自己不需要的冗余数据信息。
+```graphql
+{
+  MarketInformation {
+    theta {
+      circulating_supply
+      total_supply
+    }
+    theta_fuel {
+      circulating_supply
+      total_supply
+    }
+  }
+  StakeStatistics {
+    total_validator_node_number
+    total_guardian_node_number
+    total_elite_edge_node_number
+  }
+  ThetaRpc {
+    GetStatus {
+      current_height
+    }
+  }
+}
+```
+返回：
+```json
+{
+  "data": {
+    "MarketInformation": {
+      "theta": {
+        "circulating_supply": 1000000000,
+        "total_supply": 1000000000
+      },
+      "theta_fuel": {
+        "circulating_supply": 5301214400,
+        "total_supply": 5301214400
+      }
+    },
+    "StakeStatistics": {
+      "total_validator_node_number": 16,
+      "total_guardian_node_number": 3441,
+      "total_elite_edge_node_number": 8436
+    },
+    "ThetaRpc": {
+      "GetStatus": {
+        "current_height": "12806717"
+      }
+    }
+  }
+}
+```
