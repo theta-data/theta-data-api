@@ -353,7 +353,7 @@ this field return the information of the node stake split rule
 }
 ```
 ### GetStatus
-这个字段返回的是theta 运行的用来做数据查询的守护节点的相关状态
+这个字段返回的是theta data运行的用来做数据查询的守护节点的相关状态
 * current_height
 * address
 * genesis_block_hash
