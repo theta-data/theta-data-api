@@ -155,3 +155,113 @@ then returns an empty result.
 * height: the block height
 **Response**
 Similar to the returns of the GetBlock field
+
+### GetEenpByHeight
+
+### GetGcpByHeight
+
+### GetPendingTransactions
+* tx_hashes : the hashes of the transactions pending in the mempool*
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetPendingTransactions {
+      tx_hashes
+    }
+  }
+}
+```
+**Response**
+```json
+{
+  "data": {
+    "ThetaRpc": {
+      "GetPendingTransactions": {
+        "tx_hashes": ["0x61ed06b78fededbbd262f95f321d7e48dee81e9b1e493b7f4d42c6bf7afd4b27"]
+      }
+    }
+  }
+}
+```
+
+### GetStakeRewardDistributionByHeight
+
+### GetStatus
+
+### GetTransaction
+**Query Parameters**
+* hash: the transaction hash*
+
+**Fields**
+* block_hash: hash of the block that contains the transaction
+* block_height: height of the block that contains the transaction
+* hash: the hash of the transaction itself
+* transaction: the details of the transaction
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetTransaction(hash: "0xfe298bd5a8718fe009f66d38caed35f0d91f96008d16d56f090e71de89af2124") {
+      block_height
+      block_hash
+      hash
+      status
+      type
+    }
+  }
+}
+```
+**Response**
+```json
+{
+  "data": {
+    "ThetaRpc": {
+      "GetTransaction": {
+        "block_height": "12834712",
+        "block_hash": "0xbd61148982254aecb8fae8f921c9c67c7e31e0e2e65a649c76b8cd4a6bc40681",
+        "hash": "0xfe298bd5a8718fe009f66d38caed35f0d91f96008d16d56f090e71de89af2124",
+        "status": "finalized",
+        "type": "TxCoinbase"
+      }
+    }
+  }
+}
+```
+
+
+### GetVcpByHeight
+
+### GetVersion
+* timestamp :  the version number
+* git_hash :  the git commit hash of the code base
+* timestamp :  the build timestamp
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetVersion {
+      git_hash
+      timestamp
+      version
+    }
+  }
+}
+```
+***Response***
+```json
+{
+  "data": {
+    "ThetaRpc": {
+      "GetVersion": {
+        "git_hash": "cdf84379e85bb75d8f11ce2f5a1897c5134c9669",
+        "timestamp": "Wed Oct 27 06:46:55 UTC 2021",
+        "version": "3.1.2"
+      }
+    }
+  }
+}
+```
+
