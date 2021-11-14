@@ -299,9 +299,118 @@ this field return the information of the guardian node
 ```
 
 ### GetStakeRewardDistributionByHeight
+this field return the information of the node stake split rule
+**Query Parameters**
+* height: the block height,optional,if empty,will
+  use the latest finalized block height.
 
-
+**Fields**
+* BlockHashStakeRewardDistributionRuleSetPairs
+  * BlockHash
+  * StakeRewardDistributionRuleSet
+    * Beneficiary
+    * SplitBasisPoint
+    * StakeHolder
+    
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetStakeRewardDistributionByHeight {
+      BlockHashStakeRewardDistributionRuleSetPairs {
+        BlockHash
+        StakeRewardDistributionRuleSet {
+          Beneficiary
+          SplitBasisPoint
+          StakeHolder
+        }
+      }
+    }
+  }
+}
+```
+```shell
+{
+  "data": {
+    "ThetaRpc": {
+      "GetStakeRewardDistributionByHeight": {
+        "BlockHashStakeRewardDistributionRuleSetPairs": [
+          {
+            "BlockHash": "0x9dfd80e6e846e923c3542220fc2a21cdc14d7b0e5703f514cf0e30199b605bd6",
+            "StakeRewardDistributionRuleSet": [
+              {
+                "Beneficiary": "0x88881888814d847a97c1d6b9a612056806128888",
+                "SplitBasisPoint": "400",
+                "StakeHolder": "0x0000a888ae9e34075ee90ef5bc4906e871d874cd"
+              }
+              ...
+              ]
+          }
+        ]
+      }
+    }
+  }
+}
+```
 ### GetStatus
+这个字段返回的是theta 运行的用来做数据查询的守护节点的相关状态
+* current_height
+* address
+* genesis_block_hash
+* chain_id
+* current_epoch
+* current_time
+* latest_finalized_block_epoch
+* latest_finalized_block_height
+* latest_finalized_block_hash
+* latest_finalized_block_time
+* peer_id
+* syncing
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetStatus {
+      current_height
+      address
+      genesis_block_hash
+      chain_id
+      current_epoch
+      current_time
+      latest_finalized_block_epoch
+      latest_finalized_block_height
+      latest_finalized_block_hash
+      latest_finalized_block_time
+      peer_id
+      syncing
+    }
+  }
+}
+```
+***Response***
+```json
+{
+  "data": {
+    "ThetaRpc": {
+      "GetStatus": {
+        "current_height": "12837074",
+        "address": "0x1676d4D39cbC7519De75878765Fdde964B432732",
+        "genesis_block_hash": "0xd8836c6cf3c3ccea0b015b4ed0f9efb0ffe6254db793a515843c9d0f68cbab65",
+        "chain_id": "mainnet",
+        "current_epoch": "12919942",
+        "current_time": "1636875019",
+        "latest_finalized_block_epoch": "12919940",
+        "latest_finalized_block_height": "12837074",
+        "latest_finalized_block_hash": "0xb75a5e37d609d285f1d953d0691a76e81e85e170e59cd50eae4e1a3a86844f76",
+        "latest_finalized_block_time": "1636875002",
+        "peer_id": "0x1676d4D39cbC7519De75878765Fdde964B432732",
+        "syncing": false
+      }
+    }
+  }
+}
+```
 
 ### GetTransaction
 **Query Parameters**
