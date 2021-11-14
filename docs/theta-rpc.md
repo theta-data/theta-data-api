@@ -455,6 +455,71 @@ this field return the information of the node stake split rule
 
 
 ### GetVcpByHeight
+this field return the information of the validator node
+**Query Parameters**
+* height: the block height,optional,if empty,will
+  use the latest finalized block height.
+  
+**Fields**
+* BlockHashVcpPairs
+  * BlockHash
+  * HeightList
+  * Vcp
+    * BlockHash
+    * SortedCandidates
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetVcpByHeight {
+      BlockHashVcpPairs {
+        BlockHash
+        HeightList {
+          Heights
+        }
+        Vcp {
+          BlockHash
+          SortedCandidates {
+            Holder
+          }
+        }
+      }
+    }
+  }
+}
+```
+**Response**
+```shell
+{
+  "data": {
+    "ThetaRpc": {
+      "GetVcpByHeight": {
+        "BlockHashVcpPairs": [
+          {
+            "BlockHash": "0xe2efcbef506528d07964b08c2f7f69e5693432a42fd19774746653bdc8ba69fa",
+            "HeightList": {
+              "Heights": [
+                0,
+                ...
+                ]
+            },
+            "Vcp": {
+              "BlockHash": null,
+              "SortedCandidates": [
+                { 
+                  "Holder": "0x80eab22e27d4b94511f5906484369b868d6552d2"
+                },
+                ...
+                ]
+            }
+          }
+        ]
+      }
+    }
+  }
+
+```
 
 ### GetVersion
 * timestamp :  the version number
