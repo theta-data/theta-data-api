@@ -157,8 +157,120 @@ then returns an empty result.
 Similar to the returns of the GetBlock field
 
 ### GetEenpByHeight
+this field return the information of the elite edge node
+**Query Parameters**
+* height: the block height,optional,if empty,will
+use the latest finalized block height.
+
+**Fields**
+* BlockHashEenpPairs
+  * HeightList
+  * BlockHash
+  * EENs
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetEenpByHeight {
+      BlockHashEenpPairs {
+        EENs {
+          Holder
+        }
+        HeightList {
+          Heights
+        }
+      }
+    }
+  }
+}
+```
+**Response**
+```shell
+{
+  "data": {
+    "ThetaRpc": {
+      "GetEenpByHeight": {
+        "BlockHashEenpPairs": [
+          {
+            "EENs":[
+              {
+                "Holder": "0x0000a888ae9e34075ee90ef5bc4906e871d874cd"
+              },
+              ...
+              {
+                "Holder": "0x0001a888aa09d244f2d66437fa22f0aaaf9916fb"
+              },
+            ],
+            "HeightList": null
+          }
+        ]
+      }
+    }
+  }
+}
+```
 
 ### GetGcpByHeight
+this field return the information of the guardian node
+**Query Parameters**
+* height: the block height,optional,if empty,will
+  use the latest finalized block height.
+**Fields**
+* BlockHashGcpPairs
+  * BlockHash
+  * Gcp
+  * HeightList
+
+
+**Example**
+```graphql
+{
+  ThetaRpc {
+    GetGcpByHeight {
+      BlockHashGcpPairs {
+        BlockHash
+        Gcp {
+          SortedGuardians {
+            Holder
+          }
+        }
+        HeightList {
+          Heights
+        }
+      }
+    }
+  }
+}
+```
+**Response**
+```shell
+{
+  "data": {
+    "ThetaRpc": {
+      "GetGcpByHeight": {
+        "BlockHashGcpPairs": [
+          {
+            "BlockHash": "0xa1a12da8a3a8a8c732b3f0af648a7db26817d52d8af33d68f062513da3eef7ec",
+            "Gcp": {
+              "SortedGuardians":[
+               {
+                  "Holder": "0x0008b98bd392e023bec03f9d611741b1d2152d4b"
+                },
+                ...
+                 {
+                  "Holder": "0x005d4ea80bd1fc6df1852fd41d5c62f24e9171ac"
+                }
+              ]
+            },
+            "HeightList": null
+          }
+        ]
+      }
+    }
+  }
+}
+```
 
 ### GetPendingTransactions
 * tx_hashes : the hashes of the transactions pending in the mempool*
@@ -187,6 +299,7 @@ Similar to the returns of the GetBlock field
 ```
 
 ### GetStakeRewardDistributionByHeight
+
 
 ### GetStatus
 
