@@ -339,7 +339,7 @@ type ThetaRpcModel {
   GetGcpByHeight(height: Int): GetGcpByHeightModel!
   GetEenpByHeight(height: Int): GetEenpByHeightModel!
   GetPendingTransactions: GetPendingTransactionsModel!
-  GetStakeRewardDistributionByHeight(height: Int!): BlockHashStakeRewardDistributionRuleSetPairsModel!
+  GetStakeRewardDistributionByHeight(height: Int): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }
 
 type SmartContractCallRecordEntity {

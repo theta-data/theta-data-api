@@ -109,7 +109,13 @@ export class RpcResolver {
   }
 
   @ResolveField()
-  async GetStakeRewardDistributionByHeight(@Args('height', { type: () => Int! }) height: number) {
+  async GetStakeRewardDistributionByHeight(
+    @Args('height', { type: () => Int, nullable: true }) height: number
+  ) {
+    if (!height)
+      height = Number(
+        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      )
     return (await thetaTsSdk.blockchain.getStakeRewardDistributionByHeight(height.toString()))
       .result
   }
