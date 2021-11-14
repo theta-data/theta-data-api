@@ -147,3 +147,11 @@
   }
 }
 ```
+### GetBlockByHeight
+This Field returns the finalized block given the height.
+If none of the blocks at the given height are finalized (either directly or indirectly), 
+then returns an empty result.
+**Query Parameters**
+* height: the block height
+**Response**
+Similar to the returns of the GetBlock field
