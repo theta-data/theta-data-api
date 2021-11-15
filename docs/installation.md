@@ -26,3 +26,5 @@ const query = gql`
 
 request('https://thetadata.io/graphql/', query).then((data) => console.log(data))
 ```
+## Graphql Introduction
+More information about Graphql, check [https://graphql.org/](https://graphql.org/)
