@@ -17,12 +17,12 @@ Theta Data从自己运行的Guardian Node查询theta网络相关数据，
 
 ### 通过传统数据接口的方式，需要做这些网络查询操作
 
-**1、通过js sdk查出最新的区块高度**
+1. 通过js sdk查出最新的区块高度
 ```javascript
 const provider = new thetajs.providers.HttpProvider();
 const blockHeight = await provider.getBlockNumber();
 ```
-**2、通过浏览器接口查询出Theta的质押信息(很遗憾，目前没有找到查询theta fuel质押信息的接口)**
+2. 通过浏览器接口查询出Theta的质押信息(很遗憾，目前没有找到查询theta fuel质押信息的接口)
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
@@ -38,7 +38,7 @@ curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
 }
 ```
 
-**3、 通过explorer api查询theta的供应量和流通量**
+3. 通过explorer api查询theta的供应量和流通量
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/supply/theta
@@ -50,7 +50,7 @@ curl https://explorer.thetatoken.org:8443/api/supply/theta
 }
 ```
 
-**4、通过explorer api查询theta fuel的供应量和流通量**
+4. 通过explorer api查询theta fuel的供应量和流通量
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/supply/tfuel
