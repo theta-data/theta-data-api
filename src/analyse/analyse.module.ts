@@ -9,6 +9,7 @@ import { StakeModule } from '../block-chain/stake/stake.module'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
+import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 const config = require('config')
 @Module({
   imports: [
@@ -19,7 +20,7 @@ const config = require('config')
           { entities: [join(__dirname, '/../**', '*.entity.{ts,js}')] }
         )
     }),
-    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity]),
+    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity, StakeRewardEntity]),
     CacheModule.register({
       store: redisStore,
       host: config.get('REDIS')['host'],

@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateCol
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat } from 'graphql'
 import { StakeEntity } from './stake.entity'
+import { StakeRewardModel } from './stake.model'
 
 @Entity()
 @ObjectType()
@@ -114,4 +115,7 @@ export class StakeStatisticsEntity {
   update_date!: number
   // @Field(() => [StakeEntity])
   // stakes: Array<StakeEntity>
+
+  // @Field(() => StakeRewardModel)
+  stake_reward: Promise<StakeRewardModel>
 }

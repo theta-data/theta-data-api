@@ -1,10 +1,11 @@
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { InjectRepository } from '@nestjs/typeorm'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
-import { Repository } from 'typeorm'
-import { Cron, CronExpression } from '@nestjs/schedule'
+import { MoreThan, Repository } from 'typeorm'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Injectable, Logger } from '@nestjs/common'
+import { StakeRewardEntity } from './stake-reward.entity'
+const moment = require('moment')
 const config = require('config')
 
 @Injectable()
@@ -13,7 +14,9 @@ export class StakeService {
   constructor(
     @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,
     @InjectRepository(StakeStatisticsEntity)
-    private stakeStatisticsRepository: Repository<StakeStatisticsEntity>
+    private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
+    @InjectRepository(StakeRewardEntity)
+    private stakeRewardRepository: Repository<StakeRewardEntity>
   ) {
     // if (config.get('THETA_NODE_HOST')) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -160,5 +163,43 @@ export class StakeService {
     await this.updateVcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateGcp(nodeInfo.result.latest_finalized_block_height)
     await this.updateEenp(nodeInfo.result.latest_finalized_block_height)
+  }
+
+  async getStakeReward(
+    wallet_address: string,
+    period: 'last_24_hour' | 'last_3_days' | 'last_7_days' | 'last_30_days'
+  ) {
+    let rewardList: Array<StakeRewardEntity> = []
+    switch (period) {
+      case 'last_24_hour':
+        rewardList = await this.stakeRewardRepository.find({
+          timestamp: MoreThan(moment().subtract(24, 'hours').format()),
+          wallet_address: wallet_address
+        })
+        break
+      case 'last_7_days':
+        rewardList = await this.stakeRewardRepository.find({
+          timestamp: MoreThan(moment().subtract(7, 'days').format()),
+          wallet_address: wallet_address
+        })
+        break
+      case 'last_3_days':
+        rewardList = await this.stakeRewardRepository.find({
+          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          wallet_address: wallet_address
+        })
+        break
+      case 'last_30_days':
+        rewardList = await this.stakeRewardRepository.find({
+          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          wallet_address: wallet_address
+        })
+        break
+      default:
+        break
+    }
+    return rewardList.reduce((oldValue, reward) => {
+      return oldValue + reward.reward_amount
+    }, 0)
   }
 }

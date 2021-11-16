@@ -16,7 +16,7 @@ registerEnumType(STAKE_TOKEN_TYPE_ENUM, {
 })
 
 @Entity()
-@Index(['stake_token_type', 'timestamp'])
+@Index(['wallet_address', 'timestamp'])
 export class StakeRewardEntity {
   @PrimaryGeneratedColumn()
   id!: number
@@ -24,8 +24,11 @@ export class StakeRewardEntity {
   @Column({ type: 'float' })
   reward_amount: number
 
-  @Column({ type: 'tinyint' })
-  stake_token_type: STAKE_TOKEN_TYPE_ENUM
+  @Column()
+  wallet_address: string
+
+  // @Column({ type: 'tinyint' })
+  // stake_token_type: STAKE_TOKEN_TYPE_ENUM
 
   @Column({ type: 'bigint' })
   reward_height: number

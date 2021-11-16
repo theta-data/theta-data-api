@@ -1,28 +1,17 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+import { TokenBalanceType } from '../wallet/wallet-balance.model'
+import { Field, ObjectType } from '@nestjs/graphql'
 
-// @ObjectType()
-// export class stakeStatistics {
-//   @Field(() => Int)
-//   elite_edge_node_num: number
-//
-//   @Field(() => Float)
-//   theta_stake_ratio: number
-//
-//   @Field(() => Float)
-//   tfuel_stake_ratio: number
-//
-//   @Field(() => Int)
-//   validator_node_num: number
-//
-//   @Field(() => Int)
-//   guardian_node_num: number
-// }
+@ObjectType()
+export class StakeRewardModel {
+  @Field(() => TokenBalanceType, { nullable: true })
+  last_24_hour: TokenBalanceType
 
-// @ObjectType()
-// export class stakeInfo {
-//   @Field(() => [StakeEntity])
-//   node_info: Array<StakeEntity>
-//
-//   @Field(() => stakeStatistics)
-//   statistics: stakeStatistics
-// }
+  @Field(() => TokenBalanceType, { nullable: true })
+  last_3_days: TokenBalanceType
+
+  @Field(() => TokenBalanceType, { nullable: true })
+  last_7_days: TokenBalanceType
+
+  @Field(() => TokenBalanceType, { nullable: true })
+  last_30_days: TokenBalanceType
+}

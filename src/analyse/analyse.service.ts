@@ -11,6 +11,8 @@ import { StakeService } from '../block-chain/stake/stake.service'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
+import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
+import { ExceptionFiltersContext } from '@nestjs/microservices/context/exception-filters-context'
 const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
@@ -28,6 +30,8 @@ export class AnalyseService {
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
     @InjectRepository(StakeStatisticsEntity)
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
+    @InjectRepository(StakeRewardEntity)
+    private stakeRewardRepository: Repository<StakeRewardEntity>,
     @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private stakeService: StakeService,
@@ -35,7 +39,7 @@ export class AnalyseService {
   ) {}
 
   public async queryDataFromBlockChain() {
-    let height = 12598090
+    let height = 12851074
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
@@ -59,7 +63,8 @@ export class AnalyseService {
         try {
           await this.updateCheckPoint(block)
         } catch (e) {
-          this.logger.debug(e)
+          this.logger.debug('update checkpoint error')
+          console.log(e)
         }
       }
 
@@ -102,6 +107,17 @@ export class AnalyseService {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             record.coin_base_transaction++
+            for (const output of transaction.raw.outputs) {
+              this.logger.debug('timestamp:' + row.timestamp)
+              await this.stakeRewardRepository.insert({
+                reward_amount: Number(
+                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                ),
+                wallet_address: output.address,
+                reward_height: height,
+                timestamp: moment(Number(row.timestamp) * 1000).format()
+              })
+            }
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             record.deposit_stake_transaction++
@@ -192,6 +208,8 @@ export class AnalyseService {
 
       record.latest_block_height = Number(row.height)
       record.block_number++
+      console.log(record)
+
       await this.thetaTxNumByHoursRepository.save(record)
       height++
       await sleep(1)
@@ -201,62 +219,76 @@ export class AnalyseService {
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
     // block.result.
     // block.result.guardian_votes.result
-    if (Number(block.result.height) % 100 !== 1) {
-      return
-    }
-    const [
-      vaTotalNodeNum,
-      vaEffectiveNodeNum,
-      vaTotalThetaWei,
-      vaEffectiveThetaWei
-    ] = await this.updateValidator(block)
+    try {
+      if (Number(block.result.height) % 100 !== 1) {
+        return
+      }
+      const [
+        vaTotalNodeNum,
+        vaEffectiveNodeNum,
+        vaTotalThetaWei,
+        vaEffectiveThetaWei
+      ] = await this.updateValidator(block)
 
-    const [
-      guTotalNodeNum,
-      guEffectiveNodeNum,
-      guTotalThetaWei,
-      guEffectiveThetaWei
-    ] = await this.updateGuardian(block)
+      const [
+        guTotalNodeNum,
+        guEffectiveNodeNum,
+        guTotalThetaWei,
+        guEffectiveThetaWei
+      ] = await this.updateGuardian(block)
 
-    const [eenpTotalNodeNum, eenpEffectiveNodeNum, eenpTotalTfWei, eenpEffectiveTfWei]: [
-      number,
-      number,
-      BigNumber,
-      BigNumber
-    ] = await this.updateEenp(block)
-    let res = await this.stakeStatisticsRepository.findOne({
-      block_height: Number(block.result.height)
-    })
-    if (!res) {
-      this.logger.debug(
-        'total guardian stake:' + parseInt(guTotalThetaWei.dividedBy('1e27').toFixed())
-      )
-      return await this.stakeStatisticsRepository.insert({
-        block_height: Number(block.result.height),
-
-        total_elite_edge_node_number: eenpTotalNodeNum,
-        effective_elite_edge_node_number: eenpEffectiveNodeNum,
-        total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
-        effective_elite_edge_node_stake_amount: parseInt(
-          eenpEffectiveTfWei.dividedBy('1e18').toFixed()
-        ),
-        theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
-        timestamp: Number(block.result.timestamp),
-
-        total_guardian_node_number: guTotalNodeNum,
-        effective_guardian_node_number: guEffectiveNodeNum,
-        total_guardian_stake_amount: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
-        effective_guardian_stake_amount: Number(guEffectiveThetaWei.dividedBy('1e18').toFixed()),
-
-        theta_stake_ratio: Number(
-          guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
-        ),
-
-        total_validator_node_number: vaTotalNodeNum,
-        effective_validator_node_number: vaEffectiveNodeNum,
-        effective_validator_stake_amount: parseInt(vaEffectiveThetaWei.dividedBy('1e18').toFixed()),
-        total_validator_stake_amount: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
+      const [eenpTotalNodeNum, eenpEffectiveNodeNum, eenpTotalTfWei, eenpEffectiveTfWei]: [
+        number,
+        number,
+        BigNumber,
+        BigNumber
+      ] = await this.updateEenp(block)
+      let res = await this.stakeStatisticsRepository.findOne({
+        block_height: Number(block.result.height)
       })
+      if (!res) {
+        this.logger.debug(
+          'total guardian stake:' + parseInt(guTotalThetaWei.dividedBy('1e27').toFixed())
+        )
+        try {
+          return await this.stakeStatisticsRepository.insert({
+            block_height: Number(block.result.height),
+
+            total_elite_edge_node_number: eenpTotalNodeNum,
+            effective_elite_edge_node_number: eenpEffectiveNodeNum,
+            total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
+            effective_elite_edge_node_stake_amount: parseInt(
+              eenpEffectiveTfWei.dividedBy('1e18').toFixed()
+            ),
+            theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
+            timestamp: Number(block.result.timestamp),
+
+            total_guardian_node_number: guTotalNodeNum,
+            effective_guardian_node_number: guEffectiveNodeNum,
+            total_guardian_stake_amount: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
+            effective_guardian_stake_amount: Number(
+              guEffectiveThetaWei.dividedBy('1e18').toFixed()
+            ),
+
+            theta_stake_ratio: Number(
+              guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
+            ),
+
+            total_validator_node_number: vaTotalNodeNum,
+            effective_validator_node_number: vaEffectiveNodeNum,
+            effective_validator_stake_amount: parseInt(
+              vaEffectiveThetaWei.dividedBy('1e18').toFixed()
+            ),
+            total_validator_stake_amount: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
+          })
+        } catch (e) {
+          this.logger.debug('insert stake statistics error')
+          console.log(e)
+        }
+      }
+    } catch (e) {
+      this.logger.debug('updateCheckPoint error')
+      console.log(e)
     }
   }
 
@@ -268,7 +300,9 @@ export class AnalyseService {
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
     const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.result.height)
-    if (!validatorList.result.BlockHashVcpPairs) return undefined
+    if (!validatorList.result || !validatorList.result.BlockHashVcpPairs) {
+      throw new Error('no validator BlockHashVcpPairs')
+    }
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
       totalNodeNum++
       node.Stakes.forEach((stake) => {
