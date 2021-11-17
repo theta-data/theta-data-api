@@ -2,13 +2,6 @@ import { Args, Context, Int, Query, ResolveField, Resolver } from '@nestjs/graph
 import { RpcService } from './rpc.service'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
-import { Headers } from '@nestjs/common'
-
-import // GetPendingTransactionsType,
-// GetVersionType,
-// NodeStatusType,
-// ThetaRpcType
-'./rpc.model'
 import { Logger } from '@nestjs/common'
 import { GetVersionModel, NodeStatusModel, ThetaRpcModel } from './rpc.model'
 const config = require('config')
@@ -22,14 +15,6 @@ export class RpcResolver {
 
   @Query(() => ThetaRpcModel)
   async ThetaRpc(@Context() context) {
-    // this.logger.debug(
-    //   'real ip: ' +
-    //     (context.req.headers['x-forwarded-for']
-    //       ? context.req.headers['x-forwarded-for'].toString().split(',')[0]
-    //       : context.req.connection.remoteAddress)
-    // )
-    // this.logger.debug('get header')
-    // this.logger.debug(context)
     return {}
   }
 
@@ -37,86 +22,62 @@ export class RpcResolver {
     description: 'This API returns the version of the blockchain software.\n' + '\n'
   })
   async GetVersion() {
-    return (await thetaTsSdk.blockchain.getVersion()).result
+    return await this.rpcService.getVersion()
   }
 
   @ResolveField()
   async GetAccount(@Args('address', { type: () => GraphQLString! }) address: string) {
-    this.logger.debug(
-      'get account: ' + JSON.stringify(await thetaTsSdk.blockchain.getAccount(address))
-    )
-    return (await thetaTsSdk.blockchain.getAccount(address)).result
+    return await this.rpcService.getAccount(address)
   }
 
   @ResolveField()
   async GetBlock(@Args('hash', { type: () => GraphQLString! }) hash: string) {
-    return (await thetaTsSdk.blockchain.getBlock(hash)).result
+    return await this.rpcService.getAccountByHash(hash)
   }
 
   @ResolveField()
   async GetBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
-    const res = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
-    this.logger.debug('get block by height: ' + JSON.stringify(res))
-    return res.result
+    return await this.rpcService.getBlockByHeight(height)
   }
 
   @ResolveField(() => NodeStatusModel, { description: '' })
   async GetStatus() {
-    const nodeInfo = await thetaTsSdk.blockchain.getStatus()
-    return nodeInfo.result
+    return await this.rpcService.getStatus()
   }
 
   @ResolveField()
   async GetTransaction(@Args('hash', { type: () => GraphQLString! }) hash: string) {
-    const nodeInfo = await thetaTsSdk.blockchain.getTransaction(hash)
-    return nodeInfo.result
+    return await this.rpcService.getTransactionByHash(hash)
   }
 
   @ResolveField()
   async GetVcpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
-    if (!height)
-      height = Number(
-        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      )
-    const nodeInfo = await thetaTsSdk.blockchain.getVcpByHeight(height.toString())
-    return nodeInfo.result
+    if (!height) height = Number((await this.rpcService.getStatus()).latest_finalized_block_height)
+    return await this.rpcService.getVcpByHeight(height)
   }
 
   @ResolveField()
   async GetGcpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
-    if (!height)
-      height = Number(
-        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      )
-    const nodeInfo = await thetaTsSdk.blockchain.getGcpByHeight(height.toString())
-    return nodeInfo.result
+    if (!height) height = Number((await this.rpcService.getStatus()).latest_finalized_block_height)
+    return await this.rpcService.getGcpByHeight(height)
   }
 
   @ResolveField()
   async GetEenpByHeight(@Args('height', { type: () => Int, nullable: true }) height: number) {
-    if (!height)
-      height = Number(
-        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      )
-    const nodeInfo = await thetaTsSdk.blockchain.getEenpByHeight(height.toString())
-    // console.log(JSON.stringify(nodeInfo.result))
-    return nodeInfo.result
+    if (!height) height = Number((await this.rpcService.getStatus()).latest_finalized_block_height)
+    return await this.rpcService.getEenpByHeight(height)
   }
 
   @ResolveField()
   async GetPendingTransactions() {
-    return (await thetaTsSdk.blockchain.getPendingTransactions()).result
+    return await this.rpcService.getPendingTransactions()
   }
 
   @ResolveField()
   async GetStakeRewardDistributionByHeight(
     @Args('height', { type: () => Int, nullable: true }) height: number
   ) {
-    if (!height)
-      height = Number(
-        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      )
-    return (await thetaTsSdk.blockchain.getStakeRewardDistributionByHeight(height.toString()))
-      .result
+    if (!height) height = Number((await this.rpcService.getStatus()).latest_finalized_block_height)
+    return await this.rpcService.getStakeRewardDistributionByHeight(height)
   }
 }
