@@ -72,6 +72,7 @@ type StakeStatisticsEntity {
   theta_fuel_stake_ratio: Float!
   theta_stake_ratio: Float!
   timestamp: Int!
+  stake_reward(wallet_address: String!): StakeRewardModel!
 }
 
 type FiatCurrencyType {
@@ -106,6 +107,10 @@ type BalanceModel {
   stake_to_elite_node: [StakeBalanceType!]
   stake_to_validator_node: [StakeBalanceType!]
   total: TotalBalanceType!
+}
+
+type StakeRewardModel {
+  last_24_hour: TokenBalanceType
 }
 
 type TokenMarketInformationType {
