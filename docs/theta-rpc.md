@@ -1,5 +1,7 @@
 # ThetaRpc
 ### GetAccount
+This Field returns the details of the account.
+
 * code :  the hash of the smart contract bytecode (for smart contract accounts)
 * coins : the native token balance
 * reserved_funds : fund reserved for micropayment through the off-chain resource-oriented payment pool
@@ -46,8 +48,10 @@
 ```
 
 ### GetBlock
+This Field returns the details of the block.
 **Query Parameters**
 * hash: the block hash
+
 **Fields**
 * chain_id : ID of the chain
 * epoch : epoch of the block
@@ -151,13 +155,17 @@
 This Field returns the finalized block given the height.
 If none of the blocks at the given height are finalized (either directly or indirectly), 
 then returns an empty result.
+
 **Query Parameters**
 * height: the block height
-**Response**
+
+**Fields**
+
 Similar to the returns of the GetBlock field
 
 ### GetEenpByHeight
 this field return the information of the elite edge node
+
 **Query Parameters**
 * height: the block height,optional,if empty,will
 use the latest finalized block height.
@@ -216,6 +224,7 @@ this field return the information of the guardian node
 **Query Parameters**
 * height: the block height,optional,if empty,will
   use the latest finalized block height.
+
 **Fields**
 * BlockHashGcpPairs
   * BlockHash
