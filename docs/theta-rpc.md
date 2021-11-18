@@ -531,7 +531,7 @@ this field return the information of the validator node
 ```
 
 ### GetVersion
-* timestamp :  the version number
+* version :  the version number
 * git_hash :  the git commit hash of the code base
 * timestamp :  the build timestamp
 **Example**

@@ -19,9 +19,9 @@ export class RpcResolver {
   }
 
   @ResolveField(() => GetVersionModel, {
-    description: 'This API returns the version of the blockchain software.\n' + '\n'
+    description: 'This field returns the version of the blockchain software.\n' + '\n'
   })
-  async GetVersion() {
+  async GetVersion(): Promise<GetVersionModel> {
     return await this.rpcService.getVersion()
   }
 

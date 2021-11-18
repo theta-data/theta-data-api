@@ -204,8 +204,13 @@ This API returns the version of the blockchain software.
 
 """
 type GetVersionModel {
+  """the version number"""
   version: String!
+
+  """the git commit hash of the code base"""
   git_hash: String!
+
+  """the build timestamp"""
   timestamp: String!
 }
 

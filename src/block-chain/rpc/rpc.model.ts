@@ -8,13 +8,13 @@ import { BlockHashStakeRewardDistributionRuleSetPairsModel } from './rpc-stake-r
 
 @ObjectType({ description: 'This API returns the version of the blockchain software.\n' + '\n' })
 export class GetVersionModel {
-  @Field()
+  @Field({ description: 'the version number' })
   version: string //"1.0",
 
-  @Field()
+  @Field({ description: 'the git commit hash of the code base' })
   git_hash: string //"9d7669a735063a283ae8b6f0826183e3830c00a5",
 
-  @Field()
+  @Field({ description: 'the build timestamp' })
   timestamp: string //'Tue Feb 19 23:31:32 UTC 2019'
 }
 
