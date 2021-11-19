@@ -198,11 +198,6 @@ type BlockHashStakeRewardDistributionRuleSetPairsModel {
   BlockHashStakeRewardDistributionRuleSetPairs: [StakeRewardDistributionRuleSetType!]!
 }
 
-"""
-This API returns the version of the blockchain software.
-
-
-"""
 type GetVersionModel {
   """the version number"""
   version: String!
@@ -235,11 +230,26 @@ type receiptLogType {
 }
 
 type GetAccountModel {
+  """ the current sequence number of the account"""
   sequence: String!
+
+  """the native token balance"""
   coins: TokenType!
+
+  """
+  fund reserved for micropayment through the off-chain resource-oriented payment pool
+  """
   reserved_funds: [String!]!
+
+  """"""
   last_updated_block_height: String!
+
+  """
+  the root hash of the data Merkle-Patricia trie (for smart contract accounts)
+  """
   root: String!
+
+  """the hash of the smart contract bytecode (for smart contract accounts)"""
   code: String!
 }
 
@@ -269,17 +279,40 @@ type EliteEdgeNodeVotesType {
 }
 
 type BlockModel {
+  """ID of the chain"""
   chain_id: String!
+
+  """epoch of the block"""
   epoch: String!
+
+  """height of the block"""
   height: String!
+
+  """hash of the parent block"""
   parent: String!
+
+  """root hash of the transaction Merkle-Patricia trie"""
   transactions_hash: String!
+
+  """root hash of the state Merkle-Patricia trie"""
   state_hash: String!
+
+  """timestamp when the block was proposed"""
   timestamp: String!
+
+  """address of the proposer validator"""
   proposer: String!
+
+  """children blocks"""
   children: [String!]!
+
+  """status of the block"""
   status: THETA_BLOCK_STATUS_ENUM!
+
+  """hash of the transaction"""
   hash: String!
+
+  """ json representation of the transactions contained in the block"""
   transactions: [transactionType!]!
   hcc: HccType
   guardian_votes: GuardianVotesType
@@ -373,15 +406,36 @@ type GetPendingTransactionsModel {
 }
 
 type ThetaRpcModel {
+  """This field returns the version of the blockchain software."""
   GetVersion: GetVersionModel!
+
+  """
+  This Field returns the details of the account.
+  
+  
+  """
   GetAccount(address: String!): GetAccountModel!
+
+  """This Field returns the details of the block"""
   GetBlock(hash: String!): BlockModel!
+
+  """
+  This Field returns the finalized block given the height.
+  If none of the blocks at the given height are finalized (either directly or indirectly), 
+  then returns an empty result.
+  """
   GetBlockByHeight(height: Int!): BlockModel!
+
+  """This field return the status of the guardian node run by theta data"""
   GetStatus: NodeStatusModel!
+
+  """This field returns the detail of the transaction by hash."""
   GetTransaction(hash: String!): GetTransactionModel!
   GetVcpByHeight(height: Int): GetVcpByHeightModel!
   GetGcpByHeight(height: Int): GetGcpByHeightModel!
   GetEenpByHeight(height: Int): GetEenpByHeightModel!
+
+  """This field returns the pending transactions in the mempool."""
   GetPendingTransactions: GetPendingTransactionsModel!
   GetStakeRewardDistributionByHeight(height: Int): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }

@@ -49,6 +49,7 @@ This Field returns the details of the account.
 
 ### GetBlock
 This Field returns the details of the block.
+
 **Query Parameters**
 * hash: the block hash
 
@@ -157,7 +158,7 @@ If none of the blocks at the given height are finalized (either directly or indi
 then returns an empty result.
 
 **Query Parameters**
-* height: the block height
+* height: the block height(If no height parameter provided,returns the latest finalized block)
 
 **Fields**
 
@@ -422,6 +423,7 @@ This field return the status of the guardian node run by theta data
 ```
 
 ### GetTransaction
+This field returns the detail of the transaction by hash.
 **Query Parameters**
 * hash: the transaction hash*
 

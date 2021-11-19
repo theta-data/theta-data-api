@@ -6,7 +6,7 @@ import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
 import { BlockHashStakeRewardDistributionRuleSetPairsModel } from './rpc-stake-reward-distribution-by-height.model'
 
-@ObjectType({ description: 'This API returns the version of the blockchain software.\n' + '\n' })
+@ObjectType()
 export class GetVersionModel {
   @Field({ description: 'the version number' })
   version: string //"1.0",
@@ -62,22 +62,27 @@ export class receiptLogType {
 
 @ObjectType()
 export class GetAccountModel {
-  @Field()
+  @Field({ description: ' the current sequence number of the account' })
   sequence: string // "1",
 
-  @Field()
+  @Field({ description: 'the native token balance' })
   coins: TokenType
 
-  @Field(() => [String])
+  @Field(() => [String], {
+    description:
+      'fund reserved for micropayment through the off-chain resource-oriented payment pool'
+  })
   reserved_funds: []
 
-  @Field()
+  @Field({ description: '' })
   last_updated_block_height: string //'0'
 
-  @Field()
+  @Field({
+    description: 'the root hash of the data Merkle-Patricia trie (for smart contract accounts)'
+  })
   root: string //'0x0000000000000000000000000000000000000000000000000000000000000000'
 
-  @Field()
+  @Field({ description: 'the hash of the smart contract bytecode (for smart contract accounts)' })
   code: string //'0x0000000000000000000000000000000000000000000000000000000000000000'
 }
 
@@ -134,40 +139,42 @@ export class EliteEdgeNodeVotesType {
 
 @ObjectType()
 export class BlockModel {
-  @Field()
+  @Field({ description: 'ID of the chain' })
   chain_id: string //"privatenet",
 
-  @Field()
+  @Field({ description: 'epoch of the block' })
   epoch: string // "5",
 
-  @Field()
+  @Field({ description: 'height of the block' })
   height: string //"3",
 
-  @Field()
+  @Field({ description: 'hash of the parent block' })
   parent: string // "0x724b0f68d8e45f930b95bac224fa7d67eef243307b4e84f0f666198d1d70e9d7",
 
-  @Field()
+  @Field({ description: 'root hash of the transaction Merkle-Patricia trie' })
   transactions_hash: string //"0x2bf2c62185fceed239a55bd27ada030cf75970f09122addb2e419e70cafebdf0",
 
-  @Field()
+  @Field({ description: 'root hash of the state Merkle-Patricia trie' })
   state_hash: string //"0xd41742c2b0d70e3bac1d88b2af69a2491d8c65c650af6ec4d2b8873897f8becc",
 
-  @Field()
+  @Field({ description: 'timestamp when the block was proposed' })
   timestamp: string //"1548102762",
 
-  @Field()
+  @Field({ description: 'address of the proposer validator' })
   proposer: string //"0x2e833968e5bb786ae419c4d13189fb081cc43bab",
 
-  @Field(() => [String])
+  @Field(() => [String], { description: 'children blocks' })
   children: Array<string> //["0x21d3c2bb25d0c85a1f5c3ff81bc7eeae998bf98db1dba461fb3f69a434feb90c"],
 
-  @Field(() => THETA_BLOCK_STATUS_ENUM)
+  @Field(() => THETA_BLOCK_STATUS_ENUM, { description: 'status of the block' })
   status: THETA_BLOCK_STATUS_ENUM //4,
 
-  @Field()
+  @Field({ description: 'hash of the transaction' })
   hash: string // "0x9f1e77b08c9fa8984096a735d0aae6b0e43aee297e42c54ce36334103ddd67a7",
 
-  @Field(() => [transactionType])
+  @Field(() => [transactionType], {
+    description: ' json representation of the transactions contained in the block'
+  })
   transactions: Array<transactionType>
 
   @Field(() => HccType, { nullable: true })
@@ -323,22 +330,35 @@ export class GetPendingTransactionsModel {
 
 @ObjectType()
 export class ThetaRpcModel {
-  @Field(() => GetVersionModel)
+  @Field(() => GetVersionModel, {
+    description: 'This field returns the version of the blockchain software.'
+  })
   GetVersion: GetVersionModel
 
-  @Field(() => GetAccountModel)
+  @Field(() => GetAccountModel, {
+    description: 'This Field returns the details of the account.\n' + '\n'
+  })
   GetAccount: GetAccountModel
 
-  @Field(() => BlockModel)
+  @Field(() => BlockModel, { description: 'This Field returns the details of the block' })
   GetBlock: BlockModel
 
-  @Field(() => BlockModel)
+  @Field(() => BlockModel, {
+    description:
+      'This Field returns the finalized block given the height.\n' +
+      'If none of the blocks at the given height are finalized (either directly or indirectly), \n' +
+      'then returns an empty result.'
+  })
   GetBlockByHeight: BlockModel
 
-  @Field(() => NodeStatusModel)
+  @Field(() => NodeStatusModel, {
+    description: 'This field return the status of the guardian node run by theta data'
+  })
   GetStatus: NodeStatusModel
 
-  @Field(() => GetTransactionModel)
+  @Field(() => GetTransactionModel, {
+    description: 'This field returns the detail of the transaction by hash.'
+  })
   GetTransaction: GetTransactionModel
 
   @Field(() => GetVcpByHeightModel)
@@ -350,7 +370,9 @@ export class ThetaRpcModel {
   @Field(() => GetEenpByHeightModel)
   GetEenpByHeight: GetEenpByHeightModel
 
-  @Field(() => GetPendingTransactionsModel)
+  @Field(() => GetPendingTransactionsModel, {
+    description: 'This field returns the pending transactions in the mempool.'
+  })
   GetPendingTransactions: GetPendingTransactionsModel
 
   @Field(() => BlockHashStakeRewardDistributionRuleSetPairsModel)

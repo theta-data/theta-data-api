@@ -37,6 +37,7 @@ export class RpcResolver {
 
   @ResolveField()
   async GetBlockByHeight(@Args('height', { type: () => Int! }) height: number) {
+    if (!height) height = Number((await this.rpcService.getStatus()).latest_finalized_block_height)
     return await this.rpcService.getBlockByHeight(height)
   }
 
