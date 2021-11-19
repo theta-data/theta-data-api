@@ -1,7 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat } from 'graphql'
-import { StakeEntity } from './stake.entity'
 import { StakeRewardModel } from './stake.model'
 
 @Entity()

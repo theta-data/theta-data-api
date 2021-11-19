@@ -111,6 +111,7 @@ type BalanceModel {
 
 type StakeRewardModel {
   last_24_hour: TokenBalanceType
+  last_3_days: TokenBalanceType
 }
 
 type TokenMarketInformationType {
@@ -128,7 +129,7 @@ type MarketInformationType {
   theta_fuel: TokenMarketInformationType!
 }
 
-type CandidateStakeTyep {
+type CandidateStakeType {
   source: String!
   amount: String!
   withdrawn: Boolean!
@@ -137,7 +138,7 @@ type CandidateStakeTyep {
 
 type CandidateType {
   Holder: String!
-  Stakes: [CandidateStakeTyep!]!
+  Stakes: [CandidateStakeType!]!
 }
 
 type VcpPairType {

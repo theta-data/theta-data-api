@@ -1,12 +1,6 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { CandidateType, HeightListType } from './rpc-vcp.model'
 
-// @ObjectType()
-// export class GcpType {
-//   @Field(() => [CandidateType])
-//   SortedGuardians: Array<CandidateType>
-// }
-
 @ObjectType()
 export class BlockHashEenpPairType {
   @Field()

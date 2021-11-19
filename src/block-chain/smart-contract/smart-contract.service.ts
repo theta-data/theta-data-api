@@ -19,7 +19,6 @@ export class SmartContractService {
   ) {}
 
   async getSmartContract(rankBy: RankByEnum, max: number = 500) {
-    // const orderKey = 'call_times'
     switch (rankBy) {
       case RankByEnum.last_seven_days_call_times:
         return await this.smartContractRepository.find({
@@ -51,23 +50,22 @@ export class SmartContractService {
   }
 
   async updateSmartContractRecord(timestamp: string, contractAddress: string) {
-    let smartContract = await this.smartContractRepository.findOne({
+    const smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
     this.logger.debug('timestamp:' + timestamp)
     if (!smartContract) {
-      let smartContract = new SmartContractEntity()
+      const smartContract = new SmartContractEntity()
       smartContract.contract_address = contractAddress
       smartContract.call_times = 1
       smartContract.last_24h_call_times = 1
       smartContract.last_seven_days_call_times = 1
-      let smartContractRecord = new SmartContractCallRecordEntity()
+      const smartContractRecord = new SmartContractCallRecordEntity()
       smartContractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(smartContractRecord)
     } else {
-      let contractRecord = new SmartContractCallRecordEntity()
-      // smartContract.record.push(contractRecord)
+      const contractRecord = new SmartContractCallRecordEntity()
       contractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
       contractRecord.smart_contract = smartContract
       smartContract.call_times++

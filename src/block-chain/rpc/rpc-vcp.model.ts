@@ -1,8 +1,8 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
-import { GraphQLBoolean, GraphQLInt } from 'graphql'
+import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLBoolean } from 'graphql'
 
 @ObjectType()
-export class CandidateStakeTyep {
+export class CandidateStakeType {
   @Field()
   source: string
 
@@ -21,8 +21,8 @@ export class CandidateType {
   @Field()
   Holder: string
 
-  @Field(() => [CandidateStakeTyep])
-  Stakes: Array<CandidateStakeTyep>
+  @Field(() => [CandidateStakeType])
+  Stakes: Array<CandidateStakeType>
 }
 
 @ObjectType()
