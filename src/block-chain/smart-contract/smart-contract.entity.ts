@@ -16,29 +16,29 @@ export class SmartContractEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Field()
+  @Field({ description: 'Address of the smart contract' })
   @Column()
   contract_address: string
 
-  @Field(() => Int)
+  @Field(() => Int, { description: 'Total number of smart contract calls' })
   @Column({
     type: 'int'
   })
   call_times: number
 
-  @Field(() => Int)
+  @Field(() => Int, { description: 'Number of smart contract calls in the last 7 days' })
   @Column({
     type: 'int'
   })
   last_seven_days_call_times: number
 
-  @Field(() => Int)
+  @Field(() => Int, { description: 'Number of smart contract calls in the last 24 hours' })
   @Column({
     type: 'int'
   })
   last_24h_call_times: number
 
-  @Field(() => [SmartContractCallRecordEntity])
+  @Field(() => [SmartContractCallRecordEntity], { description: ' Call log' })
   @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
     cascade: true
   })

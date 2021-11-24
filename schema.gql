@@ -57,20 +57,48 @@ type Stake {
   return_height: String!
 }
 
+"""Return to statistics related to token pledges"""
 type StakeStatisticsEntity {
+  """Height of the block where pledge statistics are performed """
   block_height: Int!
+
+  """Total number of elite edge nodes"""
   total_elite_edge_node_number: Int!
+
+  """Number of theta fuel pledged to elite edge nodes"""
   total_edge_node_stake_amount: String!
+
+  """Total number of guardian nodes"""
   total_guardian_node_number: Int!
+
+  """Number of online guardian nodes"""
   effective_guardian_node_number: Int!
+
+  """Total number of theta tokens pledged to the guardian nodes"""
   total_guardian_stake_amount: String!
+
+  """Total number of theta pledges for the online guardian nodes"""
   effective_guardian_stake_amount: String!
+
+  """Total number of validator nodes"""
   total_validator_node_number: Int!
+
+  """Number of online validator nodes"""
   effective_validator_node_number: Int!
+
+  """otal number of theta tokens pledged to the validator nodes"""
   total_validator_stake_amount: String!
+
+  """The number of tokens pledged by the online validator nodes"""
   effective_validator_stake_amount: String!
+
+  """Theta Fuel pledge ratio"""
   theta_fuel_stake_ratio: Float!
+
+  """Theta pledge ratio"""
   theta_stake_ratio: Float!
+
+  """Block time for performing pledge statistics"""
   timestamp: Int!
   stake_reward(wallet_address: String!): StakeRewardModel!
 }
@@ -442,17 +470,28 @@ type ThetaRpcModel {
 }
 
 type SmartContractCallRecordEntity {
+  """Calling time"""
   timestamp: Float!
 }
 
 type SmartContractEntity {
+  """Address of the smart contract"""
   contract_address: String!
+
+  """Total number of smart contract calls"""
   call_times: Int!
+
+  """Number of smart contract calls in the last 7 days"""
   last_seven_days_call_times: Int!
+
+  """Number of smart contract calls in the last 24 hours"""
   last_24h_call_times: Int!
+
+  """ Call log"""
   record: [SmartContractCallRecordEntity!]!
 }
 
+"""Statistics on smart contract related calls"""
 type SmartContractStatisticsType {
   call_rank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
 }
