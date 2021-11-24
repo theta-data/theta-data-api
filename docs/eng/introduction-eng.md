@@ -6,7 +6,7 @@ Users can access the data with simple statements and queries.
 
 ## User Interface
 
-![img](img/playground.png)
+![img](../img/playground.png)
 
 We provide a simple GUI for basic queries. With box checking, you can look up the relevant data of your own interest. History queries will be saved so that you do not need to rewrite the statements.
 
