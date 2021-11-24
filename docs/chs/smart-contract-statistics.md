@@ -1,6 +1,5 @@
 # SmartContractStatistics
-Statistics on smart contract related calls
-
+统计智能合约的相关调用情况
 ### call_rank
 **参数**
 * rank_by : 返回的数据的排序方式

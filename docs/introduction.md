@@ -1,28 +1,30 @@
-# 介绍
-## Theta Data是什么
-Theta Data从自己运行的Guardian Node查询theta网络相关数据，
-并进行一定的分析整理，再通过graphql接口提供出来。让对相关数据感兴趣
-的社区成员可以通过一条简单的语句查出自己关心的数据。
+# Introduction
+## What is Theta Data
+Theta Data is a Data Explorer and Analytics Platform for Theta Network.
+It collects data from Guardian Node, performs analysis and provides data and analysis result through convenient Graphql interfaces.
+Users can access the data with simple statements and queries.
 
-对于普通用户，我们有一个简单易用的Playground，通过简单勾选，就
-能查到自己感兴趣的相关数据，并且可以从历史记录中保存相关的查询，下次就不用再重新写语句。
+## User Interface
 
-![img](https://raw.githubusercontent.com/larryro/image/main/%E5%BE%AE%E4%BF%A1%E6%88%AA%E5%9B%BE_20211112111205.png)
+![img](img/playground.png)
 
-对于开发者，相比官方现在提供出来的js sdk或者RPC接口或者浏览器接口，我们提供了一种更加简单，高效的
-数据获取方式。
+We provide a simple GUI for basic queries. With box checking, you can look up the relevant data of your own interest. History queries will be saved so that you do not need to rewrite the statements.
 
-## 使用Theta Data和使用传统数据接口的区别在那里
-假设我们需要在主页显示最新的区块高度和当前的theta质押信息以及theta和theta fuel的流通量，
+## API
 
-### 通过传统数据接口的方式，需要做这些网络查询操作
+Unlike traditional interface, Theta Data provides an efficient and concise way to retrieve on-chain data.
 
-1. 通过js sdk查出最新的区块高度
+The below example shows the difference between a traditional interface and Theta Data API when you are collecting the block height, staking amount and the circulating supply of Theta token/Theta Fuel
+
+### Example of traditional data interface
+
+1. Get the latest block height with js sdk
 ```javascript
 const provider = new thetajs.providers.HttpProvider();
 const blockHeight = await provider.getBlockNumber();
 ```
-2. 通过浏览器接口查询出Theta的质押信息(很遗憾，目前没有找到查询theta fuel质押信息的接口)
+
+2. Get Theta staking amount through browser interface
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
@@ -38,7 +40,7 @@ curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
 }
 ```
 
-3. 通过explorer api查询theta的供应量和流通量
+3. Get the supply and circulation of Theta with explorer api
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/supply/theta
@@ -50,7 +52,7 @@ curl https://explorer.thetatoken.org:8443/api/supply/theta
 }
 ```
 
-4. 通过explorer api查询theta fuel的供应量和流通量
+4. Call explorer api again to get the supply and circulation of theta fuel
 ```shell
 // Request 
 curl https://explorer.thetatoken.org:8443/api/supply/tfuel
@@ -60,12 +62,15 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
    "circulation_supply":5000000000
 }
 ```
-可以看到上面至少做了4次网络查询，并且接口分布在不同的地方，如果将来提供了theta fuel的质押信息接口，
-那么可能就是5次数据接口查询了
 
-### 如果使用theta data，需要怎么获取这些数据？
-使用theta data，只需要通过一条Graphql 语句，就能精确得到你所需要的所有数据，只需要向服务器做一次网络请求。同时还有一个优势，不知道大家有没有注意到，就是通过
-这种方式查出来的数据，返回的数据就是你需要的数据，没有任何冗余字段，通过传统的数据接口，多多少少会返回一些自己不需要的冗余数据信息。
+We can see from above, in order to get the basic data, we need to call 3 different APIs. These APIs are from different source, which makes them difficult to maintain in our own program.
+
+
+### Example of Theta Data API
+
+With Theta Data, all the data above can be retrieve with one single Graphql statement and one request.
+
+Request:
 ```graphql
 {
   MarketInformation {
@@ -90,7 +95,8 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
   }
 }
 ```
-返回：
+
+Response:
 ```json
 {
   "data": {
@@ -117,13 +123,19 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
   }
 }
 ```
-## 你们提供的数据服务可靠么，你们怎么保证数据是准确的，服务是稳定的
-我们的核心代码全部是开源的。可以直接通过查看源码来了解相关的数据是怎么进行统计的。
-[https://github.com/theta-data/theta-data-api](https://github.com/theta-data/theta-data-api)
 
-除了市场相关的数据是从coinmarketcap查询获取的，我们所有的其他数据都是从我们自己运行的
-Guardian Node查询分析得来，所以我们的数据服务几乎不依赖第三方数据接口的服务稳定性。
+It is also worth mentioning that Theta Data only returns the data you specify in the query statement. No redundant fields will be returned.
 
-如果你有非常大规模的数据请求量，认为我们目前的服务部署不足以支撑你的数据服务，由于我们现在
-还没有收取接口调用的服务费用，您也可以直接将我们的数据服务部署到你的私人服务器上面，直接从您的Guardian Node来查询统计获得相关数据。我们的数据服务代码
-是基于MIT协议。
+
+## Data source and service stability
+
+Since the whole project is open sourced, the data source  can be audited through the [source code](https://github.com/theta-data/theta-data-api).
+
+
+Except for market-related data which is obtained from [Coinmarketcap](https://coinmarketcap.com/), all our data is obtained from Guardian Node. Therefore, our data service is independent from any other third-party data services.
+
+If you have massive data demand and are concerned with the stability of our service, please contract [us](*****@****.com) for further support.
+
+You can also pull our code and deploy Theta Data to your own server so that you can retrieve data from your Guardian node.
+
+This project is licensed under the terms of the MIT license.

@@ -1,25 +1,24 @@
 # Market Information
-market信息的相关数据来源于 [https://coinmarketcap.com/](https://coinmarketcap.com/)
-### theta
-* circulating_supply : theta的流通量
-* last_updated : 数据更新时间
-* market_cap : theta的市值
-* name : 代币名字,始终返回THETA
-* price : theta单个代币的价格
-* total_supply : theta的总的供应量
-* volume_24h : theta的24小时交易量
+Data related to market information from [https://coinmarketcap.com/](https://coinmarketcap.com/)
+* circulating_supply : Circulation of theta
+* last_updated : Data update time
+* market_cap : Theta's market value
+* name : Token name, always return THETA
+* price : Theta single token price
+* total_supply : Total supply of theta
+* volume_24h : Theta's 24-hour trading volume
 
 ### theta_fuel
-* circulating_supply : theta fuel的流通量
-* last_updated : 数据更新时间
-* market_cap : theta fuel的市值
-* name : 代币名字,始终返回Theta Fuel
-* price : theta单个代币的价格
-* total_supply : theta的总的供应量
-* volume_24h : theta的24小时交易量
+* circulating_supply : Circulation of theta fuel
+* last_updated : Data update time
+* market_cap : Market value of Theta Fuel
+* name : Token name, always return Theta Fuel
+* price :Theta Fuel single token price
+* total_supply : Total supply of theta
+* volume_24h : Theta's 24-hour trading volume
 
-# 示例
-**请求**
+# Example
+**Request**
 ```graphql
 {
   MarketInformation {
@@ -44,7 +43,7 @@ market信息的相关数据来源于 [https://coinmarketcap.com/](https://coinma
   }
 }
 ```
-**返回**
+**Response**
 ```json
 {
   "data": {

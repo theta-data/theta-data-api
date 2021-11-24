@@ -1,22 +1,21 @@
 # SmartContractStatistics
-统计智能合约的相关调用情况
-### call_rank
-**参数**
-* rank_by : 返回的数据的排序方式
-  - call_times：返回数据通过总调用次数从高到低排序
-  - last_24h_call_times ： 返回数据通过过去24小时的调用次数从高到低排序
-  - last_seven_days_call_times ： 返回数据通过过去7天的调用次数从高到低排序
-* take : 返回记录条数
+Statistics on smart contract related calls
 
-**字段**
-* call_times ： 智能合约总的被调用次数
-* contract_address ： 智能合约的地址
-* create_date ： 记录创建时间
-* last_24h_call_times ： 智能合约过去24小时的调用次数
-* last_seven_days_call_times：智能合约过去7天的调用次数
-* update_date ： 记录更新时间
-* record : 调用记录
-  * timestamp : 调用时间
+### call_rank
+**Parameters**
+* rank_by : Sorting method of the returned data
+  - call_times：The returned data is sorted from highest to lowest by the total number of calls
+  - last_24h_call_times ： The returned data is sorted from highest to lowest by the number of calls in the last 24 hours
+  - last_seven_days_call_times ： The returned data is sorted by the number of calls in the last 7 days from highest to lowest
+* take : Return the number of records
+
+**Fields**
+* call_times ： Total number of smart contract calls
+* contract_address ： Address of the smart contract
+* last_24h_call_times ： Number of smart contract calls in the last 24 hours
+* last_seven_days_call_times：Number of smart contract calls in the last 7 days
+* record : Call log
+  * timestamp : Calling time
 
 ## 示例
 **请求：**
