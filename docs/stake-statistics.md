@@ -34,7 +34,7 @@ Return to statistics related to token pledges
   }
 }
 ```
-**返回**
+**Response**
 ```json
 {
   "data": {
