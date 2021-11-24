@@ -140,6 +140,7 @@ type BalanceModel {
 type StakeRewardModel {
   last_24_hour: TokenBalanceType
   last_3_days: TokenBalanceType
+  last_7_days: TokenBalanceType
 }
 
 type TokenMarketInformationType {
@@ -508,6 +509,8 @@ type WalletModel {
 
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
+
+  """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity!
   MarketInformation: MarketInformationType!
   ThetaRpc: ThetaRpcModel!

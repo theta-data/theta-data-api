@@ -19,7 +19,9 @@ export class StakeResolver {
     private walletService: WalletService
   ) {}
 
-  @Query(() => StakeStatisticsEntity)
+  @Query(() => StakeStatisticsEntity, {
+    description: 'Return to statistics related to token pledges'
+  })
   async StakeStatistics() {
     return await this.stakeService.getLatestStakeStatics()
   }
