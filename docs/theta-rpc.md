@@ -77,8 +77,8 @@ This Field returns the details of the block.
   * TxSmartContract : smart contract transaction, for general purpose smart contract
   * TxDepositStake :  deposit stake transaction, for depositing stake to validators/guardians
   * TxWithdrawStake :  withdraw stake transaction, for withdrawing stake from validators/guardians
-  * TxDepositStakeV2 : 
-  * TxStakeRewardDistribution : 
+  * TxDepositStakeV2 : v2 deposit stake transaction
+  * TxStakeRewardDistribution : transaction that specify the stake fee 
 * hash :  hash of the transaction
 * status :  status of the block (see the Block Status note below)
   * pending
