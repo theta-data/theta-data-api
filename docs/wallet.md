@@ -1,18 +1,23 @@
 # Wallet
+
 ### balance
+
 Return the balance information of the relevant wallet
 **Query Parameters**
-* wallet_address : Address of the wallet to be checked
+
+- wallet_address : Address of the wallet to be checked
 
 **Fields**
-* stake_to_elite_node : Number and value of theta fuel tokens pledged to the elite edge node
-* stake_to_guardian : Number and value of theta tokens pledged to guardian node
-* stake_to_validator_node : The number and value of tokens pledged to the validator node
-* theta : Theta balance in your wallet
-* theta_fuel : Theta fuel balance in your wallet
-* total : The total token value of the wallet to be queried
+
+- stake_to_elite_node : Number and value of theta fuel tokens pledged to the elite edge node
+- stake_to_guardian : Number and value of theta tokens pledged to guardian node
+- stake_to_validator_node : The number and value of tokens pledged to the validator node
+- theta : Theta balance in your wallet
+- theta_fuel : Theta fuel balance in your wallet
+- total : The total token value of the wallet to be queried
 
 **Example**
+
 ```graphql
 {
   Wallet {
@@ -79,7 +84,9 @@ Return the balance information of the relevant wallet
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {

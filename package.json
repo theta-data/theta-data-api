@@ -8,6 +8,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "docs": "docsify serve docs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "NODE_ENV=test nest start",
     "analyse": "NODE_ENV=test ts-node src/analyse.ts",

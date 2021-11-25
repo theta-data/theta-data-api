@@ -1,20 +1,25 @@
 # StakeStatistics
+
 Return to statistics related to token pledges
-* block_height : Height of the block where pledge statistics are performed 
-* effective_guardian_node_number : Number of online guardian nodes
-* active_guardian_stake_amount : Total number of theta pledges for the online guardian nodes
-* effective_validator_node_number : Number of validator nodes online 
-* effective_validator_stake_amount : The number of tokens pledged by the online validator nodes
-* theta_fuel_stake_ratio : Theta Fuel pledge ratio
-* total_edge_node_stake_amount : Number of theta fuel pledged to elite edge nodes
-* timestamp : Block time for performing pledge statistics
-* total_elite_edge_node_number : Total number of elite edge nodes
-* total_guardian_node_number : Total number of guardian nodes
-* total_guardian_stake_amount : Total number of theta tokens pledged to the guardian nodes
-* total_validator_stake_amount ： Total number of theta tokens pledged to the validator nodes
-* total_validator_node_number ： Total number of validator nodes
+
+- block_height : Height of the block where pledge statistics are performed
+- effective_guardian_node_number : Number of online guardian nodes
+- active_guardian_stake_amount : Total number of theta pledges for the online guardian nodes
+- effective_validator_node_number : Number of validator nodes online
+- effective_validator_stake_amount : The number of tokens pledged by the online validator nodes
+- theta_fuel_stake_ratio : Theta Fuel pledge ratio
+- total_edge_node_stake_amount : Number of theta fuel pledged to elite edge nodes
+- timestamp : Block time for performing pledge statistics
+- total_elite_edge_node_number : Total number of elite edge nodes
+- total_guardian_node_number : Total number of guardian nodes
+- total_guardian_stake_amount : Total number of theta tokens pledged to the guardian nodes
+- total_validator_stake_amount ： Total number of theta tokens pledged to the validator nodes
+- total_validator_node_number ： Total number of validator nodes
+
 ## Example
+
 **Request**
+
 ```graphql
 {
   StakeStatistics {
@@ -35,7 +40,9 @@ Return to statistics related to token pledges
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {
@@ -57,9 +64,4 @@ Return to statistics related to token pledges
     }
   }
 }
-
 ```
-
-  
-  
-  

@@ -1,19 +1,24 @@
 # StakeStatistics
+
 返回代币质押的相关统计信息
-* block_height : 进行质押统计的区块高度 
-* effective_guardian_node_number : 在线的守护节点数量 
-* ctive_guardian_stake_amount : 在线的守护节点的总的theta质押数量
-* effective_validator_node_number : 在线的验证节点数量 
-* effective_validator_stake_amount : 在线的验证节点质押的代币数量
-* theta_fuel_stake_ratio : Theta Fuel质押比例
-* total_edge_node_stake_amount : 质押到精英边缘节点的theta fuel数量
-* timestamp : 进行质押统计的区块时间
-* total_elite_edge_node_number : 总的精英边缘节点数量
-* total_guardian_node_number : 总的守护节点数量
-* total_guardian_stake_amount : 总的质押到守护节点的theta代币数量
-* total_validator_stake_amount ： 总的质押到验证者节点的theta代币数量
+
+- block_height : 进行质押统计的区块高度
+- effective_guardian_node_number : 在线的守护节点数量
+- ctive_guardian_stake_amount : 在线的守护节点的总的 theta 质押数量
+- effective_validator_node_number : 在线的验证节点数量
+- effective_validator_stake_amount : 在线的验证节点质押的代币数量
+- theta_fuel_stake_ratio : Theta Fuel 质押比例
+- total_edge_node_stake_amount : 质押到精英边缘节点的 theta fuel 数量
+- timestamp : 进行质押统计的区块时间
+- total_elite_edge_node_number : 总的精英边缘节点数量
+- total_guardian_node_number : 总的守护节点数量
+- total_guardian_stake_amount : 总的质押到守护节点的 theta 代币数量
+- total_validator_stake_amount ： 总的质押到验证者节点的 theta 代币数量
+
 ## 示例
+
 **请求**
+
 ```graphql
 {
   StakeStatistics {
@@ -34,7 +39,9 @@
   }
 }
 ```
+
 **返回**
+
 ```json
 {
   "data": {
@@ -56,9 +63,4 @@
     }
   }
 }
-
 ```
-
-  
-  
-  
