@@ -1,18 +1,23 @@
 # Wallet
+
 ### balance
+
 返回相关钱包的余额信息
 **Query Parameters**
-* wallet_address : 需要查询的钱包地址
+
+- wallet_address : 需要查询的钱包地址
 
 **Fields**
-* stake_to_elite_node : 质押到elite edge node的theta fuel的代币数量和价值
-* stake_to_guardian : 质押到guardian node的theta的代币数量和价值
-* stake_to_validator_node : 质押到validator node的代币数量和价值
-* theta : 钱包里面的theta 余额情况
-* theta_fuel : 钱包里面的 theta fuel余额情况
-* total : 所要查询的钱包的总的代币价值
+
+- stake_to_elite_node : 质押到 elite edge node 的 theta fuel 的代币数量和价值
+- stake_to_guardian : 质押到 guardian node 的 theta 的代币数量和价值
+- stake_to_validator_node : 质押到 validator node 的代币数量和价值
+- theta : 钱包里面的 theta 余额情况
+- theta_fuel : 钱包里面的 theta fuel 余额情况
+- total : 所要查询的钱包的总的代币价值
 
 **Example**
+
 ```graphql
 {
   Wallet {
@@ -79,7 +84,9 @@
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {

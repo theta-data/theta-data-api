@@ -1,24 +1,29 @@
 # Market Information
+
 Data related to market information from [https://coinmarketcap.com/](https://coinmarketcap.com/)
-* circulating_supply : Circulation of theta
-* last_updated : Data update time
-* market_cap : Theta's market value
-* name : Token name, always return THETA
-* price : Theta single token price
-* total_supply : Total supply of theta
-* volume_24h : Theta's 24-hour trading volume
+
+- circulating_supply : Circulation of theta
+- last_updated : Data update time
+- market_cap : Theta's market value
+- name : Token name, always return THETA
+- price : Theta single token price
+- total_supply : Total supply of theta
+- volume_24h : Theta's 24-hour trading volume
 
 ### theta_fuel
-* circulating_supply : Circulation of theta fuel
-* last_updated : Data update time
-* market_cap : Market value of Theta Fuel
-* name : Token name, always return Theta Fuel
-* price :Theta Fuel single token price
-* total_supply : Total supply of theta
-* volume_24h : Theta's 24-hour trading volume
+
+- circulating_supply : Circulation of theta fuel
+- last_updated : Data update time
+- market_cap : Market value of Theta Fuel
+- name : Token name, always return Theta Fuel
+- price :Theta Fuel single token price
+- total_supply : Total supply of theta
+- volume_24h : Theta's 24-hour trading volume
 
 # Example
+
 **Request**
+
 ```graphql
 {
   MarketInformation {
@@ -43,7 +48,9 @@ Data related to market information from [https://coinmarketcap.com/](https://coi
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {

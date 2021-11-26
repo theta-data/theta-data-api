@@ -1,14 +1,17 @@
 # ThetaRpc
+
 ### GetAccount
+
 This Field returns the details of the account.
 
-* code :  the hash of the smart contract bytecode (for smart contract accounts)
-* coins : the native token balance
-* reserved_funds : fund reserved for micropayment through the off-chain resource-oriented payment pool
-* root : the root hash of the data Merkle-Patricia trie (for smart contract accounts)
-* sequence : the current sequence number of the account
+- code : the hash of the smart contract bytecode (for smart contract accounts)
+- coins : the native token balance
+- reserved_funds : fund reserved for micropayment through the off-chain resource-oriented payment pool
+- root : the root hash of the data Merkle-Patricia trie (for smart contract accounts)
+- sequence : the current sequence number of the account
 
 #### Example
+
 ```graphql
 {
   ThetaRpc {
@@ -26,7 +29,9 @@ This Field returns the details of the account.
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {
@@ -48,53 +53,56 @@ This Field returns the details of the account.
 ```
 
 ### GetBlock
+
 This Field returns the details of the block.
 
 **Query Parameters**
-* hash: the block hash
+
+- hash: the block hash
 
 **Fields**
-* chain_id : ID of the chain
-* epoch : epoch of the block
-* height : height of the block
-* parent : hash of the parent block
-* transactions_hash : root hash of the transaction Merkle-Patricia trie
-* state_hash : root hash of the state Merkle-Patricia trie
-* timestamp : timestamp when the block was proposed
-* proposer :  address of the proposer validator
-* children : children blocks
-* hash :  the block hash
-* transactions :  json representation of the transactions contained in the block
-* raw : transaction details
-* type : type of the transaction (see the Transaction Types note below)
-  * TxCoinbase : coinbase transaction, for validator/guardian reward
-  * TxSlash : slash transaction, for slashing malicious actors
-  * TxSend : send transaction, for sending tokens among accounts
-  * TxReserveFund : reserve fund transaction, for off-chain micropayment
-  * TxReleaseFund : release fund transaction, for off-chain micropayment
-  * TxServicePayment : service payment transaction, for off-chain micropayment
-  * TxSplitRule :  split rule transaction, for the "split rule" special smart contract
-  * TxSmartContract : smart contract transaction, for general purpose smart contract
-  * TxDepositStake :  deposit stake transaction, for depositing stake to validators/guardians
-  * TxWithdrawStake :  withdraw stake transaction, for withdrawing stake from validators/guardians
-  * TxDepositStakeV2 : v2 deposit stake transaction
-  * TxStakeRewardDistribution : transaction that specify the stake fee 
-* hash :  hash of the transaction
-* status :  status of the block (see the Block Status note below)
-  * pending
-  * valid
-  * invalid
-  * committed
-  * directly_finalized
-  * indirectly_finalized
-  * trusted
+
+- chain_id : ID of the chain
+- epoch : epoch of the block
+- height : height of the block
+- parent : hash of the parent block
+- transactions_hash : root hash of the transaction Merkle-Patricia trie
+- state_hash : root hash of the state Merkle-Patricia trie
+- timestamp : timestamp when the block was proposed
+- proposer : address of the proposer validator
+- children : children blocks
+- hash : the block hash
+- transactions : json representation of the transactions contained in the block
+- raw : transaction details
+- type : type of the transaction (see the Transaction Types note below)
+  - TxCoinbase : coinbase transaction, for validator/guardian reward
+  - TxSlash : slash transaction, for slashing malicious actors
+  - TxSend : send transaction, for sending tokens among accounts
+  - TxReserveFund : reserve fund transaction, for off-chain micropayment
+  - TxReleaseFund : release fund transaction, for off-chain micropayment
+  - TxServicePayment : service payment transaction, for off-chain micropayment
+  - TxSplitRule : split rule transaction, for the "split rule" special smart contract
+  - TxSmartContract : smart contract transaction, for general purpose smart contract
+  - TxDepositStake : deposit stake transaction, for depositing stake to validators/guardians
+  - TxWithdrawStake : withdraw stake transaction, for withdrawing stake from validators/guardians
+  - TxDepositStakeV2 : v2 deposit stake transaction
+  - TxStakeRewardDistribution : transaction that specify the stake fee
+- hash : hash of the transaction
+- status : status of the block (see the Block Status note below)
+  - pending
+  - valid
+  - invalid
+  - committed
+  - directly_finalized
+  - indirectly_finalized
+  - trusted
+
 #### Example
+
 ```graphql
 {
   ThetaRpc {
-    GetBlock(
-      hash: "0x4af27e43da47a7398fe904967f002268e14d48f6e226a15f0333997aaa37ce7b"
-    ) {
+    GetBlock(hash: "0x4af27e43da47a7398fe904967f002268e14d48f6e226a15f0333997aaa37ce7b") {
       chain_id
       children
       epoch
@@ -114,16 +122,16 @@ This Field returns the details of the block.
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {
     "ThetaRpc": {
       "GetBlock": {
         "chain_id": "mainnet",
-        "children": [
-          "0x232ee6c1901c6ddd960aacded97268664b2d83d034f1a828585948f71314b757"
-        ],
+        "children": ["0x232ee6c1901c6ddd960aacded97268664b2d83d034f1a828585948f71314b757"],
         "epoch": "12895514",
         "hash": "0x4af27e43da47a7398fe904967f002268e14d48f6e226a15f0333997aaa37ce7b",
         "height": "12812680",
@@ -152,32 +160,39 @@ This Field returns the details of the block.
   }
 }
 ```
+
 ### GetBlockByHeight
+
 This Field returns the finalized block given the height.
-If none of the blocks at the given height are finalized (either directly or indirectly), 
+If none of the blocks at the given height are finalized (either directly or indirectly),
 then returns an empty result.
 
 **Query Parameters**
-* height: the block height(If no height parameter provided,returns the latest finalized block)
+
+- height: the block height(If no height parameter provided,returns the latest finalized block)
 
 **Fields**
 
 Similar to the returns of the GetBlock field
 
 ### GetEenpByHeight
+
 this field return the information of the elite edge node
 
 **Query Parameters**
-* height: the block height,optional,if empty,will
-use the latest finalized block height.
+
+- height: the block height,optional,if empty,will
+  use the latest finalized block height.
 
 **Fields**
-* BlockHashEenpPairs
-  * HeightList
-  * BlockHash
-  * EENs
+
+- BlockHashEenpPairs
+  - HeightList
+  - BlockHash
+  - EENs
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -194,7 +209,9 @@ use the latest finalized block height.
   }
 }
 ```
+
 **Response**
+
 ```shell
 {
   "data": {
@@ -221,19 +238,22 @@ use the latest finalized block height.
 ```
 
 ### GetGcpByHeight
+
 this field return the information of the guardian node
 **Query Parameters**
-* height: the block height,optional,if empty,will
+
+- height: the block height,optional,if empty,will
   use the latest finalized block height.
 
 **Fields**
-* BlockHashGcpPairs
-  * BlockHash
-  * Gcp
-  * HeightList
 
+- BlockHashGcpPairs
+  - BlockHash
+  - Gcp
+  - HeightList
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -253,7 +273,9 @@ this field return the information of the guardian node
   }
 }
 ```
+
 **Response**
+
 ```shell
 {
   "data": {
@@ -283,9 +305,11 @@ this field return the information of the guardian node
 ```
 
 ### GetPendingTransactions
-* tx_hashes : the hashes of the transactions pending in the mempool*
+
+- tx_hashes : the hashes of the transactions pending in the mempool\*
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -295,7 +319,9 @@ this field return the information of the guardian node
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {
@@ -309,20 +335,24 @@ this field return the information of the guardian node
 ```
 
 ### GetStakeRewardDistributionByHeight
+
 this field return the information of the node stake split rule
 **Query Parameters**
-* height: the block height,optional,if empty,will
+
+- height: the block height,optional,if empty,will
   use the latest finalized block height.
 
 **Fields**
-* BlockHashStakeRewardDistributionRuleSetPairs
-  * BlockHash
-  * StakeRewardDistributionRuleSet
-    * Beneficiary
-    * SplitBasisPoint
-    * StakeHolder
-    
+
+- BlockHashStakeRewardDistributionRuleSetPairs
+  - BlockHash
+  - StakeRewardDistributionRuleSet
+    - Beneficiary
+    - SplitBasisPoint
+    - StakeHolder
+
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -339,6 +369,7 @@ this field return the information of the node stake split rule
   }
 }
 ```
+
 ```shell
 {
   "data": {
@@ -362,22 +393,26 @@ this field return the information of the node stake split rule
   }
 }
 ```
+
 ### GetStatus
+
 This field return the status of the guardian node run by theta data
-* current_height
-* address
-* genesis_block_hash
-* chain_id
-* current_epoch
-* current_time
-* latest_finalized_block_epoch
-* latest_finalized_block_height
-* latest_finalized_block_hash
-* latest_finalized_block_time
-* peer_id
-* syncing
+
+- current_height
+- address
+- genesis_block_hash
+- chain_id
+- current_epoch
+- current_time
+- latest_finalized_block_epoch
+- latest_finalized_block_height
+- latest_finalized_block_hash
+- latest_finalized_block_time
+- peer_id
+- syncing
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -398,7 +433,9 @@ This field return the status of the guardian node run by theta data
   }
 }
 ```
-***Response***
+
+**_Response_**
+
 ```json
 {
   "data": {
@@ -423,17 +460,21 @@ This field return the status of the guardian node run by theta data
 ```
 
 ### GetTransaction
+
 This field returns the detail of the transaction by hash.
 **Query Parameters**
-* hash: the transaction hash*
+
+- hash: the transaction hash\*
 
 **Fields**
-* block_hash: hash of the block that contains the transaction
-* block_height: height of the block that contains the transaction
-* hash: the hash of the transaction itself
-* transaction: the details of the transaction
+
+- block_hash: hash of the block that contains the transaction
+- block_height: height of the block that contains the transaction
+- hash: the hash of the transaction itself
+- transaction: the details of the transaction
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -447,7 +488,9 @@ This field returns the detail of the transaction by hash.
   }
 }
 ```
+
 **Response**
+
 ```json
 {
   "data": {
@@ -464,22 +507,25 @@ This field returns the detail of the transaction by hash.
 }
 ```
 
-
 ### GetVcpByHeight
+
 this field return the information of the validator node
 **Query Parameters**
-* height: the block height,optional,if empty,will
+
+- height: the block height,optional,if empty,will
   use the latest finalized block height.
-  
+
 **Fields**
-* BlockHashVcpPairs
-  * BlockHash
-  * HeightList
-  * Vcp
-    * BlockHash
-    * SortedCandidates
+
+- BlockHashVcpPairs
+  - BlockHash
+  - HeightList
+  - Vcp
+    - BlockHash
+    - SortedCandidates
 
 **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -500,7 +546,9 @@ this field return the information of the validator node
   }
 }
 ```
+
 **Response**
+
 ```shell
 {
   "data": {
@@ -518,7 +566,7 @@ this field return the information of the validator node
             "Vcp": {
               "BlockHash": null,
               "SortedCandidates": [
-                { 
+                {
                   "Holder": "0x80eab22e27d4b94511f5906484369b868d6552d2"
                 },
                 ...
@@ -533,10 +581,12 @@ this field return the information of the validator node
 ```
 
 ### GetVersion
-* version :  the version number
-* git_hash :  the git commit hash of the code base
-* timestamp :  the build timestamp
-**Example**
+
+- version : the version number
+- git_hash : the git commit hash of the code base
+- timestamp : the build timestamp
+  **Example**
+
 ```graphql
 {
   ThetaRpc {
@@ -548,7 +598,9 @@ this field return the information of the validator node
   }
 }
 ```
-***Response***
+
+**_Response_**
+
 ```json
 {
   "data": {
@@ -562,4 +614,3 @@ this field return the information of the validator node
   }
 }
 ```
-

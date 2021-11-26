@@ -1,4 +1,5 @@
 ## Description
+
 Theta data analyse server and graphql api server.
 
 ## Installation
@@ -6,12 +7,14 @@ Theta data analyse server and graphql api server.
 ```bash
 $ npm install
 ```
+
 ## Config
+
 ```bash
 # edit file in config/test.json and replace with your own prams.
 {
   "THETA_DATA_DB": {
-    "host": "replace with your own",     
+    "host": "replace with your own",
     "port": "replace with your own",
     "username": "replace with your own",
     "password": "replace with your own",
@@ -50,15 +53,19 @@ $ npm run start:dev
 ```
 
 ## PlayGround
+
 you can then open your web browser and navigate to http://localhost:3000 (host and port may vary depending on your configuration). You will then see the GraphQL playground.
 
 ![avatar](https://github.com/larryro/image/blob/main/playground_20211101112605.png?raw=true)
+
 ## Test
+
 ```bash
 $ npm run test
 ```
 
 ## Build
+
 ```bash
 # build
 $ npm run build
@@ -71,7 +78,9 @@ $ node dist/analyse
 ```
 
 ## Contact
+
 contact@thetadata.io
 
 ## License
+
 The Theta Data Api is licensed under the [MIT License](https://opensource.org/licenses/MIT).

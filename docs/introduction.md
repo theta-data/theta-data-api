@@ -1,5 +1,7 @@
 # Introduction
+
 ## What is Theta Data
+
 Theta Data is a Data Explorer and Analytics Platform for Theta Network.
 It collects data from Guardian Node, performs analysis and provides data and analysis result through convenient Graphql interfaces.
 Users can access the data with simple statements and queries.
@@ -19,14 +21,16 @@ The below example shows the difference between a traditional interface and Theta
 ### Example of traditional data interface
 
 1. Get the latest block height with js sdk
+
 ```javascript
-const provider = new thetajs.providers.HttpProvider();
-const blockHeight = await provider.getBlockNumber();
+const provider = new thetajs.providers.HttpProvider()
+const blockHeight = await provider.getBlockNumber()
 ```
 
 2. Get Theta staking amount through browser interface
+
 ```shell
-// Request 
+// Request
 curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
 
 // Result
@@ -41,8 +45,9 @@ curl https://explorer.thetatoken.org:8443/api/stake/totalAmount
 ```
 
 3. Get the supply and circulation of Theta with explorer api
+
 ```shell
-// Request 
+// Request
 curl https://explorer.thetatoken.org:8443/api/supply/theta
 
 // Result
@@ -53,8 +58,9 @@ curl https://explorer.thetatoken.org:8443/api/supply/theta
 ```
 
 4. Call explorer api again to get the supply and circulation of theta fuel
+
 ```shell
-// Request 
+// Request
 curl https://explorer.thetatoken.org:8443/api/supply/tfuel
 
 // Result
@@ -65,12 +71,12 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
 
 We can see from above, in order to get the basic data, we need to call 3 different APIs. These APIs are from different source, which makes them difficult to maintain in our own program.
 
-
 ### Example of Theta Data API
 
 With Theta Data, all the data above can be retrieve with one single Graphql statement and one request.
 
 Request:
+
 ```graphql
 {
   MarketInformation {
@@ -97,6 +103,7 @@ Request:
 ```
 
 Response:
+
 ```json
 {
   "data": {
@@ -126,11 +133,9 @@ Response:
 
 It is also worth mentioning that Theta Data only returns the data you specify in the query statement. No redundant fields will be returned.
 
-
 ## Data source and service stability
 
-Since the whole project is open sourced, the data source  can be audited through the [source code](https://github.com/theta-data/theta-data-api).
-
+Since the whole project is open sourced, the data source can be audited through the [source code](https://github.com/theta-data/theta-data-api).
 
 Except for market-related data which is obtained from [Coinmarketcap](https://coinmarketcap.com/), all our data is obtained from Guardian Node. Therefore, our data service is independent from any other third-party data services.
 
