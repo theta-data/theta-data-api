@@ -80,11 +80,11 @@ Request:
 ```graphql
 {
   MarketInformation {
-    theta {
+    Theta {
       circulating_supply
       total_supply
     }
-    theta_fuel {
+    ThetaFuel {
       circulating_supply
       total_supply
     }
