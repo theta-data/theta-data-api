@@ -1,12 +1,12 @@
 ## Inspiration
 受益于区块链的公共账本，我们可以基于公开账本上的数据做一些简单分析就可以
 得到很多区块链的运行数据，包括质押量，合约活跃度，个人账户余额和质押奖励等。
-在目前的theta生态上面，已经有了非常多的相关数据获取渠道，包括
+在目前的Theta生态上面，已经有了非常多的相关数据获取渠道，包括
 * theta团队提供出来的[explore数据接口](https://docs.thetatoken.org/docs/explorer-overview) 和  [js sdk](https://docs.thetatoken.org/docs/theta-js-sdk-overview) 
 * [guardianmonitor](https://guardianmonitor.io) 提供的节点统计，质押数据，守护节点状态统计
 * [thetaboard](https://thetaboard.io/) 提供的市场行情数据和账户余额以及质押奖励统计
 * [theta scan](http://www.thetascan.io/document/) 提供的历史市值，历史行情，以及钱包账户，区块详情等数据
-* 其他等等....
+
 
 尽管有了这些数据获取渠道，但是目前对社区的开发者，还没有一个综合性，全面的同时又足够简单进行查询的数据解决方案，
 我们希望给开发者提供一种非常简单友好的方式查询所有他需要的关于theta的数据。
@@ -22,7 +22,7 @@
 使用到的技术栈包括这些：
 * 前端：React, Material UI
 * 后端：Graphql, Typescript, Nest.js, Mysql , Redis, Nginx
-* 云服务器 : Aws Signapore
+* 云服务器 : Aws Singapore
 * 发布：Github CI&CD
 
 
@@ -37,7 +37,7 @@
 3. 形成了一套简单的，快捷的新数据开发接入流程
 
 ## What we learned
-对graphql有了更深的理解，对theta网络的rpc接口更加熟悉
+对graphql有了更深的理解，对Theta网络的rpc接口更加熟悉
 
 ## What's next for Theta Data 
 * 进一步提升数据的丰富度，让覆盖的数据能够更加的全面。 
