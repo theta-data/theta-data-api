@@ -61,7 +61,7 @@ Day-based statistics
 {
   "data": {
     "TransactionsStatistics": {
-      "by_date": [
+      "ByDate": [
         {
           "active_wallet": 252,
           "block_number": 579,

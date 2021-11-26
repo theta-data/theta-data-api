@@ -47,7 +47,7 @@ Statistics on smart contract related calls
 {
   "data": {
     "SmartContractStatistics": {
-      "call_rank": [
+      "CallRank": [
         {
           "contract_address": "0x14ca082c412bf5530aadb07d54aaa64b6e205a74",
           "call_times": 32520,
