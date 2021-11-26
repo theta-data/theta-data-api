@@ -16,20 +16,14 @@
     /> -->
   </head>
   <body>
-    <nav>
-<!--      <a href="#/">EN</a>-->
-<!--      <a href="#/chs/">中文</a>-->
-    </nav>
+    <!-- <nav>
+     <a href="#/">EN</a>
+     <a href="#/chs/">中文</a>
+    </nav> -->
     <div id="app"></div>
     <script>
+      const isLocal = window.location.hostname === 'localhost'
       const search = {
-        // search: 'auto', // 默认值
-
-        // search: [
-        //   '/', // => /README.md
-        //   '/chs/' // => /zh-cn/README.md
-        // ],
-
         // 完整配置参数
         maxAge: 86400000, // 过期时间，单位毫秒，默认一天
         paths: 'auto', // or 'auto'
@@ -87,20 +81,20 @@
         name: 'Theta Data Docs',
         repo: 'https://www.github.com/theta-data/theta-data-api',
         loadSidebar: true,
-        subMaxLevel:2,
-        coverpage:false,
+        subMaxLevel: 2,
+        coverpage: false,
         // logo: '/img/logo.png',
         repo: 'theta-data/theta-data-api',
         auto2top: true,
         homepage: 'introduction.md',
         nameLink: {
-          '/chs/': '#/chs/',
-          '/': '#/'
+          '/chs/': isLocal ? '#/chs/' : '/chs/',
+          '/': isLocal ? '#/' : '/'
         },
         onlyCover: true,
         copyCode,
         // themeColor: '#65EE85',
-        // routerMode: 'history',
+        routerMode: isLocal ? 'hash' : 'history',
         search
       }
     </script>
