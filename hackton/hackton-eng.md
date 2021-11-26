@@ -28,7 +28,7 @@ The biggest challenge is promotion. Our main target users are developers, which 
 Consequently, we have not received enough feedback from users so that we can furthur improve our product.
 
 ## Accomplishments that we're proud of
-1. The current data covers all official data interfaces, including rpc and explore. On top of that, we also add smart contracts, transaction volume, pledge revenue statistics and other data statistics that are provided by the official so far.
+1. The current data covers all official data interfaces, including rpc and explore. On top of that, we also add smart contracts, transaction volume, pledge revenue statistics and other data statistics that are not provided by the official so far.
 2. Except for the market-related data, all data are obtained from our own daemon node query and analysis, without any third-party reliance.
 3. Our product is well-documented for developers.
 4. We also built a simple, quick access for new data.
