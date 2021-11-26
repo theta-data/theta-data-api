@@ -2,7 +2,7 @@
 
 Statistics on smart contract related calls
 
-## call_rank
+## CallRank
 
 **Parameters**
 

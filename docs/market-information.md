@@ -1,7 +1,7 @@
 # Market Information
 
 Data related to market information from [https://coinmarketcap.com/](https://coinmarketcap.com/)
-## theta
+## Theta
 
 **Fields**
 - circulating_supply : Circulation of theta
@@ -12,7 +12,7 @@ Data related to market information from [https://coinmarketcap.com/](https://coi
 - total_supply : Total supply of theta
 - volume_24h : Theta's 24-hour trading volume
 
-## theta_fuel
+## ThetaFuel
 
 **Fields**
 - circulating_supply : Circulation of theta fuel

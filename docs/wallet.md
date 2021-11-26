@@ -1,6 +1,6 @@
 # Wallet
 
-## balance
+## Balance
 
 Return the balance information of the relevant wallet
 **Query Parameters**
@@ -21,7 +21,7 @@ Return the balance information of the relevant wallet
 ```graphql
 {
   Wallet {
-    balance(wallet_address: "0xdc5a5c776b1ee57f16454094f0405ef7d7bdeb76") {
+    Balance(wallet_address: "0xdc5a5c776b1ee57f16454094f0405ef7d7bdeb76") {
       stake_to_elite_node {
         amount
         fiat_currency_value {
