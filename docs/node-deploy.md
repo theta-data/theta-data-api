@@ -4,8 +4,7 @@ Theta data analyse server and graphql api server.
 
 ## Clone
 ```bash
-git clone https://github.com/theta-data/theta-data-api.git
-cd theta-data-api
+git clone https://github.com/theta-data/theta-data-api.git && cd theta-data-api
 ```
 
 ## Installation

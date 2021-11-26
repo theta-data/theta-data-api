@@ -91,7 +91,7 @@ Return the balance information of the relevant wallet
 {
   "data": {
     "Wallet": {
-      "balance": {
+      "Balance": {
         "stake_to_elite_node": [
           {
             "amount": 234464.7168383758,
