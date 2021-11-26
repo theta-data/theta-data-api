@@ -19,7 +19,7 @@ import { request, gql } from 'graphql-request'
 const query = gql`
   {
     MarketInformation {
-      theta {
+      Theta {
         name
         market_cap
         total_supply
