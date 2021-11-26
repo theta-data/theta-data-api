@@ -2,10 +2,11 @@
 
 Some statistical results on the transaction records on the blockchain
 
-### by_date
+## ByDate
 
 Day-based statistics
 
+**Fields**
 - active_wallet : Number of active wallets
 - block_number : Block height
 - coin_base_transaction : the amount of coinbase transaction, for validator/guardian reward
@@ -30,7 +31,7 @@ Day-based statistics
 ```graphql
 {
   TransactionsStatistics {
-    by_date {
+    ByDate {
       active_wallet
       block_number
       coin_base_transaction
@@ -87,8 +88,9 @@ Day-based statistics
 }
 ```
 
-### by_hour
-
+## ByHour
 Hour-based statistics
+
 **Fields**
+
 Similar to the subfields of the by_date field

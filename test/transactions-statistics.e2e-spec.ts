@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
         query:
           '{\n' +
           '  TransactionsStatistics {\n' +
-          '    by_date {\n' +
+          '    ByDate {\n' +
           '      active_wallet\n' +
           '      block_number\n' +
           '      coin_base_transaction\n' +
@@ -48,7 +48,7 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.TransactionsStatistics.by_date[0]).toHaveProperty('active_wallet')
+        expect(res.body.data.TransactionsStatistics.ByDate[0]).toHaveProperty('active_wallet')
         // done()
       })
       .end(function (err, res) {
@@ -64,7 +64,7 @@ describe('AppController (e2e)', () => {
         query:
           '{\n' +
           '  TransactionsStatistics {\n' +
-          '    by_hour {\n' +
+          '    ByHour {\n' +
           '      coin_base_transaction\n' +
           '      hour\n' +
           '      active_wallet\n' +
@@ -90,7 +90,7 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.TransactionsStatistics.by_hour[0]).toHaveProperty('active_wallet')
+        expect(res.body.data.TransactionsStatistics.ByHour[0]).toHaveProperty('active_wallet')
         // done()
       })
       .end(function (err, res) {

@@ -22,7 +22,7 @@ describe('AppController (e2e)', () => {
       .send({
         query:
           ' {SmartContractStatistics {\n' +
-          '    call_rank(take: 10, rank_by: call_times) {\n' +
+          '    CallRank(take: 10, rank_by: call_times) {\n' +
           '      call_times\n' +
           '      contract_address\n' +
           '      last_24h_call_times\n' +
@@ -35,7 +35,7 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.SmartContractStatistics).toHaveProperty('call_rank')
+        expect(res.body.data.SmartContractStatistics).toHaveProperty('CallRank')
         // done()
       })
       .end(function (err, res) {

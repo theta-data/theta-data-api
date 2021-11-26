@@ -1,6 +1,6 @@
 # ThetaRpc
 
-### GetAccount
+## GetAccount
 
 This Field returns the details of the account.
 
@@ -52,7 +52,7 @@ This Field returns the details of the account.
 }
 ```
 
-### GetBlock
+## GetBlock
 
 This Field returns the details of the block.
 
@@ -161,7 +161,7 @@ This Field returns the details of the block.
 }
 ```
 
-### GetBlockByHeight
+## GetBlockByHeight
 
 This Field returns the finalized block given the height.
 If none of the blocks at the given height are finalized (either directly or indirectly),
@@ -175,7 +175,7 @@ then returns an empty result.
 
 Similar to the returns of the GetBlock field
 
-### GetEenpByHeight
+## GetEenpByHeight
 
 this field return the information of the elite edge node
 
@@ -237,7 +237,7 @@ this field return the information of the elite edge node
 }
 ```
 
-### GetGcpByHeight
+## GetGcpByHeight
 
 this field return the information of the guardian node
 **Query Parameters**
@@ -304,7 +304,7 @@ this field return the information of the guardian node
 }
 ```
 
-### GetPendingTransactions
+## GetPendingTransactions
 
 - tx_hashes : the hashes of the transactions pending in the mempool\*
 
@@ -334,7 +334,7 @@ this field return the information of the guardian node
 }
 ```
 
-### GetStakeRewardDistributionByHeight
+## GetStakeRewardDistributionByHeight
 
 this field return the information of the node stake split rule
 **Query Parameters**
@@ -394,7 +394,7 @@ this field return the information of the node stake split rule
 }
 ```
 
-### GetStatus
+## GetStatus
 
 This field return the status of the guardian node run by theta data
 
@@ -459,7 +459,7 @@ This field return the status of the guardian node run by theta data
 }
 ```
 
-### GetTransaction
+## GetTransaction
 
 This field returns the detail of the transaction by hash.
 **Query Parameters**
@@ -507,7 +507,7 @@ This field returns the detail of the transaction by hash.
 }
 ```
 
-### GetVcpByHeight
+## GetVcpByHeight
 
 this field return the information of the validator node
 **Query Parameters**
@@ -580,7 +580,7 @@ this field return the information of the validator node
 
 ```
 
-### GetVersion
+## GetVersion
 
 - version : the version number
 - git_hash : the git commit hash of the code base

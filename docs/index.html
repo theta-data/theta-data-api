@@ -17,8 +17,8 @@
   </head>
   <body>
     <nav>
-      <a href="#/">EN</a>
-      <a href="#/chs/">中文</a>
+<!--      <a href="#/">EN</a>-->
+<!--      <a href="#/chs/">中文</a>-->
     </nav>
     <div id="app"></div>
     <script>
@@ -50,7 +50,7 @@
         },
 
         // 搜索标题的最大层级, 1 - 6
-        depth: 2,
+        depth: 3,
 
         hideOtherSidebarContent: false, // 是否隐藏其他侧边栏内容
 
@@ -87,7 +87,8 @@
         name: 'Theta Data Docs',
         repo: 'https://www.github.com/theta-data/theta-data-api',
         loadSidebar: true,
-        coverpage: ['/', '/chs/'],
+        subMaxLevel:2,
+        coverpage:false,
         // logo: '/img/logo.png',
         repo: 'theta-data/theta-data-api',
         auto2top: true,

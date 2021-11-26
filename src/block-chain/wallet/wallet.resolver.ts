@@ -13,7 +13,7 @@ export class WalletResolver {
   }
 
   @ResolveField(() => BalanceModel)
-  async balance(@Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string) {
+  async Balance(@Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string) {
     // console.log(await this.walletService.getALlBalance(wallet_address))
     const resInfo = await this.walletService.getALlBalance(wallet_address.toLocaleLowerCase())
     console.log(resInfo.total)

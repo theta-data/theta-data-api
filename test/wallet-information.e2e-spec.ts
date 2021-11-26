@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
         query:
           ' {\n' +
           '  Wallet {\n' +
-          '    balance(wallet_address: "0xdc5a5c776b1ee57f16454094f0405ef7d7bdeb76") {\n' +
+          '    Balance(wallet_address: "0xdc5a5c776b1ee57f16454094f0405ef7d7bdeb76") {\n' +
           '      stake_to_elite_node {\n' +
           '        amount\n' +
           '        fiat_currency_value {\n' +
@@ -88,7 +88,7 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.Wallet.balance).toHaveProperty('theta')
+        expect(res.body.data.Wallet.Balance).toHaveProperty('theta')
         // done()
       })
       .end(function (err, res) {

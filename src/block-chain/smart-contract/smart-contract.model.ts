@@ -4,7 +4,7 @@ import { SmartContractEntity } from './smart-contract.entity'
 @ObjectType({ description: 'Statistics on smart contract related calls' })
 export class SmartContractStatisticsType {
   @Field(() => [SmartContractEntity])
-  call_rank: Array<SmartContractEntity>
+  CallRank: Array<SmartContractEntity>
 }
 
 export enum RankByEnum {

@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
         query:
           '{' +
           '  MarketInformation {\n' +
-          '    theta {\n' +
+          '    Theta {\n' +
           '      circulating_supply\n' +
           '      market_cap\n' +
           '      last_updated\n' +
@@ -32,7 +32,7 @@ describe('AppController (e2e)', () => {
           '      total_supply\n' +
           '      volume_24h\n' +
           '    }\n' +
-          '    theta_fuel {\n' +
+          '    ThetaFuel {\n' +
           '      circulating_supply\n' +
           '      last_updated\n' +
           '      name\n' +
@@ -46,8 +46,8 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
-        expect(res.body.data.MarketInformation).toHaveProperty('theta')
-        expect(res.body.data.MarketInformation).toHaveProperty('theta_fuel')
+        expect(res.body.data.MarketInformation).toHaveProperty('Theta')
+        expect(res.body.data.MarketInformation).toHaveProperty('ThetaFuel')
         // done()
       })
       .end(function (err, res) {

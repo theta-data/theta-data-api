@@ -13,7 +13,7 @@ export class SmartContractResolver {
   }
 
   @ResolveField()
-  async call_rank(
+  async CallRank(
     @Args('rank_by', { type: () => RankByEnum, nullable: true }) rank_by: RankByEnum,
     @Args('take', { type: () => GraphQLInt, nullable: false, defaultValue: 500 }) take: number
   ) {

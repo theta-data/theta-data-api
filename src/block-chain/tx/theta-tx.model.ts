@@ -5,10 +5,10 @@ import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 @ObjectType()
 export class ThetaTransactionStatisticsType {
   @Field(() => [ThetaTxNumByDateModel])
-  by_date: Array<ThetaTxNumByDateModel>
+  ByDate: Array<ThetaTxNumByDateModel>
 
   @Field(() => [ThetaTxNumByHoursEntity])
-  by_hour: ThetaTxNumByHoursEntity
+  ByHour: ThetaTxNumByHoursEntity
 }
 
 @ObjectType()

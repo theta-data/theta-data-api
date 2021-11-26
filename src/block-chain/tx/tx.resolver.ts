@@ -12,12 +12,12 @@ export class TxResolver {
   }
 
   @ResolveField()
-  async by_date() {
+  async ByDate() {
     return await this.txService.getThetaDataByDate()
   }
 
   @ResolveField()
-  async by_hour() {
+  async ByHour() {
     return await this.txService.getThetaByHour()
   }
 }

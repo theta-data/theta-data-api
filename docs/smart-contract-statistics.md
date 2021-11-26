@@ -2,7 +2,7 @@
 
 Statistics on smart contract related calls
 
-### call_rank
+## call_rank
 
 **Parameters**
 
@@ -21,14 +21,14 @@ Statistics on smart contract related calls
 - record : Call log
   - timestamp : Calling time
 
-## 示例
+**Example**
 
-**请求：**
+**Request**
 
 ```graphql
 {
   SmartContractStatistics {
-    call_rank(rank_by: last_24h_call_times, take: 1) {
+    CallRank(rank_by: last_24h_call_times, take: 1) {
       contract_address
       call_times
       last_24h_call_times
@@ -41,7 +41,7 @@ Statistics on smart contract related calls
 }
 ```
 
-**返回**
+**Response**
 
 ```shell
 {

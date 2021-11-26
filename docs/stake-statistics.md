@@ -16,7 +16,7 @@ Return to statistics related to token pledges
 - total_validator_stake_amount ： Total number of theta tokens pledged to the validator nodes
 - total_validator_node_number ： Total number of validator nodes
 
-## Example
+**Example**
 
 **Request**
 

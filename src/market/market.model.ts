@@ -27,8 +27,8 @@ export class TokenMarketInformationType {
 @ObjectType()
 export class MarketInformationType {
   @Field(() => TokenMarketInformationType)
-  theta: TokenMarketInformationType
+  Theta: TokenMarketInformationType
 
   @Field(() => TokenMarketInformationType)
-  theta_fuel: TokenMarketInformationType
+  ThetaFuel: TokenMarketInformationType
 }

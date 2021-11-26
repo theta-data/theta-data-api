@@ -19,12 +19,12 @@ export class MarketResolver {
   }
 
   @ResolveField()
-  async theta() {
+  async Theta() {
     return this.marketService.getThetaMarketInfo()
   }
 
   @ResolveField()
-  async theta_fuel() {
+  async ThetaFuel() {
     return this.marketService.getThetaFuelMarketInfo()
   }
 }

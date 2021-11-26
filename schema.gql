@@ -25,8 +25,8 @@ type ThetaTxNumByHoursEntity {
 }
 
 type ThetaTransactionStatisticsType {
-  by_date: [ThetaTxNumByDateModel!]!
-  by_hour: [ThetaTxNumByHoursEntity!]!
+  ByDate: [ThetaTxNumByDateModel!]!
+  ByHour: [ThetaTxNumByHoursEntity!]!
 }
 
 type ThetaTxNumByDateModel {
@@ -154,8 +154,8 @@ type TokenMarketInformationType {
 }
 
 type MarketInformationType {
-  theta: TokenMarketInformationType!
-  theta_fuel: TokenMarketInformationType!
+  Theta: TokenMarketInformationType!
+  ThetaFuel: TokenMarketInformationType!
 }
 
 type CandidateStakeType {
@@ -494,7 +494,7 @@ type SmartContractEntity {
 
 """Statistics on smart contract related calls"""
 type SmartContractStatisticsType {
-  call_rank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
+  CallRank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
 }
 
 enum RankByEnum {
@@ -504,7 +504,7 @@ enum RankByEnum {
 }
 
 type WalletModel {
-  balance(wallet_address: String!): BalanceModel!
+  Balance(wallet_address: String!): BalanceModel!
 }
 
 type Query {

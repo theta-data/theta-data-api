@@ -5,8 +5,9 @@
 https://thetadata.io/graphql/
 
 ## Install
-
+```bash
 npm add graphql-request graphql
+```
 
 ## Quickstart
 

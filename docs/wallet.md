@@ -1,6 +1,6 @@
 # Wallet
 
-### balance
+## balance
 
 Return the balance information of the relevant wallet
 **Query Parameters**
