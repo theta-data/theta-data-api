@@ -69,7 +69,7 @@ curl https://explorer.thetatoken.org:8443/api/supply/tfuel
 }
 ```
 
-We can see from above, in order to get the basic data, we need to call 3 different APIs. These APIs are from different source, which makes them difficult to maintain in our own program.
+We can see from above, in order to get the basic data, we need to call 4 different APIs. These APIs are from different source, which makes them difficult to maintain in our own program.
 
 ### Example of Theta Data API
 
