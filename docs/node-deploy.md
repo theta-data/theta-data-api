@@ -32,7 +32,7 @@ $ npm install
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
+  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",//you can  replace with your own guardian node rpc interface
   "LOG_PATH": "replace with your own",
   "REDIS": {
     "host": "replace with your own",
