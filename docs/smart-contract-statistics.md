@@ -9,8 +9,8 @@ Statistics on smart contract calls
 - rank_by: the order of the returned data
   - call_times: the returned data is sorted descendingly by the total number of calls of all time
   - last_24h_call_times: the returned data is sorted descendingly by the number of calls in the last 24 hours
-  - last_seven_days_call_times: The returned data is sorted descendingly by the number of calls in the last 7 days
-- take: Return the number of records
+  - last_seven_days_call_times: the returned data is sorted descendingly by the number of calls in the last 7 days
+- take: the number of records
 
 **Fields**
 
