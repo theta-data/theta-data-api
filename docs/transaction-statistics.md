@@ -1,30 +1,30 @@
 # TransactionsStatistics
 
-Some statistical results on the transaction records on the blockchain
+Statistics of transaction records on the blockchain
 
 ## ByDate
 
-Day-based statistics
+Daily statistics
 
 **Fields**
-- active_wallet : Number of active wallets
-- block_number : Block height
-- coin_base_transaction : the amount of coinbase transaction, for validator/guardian reward
-- date : Date of statistics
-- deposit_stake_transaction : the amount of deposit stake transaction, for depositing stake to validators/guardians
-- latest_block_height : The latest block height attributed to the day
-- month : Month of statistics
-- release_fund_transaction : the amount of release fund transaction, for off-chain micropayment
-- reserve_fund_transaction : the amount of reserve fund transaction, for off-chain micropayment
-- send_transaction : the amount of send transaction, for sending tokens among accounts
-- service_payment_transaction : the amount of service payment transaction, for off-chain micropayment
-- slash_transaction : the amount of slash transaction, for slashing malicious actors
-- smart_contract_transaction : the amount of smart contract transaction, for general purpose smart contract
-- split_rule_transaction : the amount of split rule transaction, for the "split rule" special smart contract
-- theta_fuel_burnt: the amount of theta fuel burnt for transactions.
-- timestamp : Timestamp of the latest block of the day
-- withdraw_stake_transaction : the amount of withdraw stake transaction, for withdrawing stake from validators/guardians
-- year : Year of statistics
+- active_wallet: number of active wallets
+- block_number: block height
+- coin_base_transaction: the amount of coinbase transaction, for validator/guardian reward
+- date: date of statistics
+- deposit_stake_transaction: the amount of deposit stake transaction, for deposit stake to validators/guardians
+- latest_block_height: the latest block height attributed to date
+- month: month of statistics
+- release_fund_transaction: the number of release fund transactions, for off-chain micropayment
+- reserve_fund_transaction: the number of reserve fund transactions, for off-chain micropayment
+- send_transaction: the number of send transactions, for sending tokens among accounts
+- service_payment_transaction: the number of service payment transactions, for off-chain micropayment
+- slash_transaction: the number of slash transactions, for slashing malicious actors
+- smart_contract_transaction: the number of smart contract transactions, for general purpose smart contract
+- split_rule_transaction: the number of split rule transactions, for the "split rule" special smart contract
+- theta_fuel_burnt: the number of theta fuel burnt for transactions.
+- timestamp: timestamp of the latest block of the day
+- withdraw_stake_transaction: the number of withdraw stake transactions, for withdrawing stake from validators/guardians
+- year: year of statistics
 
 **For Example**
 
@@ -89,8 +89,9 @@ Day-based statistics
 ```
 
 ## ByHour
-Hour-based statistics
+
+Hourly statistics
 
 **Fields**
 
-Similar to the subfields of the by_date field
+Similar to the subfields of the `by_date` field

@@ -32,7 +32,7 @@ $ npm install
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",//you can  replace with your own guardian node rpc interface
+  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",  //replace with your own guardian node rpc interface
   "LOG_PATH": "replace with your own",
   "REDIS": {
     "host": "replace with your own",
@@ -42,7 +42,7 @@ $ npm install
 
 ```
 
-## Running the app
+## Start the app
 
 ```bash
 # graphql api development
@@ -59,7 +59,7 @@ $ npm run start:dev
 
 ## PlayGround
 
-you can then open your web browser and navigate to http://localhost:3000 (host and port may vary depending on your configuration). You will then see the GraphQL playground.
+You can then open the browser and visit http://localhost:3000 (The host (`localhost`) and the port (`3000`) are defined in the config). You should see the GraphQL playground if the installation is correct.
 
 ![avatar](https://github.com/larryro/image/blob/main/playground_20211101112605.png?raw=true)
 
