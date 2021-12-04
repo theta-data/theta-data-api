@@ -1,25 +1,25 @@
 # SmartContractStatistics
 
-Statistics on smart contract related calls
+Statistics on smart contract calls
 
 ## CallRank
 
 **Parameters**
 
-- rank_by : Sorting method of the returned data
-  - call_times：The returned data is sorted from highest to lowest by the total number of calls
-  - last_24h_call_times ： The returned data is sorted from highest to lowest by the number of calls in the last 24 hours
-  - last_seven_days_call_times ： The returned data is sorted by the number of calls in the last 7 days from highest to lowest
-- take : Return the number of records
+- rank_by: the order of the returned data
+  - call_times: the returned data is sorted descendingly by the total number of calls of all time
+  - last_24h_call_times: the returned data is sorted descendingly by the number of calls in the last 24 hours
+  - last_seven_days_call_times: The returned data is sorted descendingly by the number of calls in the last 7 days
+- take: Return the number of records
 
 **Fields**
 
-- call_times ： Total number of smart contract calls
-- contract_address ： Address of the smart contract
-- last_24h_call_times ： Number of smart contract calls in the last 24 hours
-- last_seven_days_call_times：Number of smart contract calls in the last 7 days
-- record : Call log
-  - timestamp : Calling time
+- call_times: total number of smart contract calls
+- contract_address: address of the smart contract
+- last_24h_call_times: number of smart contract calls in the last 24 hours
+- last_seven_days_call_times: number of smart contract calls in the last 7 days
+- record: call log
+  - timestamp : calling time
 
 **Example**
 

@@ -2,7 +2,7 @@
 
 <!-- # Theta Data API -->
 
-> A Data Explorer and Analytics Platform for Theta Network
+> A Platform of Data Exploration and Analytics for Theta Network
 
 [GitHub](https://github.com/theta-data/theta-data-api/)
 [Get Started](/introduction)

@@ -2,13 +2,13 @@
 
 ## GetAccount
 
-This Field returns the details of the account.
+This field returns the details of account.
 
-- code : the hash of the smart contract bytecode (for smart contract accounts)
-- coins : the native token balance
-- reserved_funds : fund reserved for micropayment through the off-chain resource-oriented payment pool
-- root : the root hash of the data Merkle-Patricia trie (for smart contract accounts)
-- sequence : the current sequence number of the account
+- code: the hash of the smart contract bytecode (for smart contract accounts)
+- coins: the native token balance
+- reserved_funds: fund reserved for micropayment through the off-chain resource-oriented payment pool
+- root: the root hash of the data Merkle-Patricia trie (for smart contract accounts)
+- sequence: the current sequence number of the account
 
 #### Example
 
@@ -54,7 +54,7 @@ This Field returns the details of the account.
 
 ## GetBlock
 
-This Field returns the details of the block.
+This field returns the details of the block.
 
 **Query Parameters**
 
@@ -62,33 +62,33 @@ This Field returns the details of the block.
 
 **Fields**
 
-- chain_id : ID of the chain
-- epoch : epoch of the block
-- height : height of the block
-- parent : hash of the parent block
-- transactions_hash : root hash of the transaction Merkle-Patricia trie
-- state_hash : root hash of the state Merkle-Patricia trie
-- timestamp : timestamp when the block was proposed
-- proposer : address of the proposer validator
-- children : children blocks
-- hash : the block hash
-- transactions : json representation of the transactions contained in the block
-- raw : transaction details
-- type : type of the transaction (see the Transaction Types note below)
-  - TxCoinbase : coinbase transaction, for validator/guardian reward
-  - TxSlash : slash transaction, for slashing malicious actors
-  - TxSend : send transaction, for sending tokens among accounts
-  - TxReserveFund : reserve fund transaction, for off-chain micropayment
-  - TxReleaseFund : release fund transaction, for off-chain micropayment
-  - TxServicePayment : service payment transaction, for off-chain micropayment
-  - TxSplitRule : split rule transaction, for the "split rule" special smart contract
-  - TxSmartContract : smart contract transaction, for general purpose smart contract
-  - TxDepositStake : deposit stake transaction, for depositing stake to validators/guardians
-  - TxWithdrawStake : withdraw stake transaction, for withdrawing stake from validators/guardians
-  - TxDepositStakeV2 : v2 deposit stake transaction
-  - TxStakeRewardDistribution : transaction that specify the stake fee
-- hash : hash of the transaction
-- status : status of the block (see the Block Status note below)
+- chain_id: ID of the chain
+- epoch: epoch of the block
+- height: height of the block
+- parent: hash of the parent block
+- transactions_hash: root hash of the transaction Merkle-Patricia trie
+- state_hash: root hash of the state Merkle-Patricia trie
+- timestamp: timestamp when the block was proposed
+- proposer: address of the proposer validator
+- children: children blocks
+- hash: the block hash
+- transactions: the transactions in the block in json format
+- raw: transaction details
+- type: type of the transaction (see the Transaction Types note below)
+  - TxCoinbase: coinbase transaction, for validator/guardian reward
+  - TxSlash: slash transaction, for slashing malicious actors
+  - TxSend: send transaction, for sending tokens among accounts
+  - TxReserveFund: reserve fund transaction, for off-chain micropayment
+  - TxReleaseFund: release fund transaction, for off-chain micropayment
+  - TxServicePayment: service payment transaction, for off-chain micropayment
+  - TxSplitRule: split rule transaction, for the "split rule" special smart contract
+  - TxSmartContract: smart contract transaction, for general purpose smart contract
+  - TxDepositStake: deposit stake transaction, for deposit stake to validators/guardians
+  - TxWithdrawStake: withdraw stake transaction, for withdrawing stake from validators/guardians
+  - TxDepositStakeV2: v2 deposit stake transaction
+  - TxStakeRewardDistribution: transactions that specify the stake fee
+- hash: hash of the transaction
+- status: status of the block (see the Block Status note below)
   - pending
   - valid
   - invalid
@@ -163,26 +163,24 @@ This Field returns the details of the block.
 
 ## GetBlockByHeight
 
-This Field returns the finalized block given the height.
-If none of the blocks at the given height are finalized (either directly or indirectly),
-then returns an empty result.
+This field returns the finalized block given the height.
+If none of the blocks at the given height are finalized (either directly or indirectly), an empty result will be returned.
 
 **Query Parameters**
 
-- height: the block height(If no height parameter provided,returns the latest finalized block)
+- height: the block height (if no height parameter is provided, the latest finalized block will be returned)
 
 **Fields**
 
-Similar to the returns of the GetBlock field
+The result of this field is similar to that of the `GetBlock` field.
 
 ## GetEenpByHeight
 
-this field return the information of the elite edge node
+This field returns the information of the elite edge node.
 
 **Query Parameters**
 
-- height: the block height,optional,if empty,will
-  use the latest finalized block height.
+- height: the block height, optional. By default, the height of the latest finalized block will be returned.
 
 **Fields**
 
@@ -239,11 +237,11 @@ this field return the information of the elite edge node
 
 ## GetGcpByHeight
 
-this field return the information of the guardian node
+This field returns the information of the guardian node.
+
 **Query Parameters**
 
-- height: the block height,optional,if empty,will
-  use the latest finalized block height.
+- height: the block height, optional. By default, the height of the latest finalized block will be returned.
 
 **Fields**
 
@@ -306,7 +304,7 @@ this field return the information of the guardian node
 
 ## GetPendingTransactions
 
-- tx_hashes : the hashes of the transactions pending in the mempool\*
+- tx_hashes: the hashes of the transactions pending in the mempool\*
 
 **Example**
 
@@ -336,11 +334,11 @@ this field return the information of the guardian node
 
 ## GetStakeRewardDistributionByHeight
 
-this field return the information of the node stake split rule
+This field returns the information of the node stake split rule.
+
 **Query Parameters**
 
-- height: the block height,optional,if empty,will
-  use the latest finalized block height.
+- height: the block height, optional. By default, the height of the latest finalized block will be returned.
 
 **Fields**
 
@@ -396,7 +394,7 @@ this field return the information of the node stake split rule
 
 ## GetStatus
 
-This field return the status of the guardian node run by theta data
+This field returns the status of the guardian node run by theta data
 
 - current_height
 - address
@@ -462,6 +460,7 @@ This field return the status of the guardian node run by theta data
 ## GetTransaction
 
 This field returns the detail of the transaction by hash.
+
 **Query Parameters**
 
 - hash: the transaction hash\*
@@ -509,11 +508,11 @@ This field returns the detail of the transaction by hash.
 
 ## GetVcpByHeight
 
-this field return the information of the validator node
+This field returns the information of the validator node.
+
 **Query Parameters**
 
-- height: the block height,optional,if empty,will
-  use the latest finalized block height.
+- height: the block height, optional. By default, the height of the latest finalized block will be returned.
 
 **Fields**
 
@@ -582,9 +581,9 @@ this field return the information of the validator node
 
 ## GetVersion
 
-- version : the version number
-- git_hash : the git commit hash of the code base
-- timestamp : the build timestamp
+- version: version of the code
+- git_hash: the git commit hash of the code base
+- timestamp: the build timestamp
   **Example**
 
 ```graphql
