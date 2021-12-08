@@ -138,7 +138,7 @@ export class StakeService {
     })
   }
 
-  async updateGcpStatus(address: string, time: string) {
+  async updateGcpStatus(address: string, time: number) {
     await this.stakeRepository.update(
       { node_type: STAKE_NODE_TYPE_ENUM.guardian, holder: address },
       {
@@ -147,7 +147,7 @@ export class StakeService {
     )
   }
 
-  async updateEenpStatus(address: string, time: string) {
+  async updateEenpStatus(address: string, time: number) {
     await this.stakeRepository.update(
       { node_type: STAKE_NODE_TYPE_ENUM.edge_cache, holder: address },
       {

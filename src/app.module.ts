@@ -6,7 +6,6 @@ import { TxModule } from './block-chain/tx/tx.module'
 import { ScheduleModule } from '@nestjs/schedule'
 import { StakeModule } from './block-chain/stake/stake.module'
 import { MarketModule } from './market/market.module'
-import * as redisStore from 'cache-manager-redis-store'
 import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
@@ -15,17 +14,18 @@ import { ThrottlerModule } from '@nestjs/throttler'
 import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
 import { WalletModule } from './block-chain/wallet/wallet.module'
-
+import * as path from 'path'
+const root: string = path.resolve(__dirname, '../../')
 const config = require('config')
 
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () =>
-        Object.assign(
-          Object.assign(await getConnectionOptions('THETA_DATA'), config.get('THETA_DATA_DB')),
-          { entities: [join(__dirname, '**', '*.entity.{ts,js}')] }
-        )
+        Object.assign(Object.assign(await getConnectionOptions('THETA_DATA')), {
+          entities: [join(__dirname, '**', '*.entity.{ts,js}')],
+          database: `${root}/data/line.sqlite`
+        })
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
@@ -34,9 +34,9 @@ const config = require('config')
       context: ({ req, res }) => ({ req, res })
     }),
     CacheModule.register({
-      store: redisStore,
-      host: config.get('REDIS')['host'],
-      port: config.get('REDIS')['port']
+      // store: redisStore,
+      // host: config.get('REDIS')['host'],
+      // port: config.get('REDIS')['port']
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'playground'),

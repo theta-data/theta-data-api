@@ -8,16 +8,16 @@ import { StakeRewardEntity } from './stake-reward.entity'
 import { MarketService } from '../../market/market.service'
 import { WalletService } from '../wallet/wallet.service'
 // import config from 'config'
-import * as redisStore from 'cache-manager-redis-store'
+// import * as redisStore from 'cache-manager-redis-store'
 const config = require('config')
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([StakeEntity, StakeStatisticsEntity, StakeRewardEntity]),
     CacheModule.register({
-      store: redisStore,
-      host: config.get('REDIS')['host'],
-      port: config.get('REDIS')['port']
+      // store: redisStore,
+      // host: config.get('REDIS')['host'],
+      // port: config.get('REDIS')['port']
     })
   ],
   providers: [StakeService, StakeResolver, MarketService, WalletService],

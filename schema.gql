@@ -21,7 +21,7 @@ type ThetaTxNumByHoursEntity {
   withdraw_stake_transaction: Int!
   smart_contract_transaction: Int!
   latest_block_height: Int!
-  timestamp: String!
+  timestamp: Float!
 }
 
 type ThetaTransactionStatisticsType {
@@ -47,7 +47,7 @@ type ThetaTxNumByDateModel {
   withdraw_stake_transaction: Int!
   smart_contract_transaction: Int!
   latest_block_height: Int!
-  timestamp: String!
+  timestamp: Float!
 }
 
 type Stake {

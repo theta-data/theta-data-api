@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Field, registerEnumType } from '@nestjs/graphql'
+import { registerEnumType } from '@nestjs/graphql'
 export enum STAKE_TOKEN_TYPE_ENUM {
   theta_stake = 1,
   elite_node_stake
@@ -33,13 +33,10 @@ export class StakeRewardEntity {
   @Column({ type: 'bigint' })
   reward_height: number
 
-  @Field()
   @Column({
-    type: 'timestamp',
-    // default: '1970-01-01 00:00:01',
-    comment: '对应精确到小时的数据'
+    type: 'int'
   })
-  timestamp: string
+  timestamp: number
 
   @CreateDateColumn()
   create_date!: number

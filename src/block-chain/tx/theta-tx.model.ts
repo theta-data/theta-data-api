@@ -65,5 +65,5 @@ export class ThetaTxNumByDateModel {
   latest_block_height: number
 
   @Field()
-  timestamp: string
+  timestamp: number
 }

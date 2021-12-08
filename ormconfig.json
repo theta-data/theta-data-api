@@ -1,15 +1,11 @@
 [
   {
     "name": "THETA_DATA",
-    "type": "mysql",
-    "host": "localhost",
-    "port": 3306,
-    "username": "root",
-    "password": "root",
+    "type": "sqlite",
     "database": "theta_db",
     "bigNumberStrings": false,
     "synchronize": true,
-    "logging": false,
+    "logging": true,
     "entities": ["dist/**/*.entity{.ts,.js}"],
     "migrations": ["src/migration/**/*.ts"],
     "subscribers": ["src/subscriber/**/*.ts"],
