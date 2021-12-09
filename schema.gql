@@ -9,6 +9,7 @@ type ThetaTxNumByHoursEntity {
   hour: Int!
   block_number: Int!
   theta_fuel_burnt: Float!
+  theta_fuel_burnt_by_smart_contract: Float!
   active_wallet: Int!
   coin_base_transaction: Int!
   slash_transaction: Int!
@@ -25,8 +26,18 @@ type ThetaTxNumByHoursEntity {
 }
 
 type ThetaTransactionStatisticsType {
-  ByDate: [ThetaTxNumByDateModel!]!
-  ByHour: [ThetaTxNumByHoursEntity!]!
+  ByDate(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [ThetaTxNumByDateModel!]!
+  ByHour(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [ThetaTxNumByHoursEntity!]!
 }
 
 type ThetaTxNumByDateModel {
@@ -35,6 +46,7 @@ type ThetaTxNumByDateModel {
   date: Int!
   block_number: Int!
   theta_fuel_burnt: Float!
+  theta_fuel_burnt_by_smart_contract: Float!
   active_wallet: Int!
   coin_base_transaction: Int!
   slash_transaction: Int!
@@ -373,6 +385,7 @@ type inputOutputType {
 
 type transactionRawType {
   proposer: proposerType
+  fee: TokenType
   outputs: [inputOutputType]
   inputs: [inputOutputType]
   gas_limit: String
@@ -386,7 +399,6 @@ type transactionRawType {
 type transactionType {
   raw: transactionRawType
   type: THETA_TX_TYPE_ENUM!
-  fee: TokenType
   hash: String!
   receipt: receiptType
 }

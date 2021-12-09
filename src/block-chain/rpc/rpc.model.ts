@@ -216,6 +216,9 @@ export class transactionRawType {
   @Field(() => proposerType, { nullable: true })
   proposer: proposerType
 
+  @Field(() => TokenType, { nullable: true })
+  fee: TokenType
+
   @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
   outputs: Array<inputOutputType>
 
@@ -249,8 +252,8 @@ export class transactionType {
   @Field(() => THETA_TX_TYPE_ENUM)
   type: THETA_TX_TYPE_ENUM
 
-  @Field(() => TokenType, { nullable: true })
-  fee: TokenType
+  // @Field(() => TokenType, { nullable: true })
+  // fee: TokenType
 
   @Field()
   hash: string

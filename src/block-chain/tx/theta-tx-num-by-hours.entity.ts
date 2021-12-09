@@ -53,6 +53,13 @@ export class ThetaTxNumByHoursEntity {
   })
   theta_fuel_burnt: number
 
+  @Field(() => Float)
+  @Column({
+    type: 'float',
+    default: 0
+  })
+  theta_fuel_burnt_by_smart_contract: number
+
   @Field(() => Int)
   @Column({
     type: 'int',
