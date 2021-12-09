@@ -3,7 +3,6 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 import { ThetaTxNumByDateModel } from './theta-tx.model'
-import { timestamp } from 'rxjs/operators'
 const moment = require('moment')
 
 @Injectable()
