@@ -39,7 +39,8 @@ export class AnalyseService {
   ) {}
 
   public async queryDataFromBlockChain() {
-    let height = 12851074
+    let height =
+      Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
@@ -90,6 +91,7 @@ export class AnalyseService {
         record.hour = hour
         record.timestamp = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
         record.coin_base_transaction = 0
+        record.theta_fuel_burnt_by_smart_contract = 0
         record.deposit_stake_transaction = 0
         record.release_fund_transaction = 0
         record.reserve_fund_transaction = 0
@@ -108,7 +110,7 @@ export class AnalyseService {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             record.coin_base_transaction++
             for (const output of transaction.raw.outputs) {
-              this.logger.debug('timestamp:' + row.timestamp)
+              // this.logger.debug('timestamp:' + row.timestamp)
               await this.stakeRewardRepository.insert({
                 reward_amount: Number(
                   new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
@@ -170,6 +172,14 @@ export class AnalyseService {
               row.timestamp,
               transaction.receipt.ContractAddress
             )
+            if (transaction.raw.gas_limit && transaction.raw.gas_price) {
+              record.theta_fuel_burnt_by_smart_contract += Number(
+                new BigNumber(transaction.raw.gas_price)
+                  .multipliedBy(transaction.receipt.GasUsed)
+                  .dividedBy('1e18')
+                  .toFixed()
+              )
+            }
             break
           case THETA_TRANSACTION_TYPE_ENUM.split_rule:
             record.split_rule_transaction++
@@ -223,19 +233,11 @@ export class AnalyseService {
       if (Number(block.result.height) % 100 !== 1) {
         return
       }
-      const [
-        vaTotalNodeNum,
-        vaEffectiveNodeNum,
-        vaTotalThetaWei,
-        vaEffectiveThetaWei
-      ] = await this.updateValidator(block)
+      const [vaTotalNodeNum, vaEffectiveNodeNum, vaTotalThetaWei, vaEffectiveThetaWei] =
+        await this.updateValidator(block)
 
-      const [
-        guTotalNodeNum,
-        guEffectiveNodeNum,
-        guTotalThetaWei,
-        guEffectiveThetaWei
-      ] = await this.updateGuardian(block)
+      const [guTotalNodeNum, guEffectiveNodeNum, guTotalThetaWei, guEffectiveThetaWei] =
+        await this.updateGuardian(block)
 
       const [eenpTotalNodeNum, eenpEffectiveNodeNum, eenpTotalTfWei, eenpEffectiveTfWei]: [
         number,
