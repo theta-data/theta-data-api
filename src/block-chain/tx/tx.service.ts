@@ -12,11 +12,16 @@ export class TxService {
     private thetaTxNumRepository: Repository<ThetaTxNumByHoursEntity>
   ) {}
 
-  public async getThetaDataByDate() {
+  public async getThetaDataByDate(timezoneOffset: string) {
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(moment().subtract(14, 'days').format())
+        timestamp: MoreThan(
+          moment()
+            .subtract(14, 'days')
+            .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
+            .format()
+        )
       }
       // take: 500
     })
@@ -24,17 +29,22 @@ export class TxService {
       [propName: string]: ThetaTxNumByDateModel
     } = {}
     hours.forEach((hourData) => {
-      let date = moment(hourData.timestamp).format('YYYY_MM_DD')
+      const dateObj = moment(hourData.timestamp).subtract(
+        -new Date().getTimezoneOffset() - Number(timezoneOffset),
+        'minutes'
+      )
+      let date = dateObj.format('YYYY_MM_DD')
       if (!obj.hasOwnProperty(date)) {
         obj[date] = {
           latest_block_height: hourData.latest_block_height,
-          month: hourData.month,
+          month: dateObj.format('MM'),
           theta_fuel_burnt: hourData.theta_fuel_burnt,
+          theta_fuel_burnt_by_smart_contract: hourData.theta_fuel_burnt_by_smart_contract,
           timestamp: hourData.timestamp,
-          year: hourData.year,
+          year: dateObj.format('YYYY'),
           block_number: hourData.block_number,
           active_wallet: hourData.active_wallet,
-          date: hourData.date,
+          date: dateObj.format('DD'),
           coin_base_transaction: hourData.coin_base_transaction,
           slash_transaction: hourData.slash_transaction,
           send_transaction: hourData.send_transaction,
@@ -61,18 +71,35 @@ export class TxService {
         obj[date].withdraw_stake_transaction += hourData.withdraw_stake_transaction
         obj[date].smart_contract_transaction += hourData.smart_contract_transaction
         obj[date].theta_fuel_burnt += hourData.theta_fuel_burnt
+        obj[date].theta_fuel_burnt_by_smart_contract += hourData.theta_fuel_burnt_by_smart_contract
       }
     })
 
     return Object.values(obj)
   }
 
-  public async getThetaByHour(hours: number = 24 * 7) {
-    return await this.thetaTxNumRepository.find({
+  public async getThetaByHour(timezoneOffset, hours: number = 24 * 7) {
+    const res = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(moment().subtract(hours, 'hours').format())
+        timestamp: MoreThan(
+          moment()
+            .subtract(hours, 'hours')
+            .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
+            .format()
+        )
       }
     })
+    res.forEach((tx) => {
+      const dateObj = moment(tx.timestamp).subtract(
+        -new Date().getTimezoneOffset() - Number(timezoneOffset),
+        'minutes'
+      )
+      tx.year = dateObj.format('YYYY')
+      tx.month = dateObj.format('MM')
+      tx.date = dateObj.format('DD')
+      tx.hour = dateObj.format('HH')
+    })
+    return res
   }
 }

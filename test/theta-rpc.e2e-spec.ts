@@ -73,13 +73,13 @@ describe('Theta RPC', () => {
           '      status\n' +
           '      timestamp\n' +
           '      transactions {\n' +
+          '        hash\n' +
+          '        raw {\n' +
+          '          block_height\n' +
           '        fee {\n' +
           '          thetawei\n' +
           '          tfuelwei\n' +
           '        }\n' +
-          '        hash\n' +
-          '        raw {\n' +
-          '          block_height\n' +
           '          data\n' +
           '          from {\n' +
           '            address\n' +
@@ -173,12 +173,12 @@ describe('Theta RPC', () => {
           '      status\n' +
           '      timestamp\n' +
           '      transactions {\n' +
+          '        hash\n' +
+          '        raw {\n' +
           '        fee {\n' +
           '          thetawei\n' +
           '          tfuelwei\n' +
           '        }\n' +
-          '        hash\n' +
-          '        raw {\n' +
           '          block_height\n' +
           '          data\n' +
           '          from {\n' +
