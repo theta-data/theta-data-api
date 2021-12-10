@@ -132,32 +132,6 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.send:
             record.send_transaction++
-            transaction.raw.outputs.forEach((tx, index) => {
-              if (tx.coins.thetawei !== '0') {
-                // console.log('theta emit send')
-                this.client.emit('send-tx-monitor', {
-                  token_type: 0,
-                  amount: Number(tx.coins.thetawei) / Math.pow(10, 18),
-                  from: transaction.raw.inputs[0].address,
-                  to: tx.address,
-                  hash: transaction.hash
-                })
-              }
-              if (tx.coins.tfuelwei !== '0') {
-                // console.log('tf emit send')
-                this.client.emit('send-tx-monitor', {
-                  token_type: 1,
-                  amount: Number(tx.coins.tfuelwei) / Math.pow(10, 18),
-                  from: transaction.raw.inputs[0].address,
-                  to: tx.address,
-                  hash: transaction.hash
-                })
-              }
-            })
-            // if (transaction.raw.proposer.coins.thetawei !== '0') {
-            // }
-            // transaction.raw.proposer.address
-            // transaction.
             break
           case THETA_TRANSACTION_TYPE_ENUM.service_payment:
             record.service_payment_transaction++
@@ -167,13 +141,18 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
             record.smart_contract_transaction++
-            this.logger.debug('row:' + JSON.stringify(row))
             await this.smartContractService.updateSmartContractRecord(
               row.timestamp,
               transaction.receipt.ContractAddress
             )
             if (transaction.raw.gas_limit && transaction.raw.gas_price) {
               record.theta_fuel_burnt_by_smart_contract += Number(
+                new BigNumber(transaction.raw.gas_price)
+                  .multipliedBy(transaction.receipt.GasUsed)
+                  .dividedBy('1e18')
+                  .toFixed()
+              )
+              record.theta_fuel_burnt += Number(
                 new BigNumber(transaction.raw.gas_price)
                   .multipliedBy(transaction.receipt.GasUsed)
                   .dividedBy('1e18')
@@ -218,7 +197,7 @@ export class AnalyseService {
 
       record.latest_block_height = Number(row.height)
       record.block_number++
-      console.log(record)
+      // console.log(record)
 
       await this.thetaTxNumByHoursRepository.save(record)
       height++
