@@ -92,6 +92,7 @@ export class AnalyseService {
         record.timestamp = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
         record.coin_base_transaction = 0
         record.theta_fuel_burnt_by_smart_contract = 0
+        record.theta_fuel_burnt_by_transfers = 0
         record.deposit_stake_transaction = 0
         record.release_fund_transaction = 0
         record.reserve_fund_transaction = 0
@@ -132,6 +133,11 @@ export class AnalyseService {
             break
           case THETA_TRANSACTION_TYPE_ENUM.send:
             record.send_transaction++
+            if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+              record.theta_fuel_burnt_by_transfers += Number(
+                new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toFixed()
+              )
+            }
             break
           case THETA_TRANSACTION_TYPE_ENUM.service_payment:
             record.service_payment_transaction++
