@@ -40,6 +40,7 @@ export class TxService {
           month: dateObj.format('MM'),
           theta_fuel_burnt: hourData.theta_fuel_burnt,
           theta_fuel_burnt_by_smart_contract: hourData.theta_fuel_burnt_by_smart_contract,
+          theta_fuel_burnt_by_transfers: hourData.theta_fuel_burnt_by_transfers,
           timestamp: hourData.timestamp,
           year: dateObj.format('YYYY'),
           block_number: hourData.block_number,
@@ -72,6 +73,7 @@ export class TxService {
         obj[date].smart_contract_transaction += hourData.smart_contract_transaction
         obj[date].theta_fuel_burnt += hourData.theta_fuel_burnt
         obj[date].theta_fuel_burnt_by_smart_contract += hourData.theta_fuel_burnt_by_smart_contract
+        obj[date].theta_fuel_burnt_by_transfers += hourData.theta_fuel_burnt_by_transfers
       }
     })
 
