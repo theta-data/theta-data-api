@@ -31,6 +31,9 @@ export class ThetaTxNumByDateModel {
   @Field(() => Float)
   theta_fuel_burnt_by_smart_contract: number
 
+  @Field(() => Float)
+  theta_fuel_burnt_by_transfers: number
+
   @Field(() => Int)
   active_wallet: number
 

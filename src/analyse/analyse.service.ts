@@ -134,9 +134,9 @@ export class AnalyseService {
           case THETA_TRANSACTION_TYPE_ENUM.send:
             record.send_transaction++
             if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-              record.theta_fuel_burnt_by_transfers += Number(
-                new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toFixed()
-              )
+              record.theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
+                .dividedBy('1e18')
+                .toNumber()
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.service_payment:
@@ -152,18 +152,15 @@ export class AnalyseService {
               transaction.receipt.ContractAddress
             )
             if (transaction.raw.gas_limit && transaction.raw.gas_price) {
-              record.theta_fuel_burnt_by_smart_contract += Number(
-                new BigNumber(transaction.raw.gas_price)
-                  .multipliedBy(transaction.receipt.GasUsed)
-                  .dividedBy('1e18')
-                  .toFixed()
-              )
-              record.theta_fuel_burnt += Number(
-                new BigNumber(transaction.raw.gas_price)
-                  .multipliedBy(transaction.receipt.GasUsed)
-                  .dividedBy('1e18')
-                  .toFixed()
-              )
+              record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toNumber()
+
+              record.theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toNumber()
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.split_rule:
@@ -195,9 +192,9 @@ export class AnalyseService {
         }
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-          record.theta_fuel_burnt += Number(
-            new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toFixed()
-          )
+          record.theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
+            .dividedBy('1e18')
+            .toNumber()
         }
       }
 
