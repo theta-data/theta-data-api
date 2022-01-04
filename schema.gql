@@ -10,6 +10,7 @@ type ThetaTxNumByHoursEntity {
   block_number: Int!
   theta_fuel_burnt: Float!
   theta_fuel_burnt_by_smart_contract: Float!
+  theta_fuel_burnt_by_transfers: Float!
   active_wallet: Int!
   coin_base_transaction: Int!
   slash_transaction: Int!
@@ -47,6 +48,7 @@ type ThetaTxNumByDateModel {
   block_number: Int!
   theta_fuel_burnt: Float!
   theta_fuel_burnt_by_smart_contract: Float!
+  theta_fuel_burnt_by_transfers: Float!
   active_wallet: Int!
   coin_base_transaction: Int!
   slash_transaction: Int!
