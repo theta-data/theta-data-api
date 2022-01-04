@@ -7,13 +7,16 @@ import { StakeModule } from '../block-chain/stake/stake.module'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
+import * as path from 'path'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
+const root: string = path.resolve(__dirname, '../../')
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () =>
         Object.assign(await getConnectionOptions('THETA_DATA'), {
-          entities: [join(__dirname, '/../**', '*.entity.{ts,js}')]
+          entities: [join(__dirname, '/../**', '*.entity.{ts,js}')],
+          database: `${root}/data/line.sqlite`
         })
     }),
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity, StakeRewardEntity]),

@@ -32,7 +32,7 @@ export class AnalyseService {
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
     @InjectRepository(StakeRewardEntity)
     private stakeRewardRepository: Repository<StakeRewardEntity>,
-    @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
+    // @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private stakeService: StakeService,
     private smartContractService: SmartContractService
@@ -204,7 +204,7 @@ export class AnalyseService {
 
       await this.thetaTxNumByHoursRepository.save(record)
       height++
-      await sleep(1)
+      await sleep(config.get('ANALYSE_SLEEP'))
     }
   }
 
