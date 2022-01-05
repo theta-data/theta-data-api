@@ -1,7 +1,7 @@
 ---
 name: New Data Request
 about: Describe the data you need
-title: "[New Data Request]"
+title: "【**New Data Request**】"
 labels: ''
 assignees: ''
 
