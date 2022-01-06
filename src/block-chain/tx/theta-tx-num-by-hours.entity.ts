@@ -7,6 +7,7 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
@@ -151,14 +152,14 @@ export class ThetaTxNumByHoursEntity {
   })
   latest_block_height: number
 
-  @Field()
+  @Field(() => GraphQLString)
   @Column({
     type: 'int',
     unique: true,
     // default: '1970-01-01 00:00:01',
     comment: '对应精确到小时的数据'
   })
-  timestamp: number
+  timestamp: string
 
   @CreateDateColumn()
   create_date!: number
