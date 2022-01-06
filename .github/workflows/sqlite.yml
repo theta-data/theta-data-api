@@ -23,14 +23,18 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # Runs a set of commands using the runners shell
+      - name: install and test
+        run: |
+          npm ci
+#          npm run test
+
       #      # Runs a single command using the runners shell
       #      - name: install
       #        run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
-      - name: install and build
+      - name: build
         run: |
-          npm ci
           npm run build
-          pm2 delete ecosystem.config.js
-          pm2 start ecosystem.config.js --env test
+          pm2 reload ecosystem.config.js --env test

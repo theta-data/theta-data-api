@@ -1,6 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { getConnectionOptions } from 'typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
 import { TxModule } from './block-chain/tx/tx.module'
 import { ScheduleModule } from '@nestjs/schedule'
