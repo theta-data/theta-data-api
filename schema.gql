@@ -486,7 +486,7 @@ type ThetaRpcModel {
 
 type SmartContractCallRecordEntity {
   """Calling time"""
-  timestamp: Float!
+  timestamp: String!
 }
 
 type SmartContractEntity {

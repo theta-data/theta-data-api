@@ -35,6 +35,7 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect((res) => {
+        console.log(res.body)
         expect(res.body.data.SmartContractStatistics).toHaveProperty('CallRank')
         // done()
       })
