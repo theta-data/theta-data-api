@@ -21,11 +21,18 @@ const config = require('config')
 @Module({
   imports: [
     TypeOrmModule.forRootAsync({
-      useFactory: async () =>
-        Object.assign(Object.assign(await getConnectionOptions('THETA_DATA')), {
-          entities: [join(__dirname, '**', '*.entity.{ts,js}')],
-          database: `${root}/data/line.sqlite`
+      useFactory: async () => {
+        let databaseConfig = Object.assign(config.get('DB_CONFIG'), {
+          entities: [join(__dirname, '**', '*.entity.{ts,js}')]
         })
+        console.log(databaseConfig)
+        if (!databaseConfig.database) {
+          databaseConfig = Object.assign(databaseConfig, {
+            database: `${root}/data/line.sqlite`
+          })
+        }
+        return databaseConfig
+      }
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,

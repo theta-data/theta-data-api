@@ -5,7 +5,7 @@
     "database": "theta_db",
     "bigNumberStrings": false,
     "synchronize": true,
-    "logging": true,
+    "logging": false,
     "entities": ["dist/**/*.entity{.ts,.js}"],
     "migrations": ["src/migration/**/*.ts"],
     "subscribers": ["src/subscriber/**/*.ts"],

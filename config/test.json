@@ -1,12 +1,10 @@
 {
-  "THETA_DATA_DB": {
-    "host": "127.0.0.1",
-    "port": 3306,
-    "username": "root",
-    "password": "root",
-    "database": "theta_db",
+  "DB_CONFIG": {
+    "database": "/home/ubuntu/theta-data/database/data.sqlite",
     "synchronize": true,
     "autoLoadEntities": true,
+    "name": "THETA_DATA",
+    "type": "sqlite",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "logging": false,
     "extra": {
