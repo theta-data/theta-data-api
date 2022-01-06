@@ -1,6 +1,6 @@
 {
   "DB_CONFIG": {
-    "database": "/home/ubuntu/theta-data/database/data.sqlite",
+    "database": "/home/ubuntu/theta-data/database/data1.sqlite",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",

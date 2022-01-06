@@ -1,6 +1,5 @@
 import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { getConnectionOptions } from 'typeorm'
 import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours.entity'
 import { AnalyseService } from './analyse.service'
 import { StakeModule } from '../block-chain/stake/stake.module'
