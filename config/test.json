@@ -1,11 +1,12 @@
 {
-  "DB_CONFIG": {
+  "ORM_CONFIG": {
     "database": "/home/ubuntu/theta-data/database/data.sqlite",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
     "type": "sqlite",
     "entities": ["src/**/*.entity{.ts,.js}"],
+    "bigNumberStrings": false,
     "logging": false,
     "extra": {
       "charset": "utf8mb4_unicode_ci"

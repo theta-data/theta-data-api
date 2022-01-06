@@ -22,7 +22,7 @@ const config = require('config')
   imports: [
     TypeOrmModule.forRootAsync({
       useFactory: async () => {
-        let databaseConfig = Object.assign(config.get('DB_CONFIG'), {
+        let databaseConfig = Object.assign(config.get('ORM_CONFIG'), {
           entities: [join(__dirname, '**', '*.entity.{ts,js}')]
         })
         console.log(databaseConfig)

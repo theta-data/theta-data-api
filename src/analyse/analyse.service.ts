@@ -2,7 +2,6 @@ import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { Repository } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
-import { ClientProxy } from '@nestjs/microservices'
 import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
@@ -12,7 +11,6 @@ import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
-import { ExceptionFiltersContext } from '@nestjs/microservices/context/exception-filters-context'
 const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
