@@ -60,6 +60,7 @@ export class AnalyseService {
         await sleep(60000)
         continue
       }
+
       if (Number(block.result.height) % 100 === 1) {
         const latestFinalizedBlockHeight = Number(
           (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
