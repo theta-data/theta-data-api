@@ -61,12 +61,18 @@ export class AnalyseService {
         continue
       }
       if (Number(block.result.height) % 100 === 1) {
-        try {
+        const latestFinalizedBlockHeight = Number(
+          (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+        )
+        if (latestFinalizedBlockHeight - height < 5000) {
           await this.updateCheckPoint(block)
-        } catch (e) {
-          this.logger.debug('update checkpoint error')
-          console.log(e)
         }
+        // try {
+        //   await this.updateCheckPoint(block)
+        // } catch (e) {
+        //   this.logger.debug('update checkpoint error')
+        //   console.log(e)
+        // }
       }
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
