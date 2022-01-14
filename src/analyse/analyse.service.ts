@@ -66,13 +66,9 @@ export class AnalyseService {
         )
         if (latestFinalizedBlockHeight - height < 5000) {
           await this.updateCheckPoint(block)
+        } else {
+          this.logger.debug('no need to calculate checkpoint block')
         }
-        // try {
-        //   await this.updateCheckPoint(block)
-        // } catch (e) {
-        //   this.logger.debug('update checkpoint error')
-        //   console.log(e)
-        // }
       }
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
