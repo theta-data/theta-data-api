@@ -59,16 +59,16 @@ export class AnalyseService {
         continue
       }
 
-      if (Number(block.result.height) % 100 === 1) {
-        const latestFinalizedBlockHeight = Number(
-          (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-        )
-        if (latestFinalizedBlockHeight - height < 5000) {
-          await this.updateCheckPoint(block)
-        } else {
-          this.logger.debug('no need to calculate checkpoint block')
-        }
-      }
+      // if (Number(block.result.height) % 100 === 1) {
+      //   const latestFinalizedBlockHeight = Number(
+      //     (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      //   )
+      //   if (latestFinalizedBlockHeight - height < 5000) {
+      //     await this.updateCheckPoint(block)
+      //   } else {
+      //     this.logger.debug('no need to calculate checkpoint block')
+      //   }
+      // }
 
       const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
       const month = Number(moment(Number(row.timestamp) * 1000).format('MM'))
