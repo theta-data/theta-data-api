@@ -49,7 +49,6 @@ export class AnalyseService {
     if (latestBlock && latestBlock.latest_block_height > height) {
       height = latestBlock.latest_block_height + 1
     }
-
     while (1) {
       this.logger.debug('get height: ' + height)
       const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
