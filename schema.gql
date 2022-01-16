@@ -23,7 +23,7 @@ type ThetaTxNumByHoursEntity {
   withdraw_stake_transaction: Int!
   smart_contract_transaction: Int!
   latest_block_height: Int!
-  timestamp: Float!
+  timestamp: String!
 }
 
 type ThetaTransactionStatisticsType {
@@ -61,7 +61,7 @@ type ThetaTxNumByDateModel {
   withdraw_stake_transaction: Int!
   smart_contract_transaction: Int!
   latest_block_height: Int!
-  timestamp: Float!
+  timestamp: String!
 }
 
 type Stake {
@@ -114,7 +114,7 @@ type StakeStatisticsEntity {
 
   """Block time for performing pledge statistics"""
   timestamp: Int!
-  stake_reward(wallet_address: String!): StakeRewardModel!
+  stake_reward(wallet_address: String!): StakeRewardModel
 }
 
 type FiatCurrencyType {
@@ -522,12 +522,11 @@ type WalletModel {
 }
 
 type Query {
-  TransactionsStatistics: ThetaTransactionStatisticsType!
-
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity!
+  SmartContractStatistics: SmartContractStatisticsType!
+  TransactionsStatistics: ThetaTransactionStatisticsType!
   MarketInformation: MarketInformationType!
   ThetaRpc: ThetaRpcModel!
-  SmartContractStatistics: SmartContractStatisticsType!
   Wallet: WalletModel!
 }

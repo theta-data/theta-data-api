@@ -14,6 +14,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
 import { WalletModule } from './block-chain/wallet/wallet.module'
 import * as path from 'path'
+import { AnalyseModule } from './analyse/analyse.module'
 const root: string = path.resolve(__dirname, '../../')
 const config = require('config')
 
@@ -54,6 +55,7 @@ const config = require('config')
       ttl: config.get('RATE_LIMIT')['ttl'],
       limit: config.get('RATE_LIMIT')['limit']
     }),
+    AnalyseModule,
     TxModule,
     StakeModule,
     MarketModule,

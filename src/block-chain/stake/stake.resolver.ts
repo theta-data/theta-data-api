@@ -27,7 +27,7 @@ export class StakeResolver {
   }
 
   // @Resolver('stake_reward')
-  @ResolveField(() => StakeRewardModel, { name: 'stake_reward' })
+  @ResolveField(() => StakeRewardModel, { name: 'stake_reward', nullable: true })
   async stake_reward(
     @Info() info,
     @Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string
