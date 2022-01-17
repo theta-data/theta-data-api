@@ -13,6 +13,6 @@ const config = require('config')
     })
   ],
   providers: [MarketResolver, MarketService],
-  exports: []
+  exports: [MarketService]
 })
 export class MarketModule {}

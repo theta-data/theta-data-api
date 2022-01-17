@@ -15,6 +15,7 @@ const config = require('config')
 const moment = require('moment')
 const sleep = require('await-sleep')
 import { Cron, Interval } from '@nestjs/schedule'
+import { WalletService } from '../block-chain/wallet/wallet.service'
 
 // if (config.get('THETA_NODE_HOST')) {
 thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -35,7 +36,8 @@ export class AnalyseService {
     // @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private stakeService: StakeService,
-    private smartContractService: SmartContractService
+    private smartContractService: SmartContractService,
+    private walletService: WalletService
   ) {}
 
   public async queryDataFromBlockChain() {
@@ -351,6 +353,7 @@ export class AnalyseService {
       }
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
+          await this.walletService.markActive(wallet.address)
           if (!(await this.cacheManager.get(hhStr + wallet.address))) {
             await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
             record.active_wallet++

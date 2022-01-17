@@ -6,11 +6,20 @@ import { MarketService } from '../../market/market.service'
 import BigNumber from 'bignumber.js'
 import { BalanceModel, StakeBalanceType, TotalBalanceType } from './wallet-balance.model'
 import { fetch } from 'cross-fetch'
+import { InjectRepository } from '@nestjs/typeorm'
+import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
+import { Repository } from 'typeorm'
+import { WalletEntity } from './wallet.entity'
 const config = require('config')
+const moment = require('moment')
 @Injectable()
 export class WalletService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+
+    @InjectRepository(WalletEntity)
+    private walletRepository: Repository<WalletEntity>,
+
     private marketInfo: MarketService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -214,5 +223,11 @@ export class WalletService {
     // console.log(res.json())
     await this.cacheManager.set(key, jsonInfo['rates'], { ttl: 60 * 60 * 24 * 7 })
     return jsonInfo['rates']
+  }
+
+  public async markActive(address: string): Promise<void> {
+    await this.walletRepository.upsert({ address: address, latest_active_time: moment().unix() }, [
+      'address'
+    ])
   }
 }

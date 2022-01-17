@@ -157,6 +157,10 @@ type StakeRewardModel {
   last_7_days: TokenBalanceType
 }
 
+type WalletModel {
+  Balance(wallet_address: String!): BalanceModel!
+}
+
 type TokenMarketInformationType {
   name: String!
   price: Float!
@@ -517,16 +521,12 @@ enum RankByEnum {
   last_seven_days_call_times
 }
 
-type WalletModel {
-  Balance(wallet_address: String!): BalanceModel!
-}
-
 type Query {
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity!
+  Wallet: WalletModel!
+  MarketInformation: MarketInformationType!
   SmartContractStatistics: SmartContractStatisticsType!
   TransactionsStatistics: ThetaTransactionStatisticsType!
-  MarketInformation: MarketInformationType!
   ThetaRpc: ThetaRpcModel!
-  Wallet: WalletModel!
 }
