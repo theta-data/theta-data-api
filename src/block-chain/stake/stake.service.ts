@@ -178,7 +178,6 @@ export class StakeService {
           timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
           wallet_address: wallet_address
         })
-        this.logger.debug('24 h reward list: ' + JSON.stringify(rewardList))
         break
       case 'last_7_days':
         rewardList = await this.stakeRewardRepository.find({
