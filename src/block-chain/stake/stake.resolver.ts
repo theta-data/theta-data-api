@@ -36,7 +36,7 @@ export class StakeResolver {
     console.log(fieldsList(info))
     const reward = new StakeRewardModel()
     const thetaFuelMarketInfo = await this.marketInfo.getThetaFuelMarketInfo()
-
+    wallet_address = wallet_address.toLocaleLowerCase()
     for (const field of fieldsList(info)) {
       //@ts-ignore
       const rewardAmount = await this.stakeService.getStakeReward(wallet_address, field)
