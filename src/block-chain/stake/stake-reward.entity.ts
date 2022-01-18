@@ -4,6 +4,7 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn
 } from 'typeorm'
 import { registerEnumType } from '@nestjs/graphql'
@@ -17,6 +18,7 @@ registerEnumType(STAKE_TOKEN_TYPE_ENUM, {
 
 @Entity()
 @Index(['wallet_address', 'timestamp'])
+@Unique(['wallet_address', 'reward_height'])
 export class StakeRewardEntity {
   @PrimaryGeneratedColumn()
   id!: number

@@ -43,7 +43,7 @@ export class AnalyseService {
   public async queryDataFromBlockChain() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
-    height = 13209601
+    // height = 13209601
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
@@ -117,14 +117,17 @@ export class AnalyseService {
             record.coin_base_transaction++
             for (const output of transaction.raw.outputs) {
               // this.logger.debug('timestamp:' + row.timestamp)
-              await this.stakeRewardRepository.insert({
-                reward_amount: Number(
-                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-                ),
-                wallet_address: output.address,
-                reward_height: height,
-                timestamp: Number(row.timestamp)
-              })
+              await this.stakeRewardRepository.upsert(
+                {
+                  reward_amount: Number(
+                    new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                  ),
+                  wallet_address: output.address,
+                  reward_height: height,
+                  timestamp: Number(row.timestamp)
+                },
+                ['wallet_address', 'reward_height']
+              )
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
