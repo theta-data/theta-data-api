@@ -523,7 +523,7 @@ enum RankByEnum {
 
 type Query {
   """Return to statistics related to token pledges"""
-  StakeStatistics: StakeStatisticsEntity!
+  StakeStatistics: StakeStatisticsEntity
   Wallet: WalletModel!
   MarketInformation: MarketInformationType!
   SmartContractStatistics: SmartContractStatisticsType!

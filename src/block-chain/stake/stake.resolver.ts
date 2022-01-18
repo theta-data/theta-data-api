@@ -20,7 +20,8 @@ export class StakeResolver {
   ) {}
 
   @Query(() => StakeStatisticsEntity, {
-    description: 'Return to statistics related to token pledges'
+    description: 'Return to statistics related to token pledges',
+    nullable: true
   })
   async StakeStatistics() {
     return await this.stakeService.getLatestStakeStatics()
