@@ -173,25 +173,25 @@ export class StakeService {
     switch (period) {
       case 'last_24_hour':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(24, 'hours').format()),
+          timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_7_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(7, 'days').format()),
+          timestamp: MoreThan(moment().subtract(7, 'days').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_3_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          timestamp: MoreThan(moment().subtract(3, 'days').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_30_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          timestamp: MoreThan(moment().subtract(3, 'days').unix()),
           wallet_address: wallet_address
         })
         break

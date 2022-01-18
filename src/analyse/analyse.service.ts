@@ -123,7 +123,7 @@ export class AnalyseService {
                 ),
                 wallet_address: output.address,
                 reward_height: height,
-                timestamp: moment(Number(row.timestamp) * 1000).format()
+                timestamp: Number(row.timestamp)
               })
             }
             break
