@@ -170,8 +170,8 @@ export class StakeService {
     period: 'last_24_hour' | 'last_3_days' | 'last_7_days' | 'last_30_days'
   ) {
     let rewardList: Array<StakeRewardEntity> = []
-    console.log('period:' + period)
     this.logger.debug('period:' + period)
+    this.logger.debug('wallet:' + wallet_address)
     switch (period) {
       case 'last_24_hour':
         rewardList = await this.stakeRewardRepository.find({
