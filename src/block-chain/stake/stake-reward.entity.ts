@@ -23,7 +23,7 @@ export class StakeRewardEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column({ type: 'float' })
+  @Column({ type: 'real' })
   reward_amount: number
 
   @Column()
@@ -32,11 +32,11 @@ export class StakeRewardEntity {
   // @Column({ type: 'tinyint' })
   // stake_token_type: STAKE_TOKEN_TYPE_ENUM
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'integer' })
   reward_height: number
 
   @Column({
-    type: 'int'
+    type: 'integer'
   })
   timestamp: number
 

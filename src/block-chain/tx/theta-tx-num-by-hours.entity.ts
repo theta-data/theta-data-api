@@ -159,7 +159,7 @@ export class ThetaTxNumByHoursEntity {
     // default: '1970-01-01 00:00:01',
     comment: '对应精确到小时的数据'
   })
-  timestamp: string
+  timestamp: number
 
   @CreateDateColumn()
   create_date!: number
