@@ -20,7 +20,7 @@ export class TxService {
           moment()
             .subtract(14, 'days')
             .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-            .format()
+            .unix()
         )
       }
       // take: 500
@@ -88,7 +88,7 @@ export class TxService {
           moment()
             .subtract(hours, 'hours')
             .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-            .format()
+            .unix()
         )
       }
     })
