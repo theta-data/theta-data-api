@@ -26,7 +26,7 @@ export class StakeRewardEntity {
   @Column({ type: 'real' })
   reward_amount: number
 
-  @Column()
+  @Column({ type: 'text' })
   wallet_address: string
 
   // @Column({ type: 'tinyint' })

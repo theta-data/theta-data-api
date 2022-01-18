@@ -70,6 +70,6 @@ export class ThetaTxNumByDateModel {
   @Field(() => Int)
   latest_block_height: number
 
-  @Field(() => GraphQLString)
-  timestamp: string
+  @Field(() => Int)
+  timestamp: number
 }
