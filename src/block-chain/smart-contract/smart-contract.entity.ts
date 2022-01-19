@@ -12,9 +12,6 @@ import { Field, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 @Entity()
-@Index('call_times')
-@Index('last_seven_days_call_times')
-@Index('last_24h_call_times')
 export class SmartContractEntity {
   // @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -25,18 +22,21 @@ export class SmartContractEntity {
   contract_address: string
 
   @Field(() => Int, { description: 'Total number of smart contract calls' })
+  @Index('call_times')
   @Column({
     type: 'int'
   })
   call_times: number
 
   @Field(() => Int, { description: 'Number of smart contract calls in the last 7 days' })
+  @Index('last_seven_days_call_times')
   @Column({
     type: 'int'
   })
   last_seven_days_call_times: number
 
   @Field(() => Int, { description: 'Number of smart contract calls in the last 24 hours' })
+  @Index('last_24h_call_times')
   @Column({
     type: 'int'
   })
