@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
@@ -11,6 +12,9 @@ import { Field, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 @Entity()
+@Index('call_times')
+@Index('last_seven_days_call_times')
+@Index('last_24h_call_times')
 export class SmartContractEntity {
   // @Field(() => Int)
   @PrimaryGeneratedColumn()
