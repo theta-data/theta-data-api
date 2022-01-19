@@ -7,8 +7,9 @@ import BigNumber from 'bignumber.js'
 import { BalanceModel, StakeBalanceType, TotalBalanceType } from './wallet-balance.model'
 import { fetch } from 'cross-fetch'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { MoreThan, Repository } from 'typeorm'
 import { WalletEntity } from './wallet.entity'
+import { AcitiveWalletsEntity } from './active-wallets.entity'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -18,6 +19,9 @@ export class WalletService {
 
     @InjectRepository(WalletEntity)
     private walletRepository: Repository<WalletEntity>,
+
+    @InjectRepository(AcitiveWalletsEntity)
+    private activeWalletsRepository: Repository<AcitiveWalletsEntity>,
 
     private marketInfo: MarketService
   ) {
@@ -228,5 +232,21 @@ export class WalletService {
     await this.walletRepository.upsert({ address: address, latest_active_time: moment().unix() }, [
       'address'
     ])
+  }
+
+  public async snapShotActiveWallets() {
+    if (moment().minutes() < 2) {
+      const hhTimestamp = moment(moment().format("YYYY-MM-DD HH:00:00")).unix()
+      const statisticsStartTimeStamp = moment(hhTimestamp * 1000).subtract(24, 'hours').unix()
+      const totalAmount = await this.walletRepository.count({
+        latest_active_time: MoreThan(statisticsStartTimeStamp)
+      })
+      await this.activeWalletsRepository.upsert({
+        snapshot_time: hhTimestamp,
+        active_wallets_amount: totalAmount
+      }, ['snapshot_time'])
+
+    }
+
   }
 }
