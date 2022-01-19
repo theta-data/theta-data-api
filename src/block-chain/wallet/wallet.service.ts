@@ -7,7 +7,6 @@ import BigNumber from 'bignumber.js'
 import { BalanceModel, StakeBalanceType, TotalBalanceType } from './wallet-balance.model'
 import { fetch } from 'cross-fetch'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
 import { Repository } from 'typeorm'
 import { WalletEntity } from './wallet.entity'
 const config = require('config')

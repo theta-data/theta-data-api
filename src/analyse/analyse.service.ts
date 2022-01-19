@@ -38,7 +38,7 @@ export class AnalyseService {
     private stakeService: StakeService,
     private smartContractService: SmartContractService,
     private walletService: WalletService
-  ) {}
+  ) { }
 
   public async queryDataFromBlockChain() {
     let height =
@@ -183,19 +183,14 @@ export class AnalyseService {
         }
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
-            if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-              await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
-              record.active_wallet++
-            }
+            await this.walletService.markActive(wallet.address)
+
           }
         }
 
         if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
           for (const wallet of transaction.raw.outputs) {
-            if (!(await this.cacheManager.get(hhStr + wallet.address))) {
-              await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
-              record.active_wallet++
-            }
+            await this.walletService.markActive(wallet.address)
           }
         }
 
@@ -356,7 +351,7 @@ export class AnalyseService {
   //     }
   //     if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
   //       for (const wallet of transaction.raw.inputs) {
-  //         await this.walletService.markActive(wallet.address)
+  // await this.walletService.markActive(wallet.address)
   //         if (!(await this.cacheManager.get(hhStr + wallet.address))) {
   //           await this.cacheManager.set(hhStr + wallet.address, 1, { ttl: 3600 * 24 })
   //           record.active_wallet++
