@@ -16,18 +16,20 @@ export class TxService {
   ) {}
 
   public async getThetaDataByDate(timezoneOffset: string) {
+    const startTimeStamp = moment()
+    .subtract(14, 'days')
+    .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
+    .unix()
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
         timestamp: MoreThan(
-          moment()
-            .subtract(14, 'days')
-            .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-            .unix()
+          startTimeStamp
         )
       }
       // take: 500
     })
+    const activeWallets = await this.walletService.getActiveWallet(startTimeStamp)
     let obj: {
       [propName: string]: ThetaTxNumByDateModel
     } = {}
@@ -61,6 +63,11 @@ export class TxService {
           smart_contract_transaction: hourData.smart_contract_transaction
           // timestamp: hourData.timestamp
         }
+        const activeWalletObj  =  activeWallets.find((wallet)=>{
+          return wallet.snapshot_time === hourData.timestamp
+        })
+        if(activeWalletObj)
+        obj[date]['active_wallet'] = activeWalletObj.active_wallets_amount
       } else {
         obj[date].coin_base_transaction += hourData.coin_base_transaction
         obj[date].slash_transaction += hourData.slash_transaction
@@ -102,7 +109,6 @@ export class TxService {
         -new Date().getTimezoneOffset() - Number(timezoneOffset),
         'minutes'
       )
-      console.log('date obj :' + dateObj.format())
       tx.year = dateObj.format('YYYY')
       tx.month = dateObj.format('MM')
       tx.date = dateObj.format('DD')
