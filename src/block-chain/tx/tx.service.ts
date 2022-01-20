@@ -98,7 +98,7 @@ export class TxService {
     })
     const activeWalletList = await this.walletService.getActiveWallet(startTime - 3600)
     res.forEach((tx) => {
-      const dateObj = moment(tx.timestamp).subtract(
+      const dateObj = moment(tx.timestamp * 1000).subtract(
         -new Date().getTimezoneOffset() - Number(timezoneOffset),
         'minutes'
       )
