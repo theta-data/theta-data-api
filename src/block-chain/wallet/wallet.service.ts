@@ -234,9 +234,9 @@ export class WalletService {
     ])
   }
 
-  public async snapShotActiveWallets() {
-    if (moment().minutes() < 2) {
-      const hhTimestamp = moment(moment().format("YYYY-MM-DD HH:00:00")).unix()
+  public async snapShotActiveWallets(timestamp : number) {
+    if (moment(timestamp * 1000).minutes() < 2) {
+      const hhTimestamp = moment(moment(timestamp * 1000).format("YYYY-MM-DD HH:00:00")).unix()
       const statisticsStartTimeStamp = moment(hhTimestamp * 1000).subtract(24, 'hours').unix()
       const totalAmount = await this.walletRepository.count({
         latest_active_time: MoreThan(statisticsStartTimeStamp)

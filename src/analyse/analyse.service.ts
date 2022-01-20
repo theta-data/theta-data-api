@@ -206,7 +206,7 @@ export class AnalyseService {
       // console.log(record)
 
       await this.thetaTxNumByHoursRepository.save(record)
-      await this.walletService.snapShotActiveWallets()
+      await this.walletService.snapShotActiveWallets(Number(row.timestamp))
       await sleep(config.get('ANALYSE_SLEEP'))
       height++
     }
