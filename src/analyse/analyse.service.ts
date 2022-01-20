@@ -94,7 +94,7 @@ export class AnalyseService {
         record.month = month
         record.date = date
         record.hour = hour
-        record.timestamp = Number(row.timestamp)
+        record.timestamp = moment(moment(Number(row.timestamp) * 1000).format("YYYY-MM-DD HH:00:00")).unix()
         record.coin_base_transaction = 0
         record.theta_fuel_burnt_by_smart_contract = 0
         record.theta_fuel_burnt_by_transfers = 0
