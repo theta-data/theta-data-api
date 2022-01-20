@@ -233,7 +233,7 @@ export class WalletService {
     const record = await this.walletRepository.findOne({
       address : address
     })
-    console.log(record)
+    // console.log(record)
     if(record){
       record.latest_active_time = timestamp
       await this.walletRepository.save(record)

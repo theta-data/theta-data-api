@@ -129,7 +129,7 @@ export class AnalyseService {
                     reward_amount: Number(
                       new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
                     ),
-                    wallet_address: output.address,
+                    wallet_address: output.address.toLocaleLowerCase(),
                     reward_height: height,
                     timestamp: Number(row.timestamp)
                   },
