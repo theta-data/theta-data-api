@@ -13,6 +13,9 @@ export class AcitiveWalletsEntity {
   @Column({ type: 'int' })
   active_wallets_amount: number
 
+  @Column({ type: 'int' })
+  active_wallets_amount_last_hour: number
+
   @CreateDateColumn()
   create_date!: number
 

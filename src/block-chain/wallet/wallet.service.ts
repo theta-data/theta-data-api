@@ -241,9 +241,13 @@ export class WalletService {
       const totalAmount = await this.walletRepository.count({
         latest_active_time: MoreThan(statisticsStartTimeStamp)
       })
+      const activeWalletLastHour = await this.walletRepository.count({
+        latest_active_time : MoreThan(moment(hhTimestamp * 1000).subtract(1, 'hours').unix())
+      })
       await this.activeWalletsRepository.upsert({
         snapshot_time: hhTimestamp,
-        active_wallets_amount: totalAmount
+        active_wallets_amount: totalAmount,
+        active_wallets_amount_last_hour : activeWalletLastHour
       }, ['snapshot_time'])
 
     }
