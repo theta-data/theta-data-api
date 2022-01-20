@@ -49,7 +49,7 @@ export class TxService {
           timestamp: hourData.timestamp,
           year: dateObj.format('YYYY'),
           block_number: hourData.block_number,
-          active_wallet: hourData.active_wallet,
+          // active_wallet: hourData.active_wallet,
           date: dateObj.format('DD'),
           coin_base_transaction: hourData.coin_base_transaction,
           slash_transaction: hourData.slash_transaction,
