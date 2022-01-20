@@ -64,7 +64,7 @@ export class TxService {
           // timestamp: hourData.timestamp
         }
         const activeWalletObj  =  activeWallets.find((wallet)=>{
-          return wallet.snapshot_time === hourData.timestamp
+          return (wallet.snapshot_time - 3600 * 24)  === hourData.timestamp
         })
         if(activeWalletObj)
         obj[date]['active_wallet'] = activeWalletObj.active_wallets_amount
