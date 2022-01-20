@@ -43,7 +43,7 @@ export class AnalyseService {
   public async queryDataFromBlockChain() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 10000
-    // height = 13209601
+    height = 13583342
     const latestBlock = await this.thetaTxNumByHoursRepository.findOne({
       order: {
         latest_block_height: 'DESC'
