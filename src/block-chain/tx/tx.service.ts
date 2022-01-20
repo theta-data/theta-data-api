@@ -102,10 +102,17 @@ export class TxService {
         -new Date().getTimezoneOffset() - Number(timezoneOffset),
         'minutes'
       )
+      console.log('date obj :' + dateObj.format())
       tx.year = dateObj.format('YYYY')
       tx.month = dateObj.format('MM')
       tx.date = dateObj.format('DD')
       tx.hour = dateObj.format('HH')
+      // const moment = require('moment')
+      // const testDate = moment(1642644000000).subtract(
+      //   -new Date().getTimezoneOffset() - 480,
+      //   'minutes'
+      // ).format('HH')
+      // console.log(testDate)
       for(const wallet of activeWalletList){
         if(tx.timestamp === (wallet.snapshot_time - 3600)){
           tx.active_wallet = wallet.active_wallets_amount_last_hour
