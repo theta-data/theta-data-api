@@ -251,6 +251,12 @@ export class WalletService {
       }, ['snapshot_time'])
 
     }
+  }
+
+  public async getActiveWallet(startTime){
+    return await this.activeWalletsRepository.find({
+      snapshot_time : MoreThan(startTime)
+    })
 
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
+import { WalletService } from '../wallet/wallet.service'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 import { ThetaTxNumByDateModel } from './theta-tx.model'
 const moment = require('moment')
@@ -9,7 +10,9 @@ const moment = require('moment')
 export class TxService {
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity)
-    private thetaTxNumRepository: Repository<ThetaTxNumByHoursEntity>
+    private thetaTxNumRepository: Repository<ThetaTxNumByHoursEntity>,
+    private walletService : WalletService
+  
   ) {}
 
   public async getThetaDataByDate(timezoneOffset: string) {
@@ -81,17 +84,19 @@ export class TxService {
   }
 
   public async getThetaByHour(timezoneOffset, hours: number = 24 * 7) {
+    const startTime =  moment()
+    .subtract(hours, 'hours')
+    .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
+    .unix()
     const res = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
         timestamp: MoreThan(
-          moment()
-            .subtract(hours, 'hours')
-            .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-            .unix()
+         startTime
         )
       }
     })
+    const activeWalletList = await this.walletService.getActiveWallet(startTime - 3600)
     res.forEach((tx) => {
       const dateObj = moment(tx.timestamp).subtract(
         -new Date().getTimezoneOffset() - Number(timezoneOffset),
@@ -101,6 +106,11 @@ export class TxService {
       tx.month = dateObj.format('MM')
       tx.date = dateObj.format('DD')
       tx.hour = dateObj.format('HH')
+      for(const wallet of activeWalletList){
+        if(tx.timestamp === (wallet.snapshot_time - 3600)){
+          tx.active_wallet = wallet.active_wallets_amount_last_hour
+        }
+      }
     })
     return res
   }
