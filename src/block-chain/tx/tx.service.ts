@@ -72,7 +72,7 @@ export class TxService {
         obj[date].coin_base_transaction += hourData.coin_base_transaction
         obj[date].slash_transaction += hourData.slash_transaction
         obj[date].block_number += hourData.block_number
-        obj[date].active_wallet += hourData.active_wallet
+        // obj[date].active_wallet += hourData.active_wallet
         obj[date].send_transaction += hourData.send_transaction
         obj[date].reserve_fund_transaction += hourData.reserve_fund_transaction
         obj[date].release_fund_transaction += hourData.release_fund_transaction
