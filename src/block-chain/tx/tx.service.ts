@@ -34,7 +34,7 @@ export class TxService {
       [propName: string]: ThetaTxNumByDateModel
     } = {}
     hours.forEach((hourData) => {
-      const dateObj = moment(hourData.timestamp).subtract(
+      const dateObj = moment(hourData.timestamp * 1000).subtract(
         -new Date().getTimezoneOffset() - Number(timezoneOffset),
         'minutes'
       )
