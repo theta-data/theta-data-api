@@ -10,6 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
 import { WalletEntity } from './wallet.entity'
 import { AcitiveWalletsEntity } from './active-wallets.entity'
+import { time } from 'console'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -228,10 +229,20 @@ export class WalletService {
     return jsonInfo['rates']
   }
 
-  public async markActive(address: string): Promise<void> {
-    await this.walletRepository.upsert({ address: address, latest_active_time: moment().unix() }, [
-      'address'
-    ])
+  public async markActive(address: string, timestamp: number): Promise<void> {
+    const record = await this.walletRepository.findOne({
+      address : address
+    })
+    console.log(record)
+    if(record){
+      record.latest_active_time = timestamp
+      await this.walletRepository.save(record)
+    }else{
+      let walletEntity = new WalletEntity()
+      walletEntity.address = address
+      walletEntity.latest_active_time = timestamp
+      await this.walletRepository.save(walletEntity)
+    }
   }
 
   public async snapShotActiveWallets(timestamp : number) {
@@ -244,12 +255,16 @@ export class WalletService {
       const activeWalletLastHour = await this.walletRepository.count({
         latest_active_time : MoreThan(moment(hhTimestamp * 1000).subtract(1, 'hours').unix())
       })
-      await this.activeWalletsRepository.upsert({
+      const snapObj = await this.activeWalletsRepository.findOne({
         snapshot_time: hhTimestamp,
-        active_wallets_amount: totalAmount,
-        active_wallets_amount_last_hour : activeWalletLastHour
-      }, ['snapshot_time'])
-
+      })
+      if(!snapObj){
+        await this.activeWalletsRepository.insert({
+          snapshot_time: hhTimestamp,
+          active_wallets_amount: totalAmount,
+          active_wallets_amount_last_hour : activeWalletLastHour
+        })
+      }
     }
   }
 

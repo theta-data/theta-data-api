@@ -117,17 +117,26 @@ export class AnalyseService {
             record.coin_base_transaction++
             for (const output of transaction.raw.outputs) {
               // this.logger.debug('timestamp:' + row.timestamp)
-              await this.stakeRewardRepository.upsert(
+              const stakeReard = await this.stakeRewardRepository.findOne(
                 {
-                  reward_amount: Number(
-                    new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-                  ),
                   wallet_address: output.address,
                   reward_height: height,
-                  timestamp: Number(row.timestamp)
-                },
-                ['wallet_address', 'reward_height']
+                }
               )
+              if(!stakeReard){
+                await this.stakeRewardRepository.insert(
+                  {
+                    reward_amount: Number(
+                      new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                    ),
+                    wallet_address: output.address,
+                    reward_height: height,
+                    timestamp: Number(row.timestamp)
+                  },
+              
+                )
+              }
+             
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
@@ -183,14 +192,14 @@ export class AnalyseService {
         }
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
-            await this.walletService.markActive(wallet.address)
+            await this.walletService.markActive(wallet.address, Number(row.timestamp))
 
           }
         }
 
         if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
           for (const wallet of transaction.raw.outputs) {
-            await this.walletService.markActive(wallet.address)
+            await this.walletService.markActive(wallet.address, Number(row.timestamp))
           }
         }
 
