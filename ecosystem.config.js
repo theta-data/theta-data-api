@@ -13,7 +13,6 @@ module.exports = {
       },
       env_production: {
         NODE_ENV: 'production',
-        NODE_CONFIG_DIR: '/home/ubuntu/actions-runner/_work/config/config/theta-data-api'
       }
     }
     // {
