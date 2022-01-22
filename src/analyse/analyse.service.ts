@@ -81,7 +81,7 @@ export class AnalyseService {
       const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD')
       let record = await this.thetaTxNumByHoursRepository.findOne({
         where: {
-          timestamp : Number(row.timestamp)
+          timestamp :  moment(moment(Number(row.timestamp) * 1000).format("YYYY-MM-DD HH:00:00")).unix()
         }
       })
 
