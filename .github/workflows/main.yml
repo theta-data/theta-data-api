@@ -5,7 +5,7 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
       - '**/*.md'
 
@@ -24,9 +24,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-#      # Runs a single command using the runners shell
-#      - name: install
-#        run: echo Hello, world!
+      #      # Runs a single command using the runners shell
+      #      - name: install
+      #        run: echo Hello, world!
 
       # Runs a set of commands using the runners shell
       - name: install and test
@@ -38,4 +38,5 @@ jobs:
       - name: build
         run: |
           npm run build
+          pm2 delete ecosystem.config.js
           pm2 reload ecosystem.config.js --env production
