@@ -81,10 +81,7 @@ export class AnalyseService {
       const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD')
       let record = await this.thetaTxNumByHoursRepository.findOne({
         where: {
-          year: Number(year),
-          month: Number(month),
-          date: Number(date),
-          hour: Number(hour)
+          timestamp : Number(row.timestamp)
         }
       })
 
@@ -213,7 +210,6 @@ export class AnalyseService {
       record.latest_block_height = Number(row.height)
       record.block_number++
       // console.log(record)
-
       await this.thetaTxNumByHoursRepository.save(record)
       await this.walletService.snapShotActiveWallets(Number(row.timestamp))
       await sleep(config.get('ANALYSE_SLEEP'))
