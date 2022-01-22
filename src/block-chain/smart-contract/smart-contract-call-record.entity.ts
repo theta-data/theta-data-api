@@ -7,7 +7,8 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 import { SmartContractEntity } from './smart-contract.entity'
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, ObjectType } from '@nestjs/graphql'
+import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
@@ -22,9 +23,9 @@ export class SmartContractCallRecordEntity {
   })
   smart_contract: SmartContractEntity
 
-  @Field({ description: 'Calling time' })
+  @Field(() => GraphQLString, { description: 'Calling time' })
   @Column({
-    type: 'timestamp'
+    type: 'int'
     // default: '1970-01-01 00:00:01'
   })
   timestamp: number

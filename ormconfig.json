@@ -1,11 +1,7 @@
 [
   {
     "name": "THETA_DATA",
-    "type": "mysql",
-    "host": "localhost",
-    "port": 3306,
-    "username": "root",
-    "password": "root",
+    "type": "sqlite",
     "database": "theta_db",
     "bigNumberStrings": false,
     "synchronize": true,

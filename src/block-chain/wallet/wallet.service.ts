@@ -6,11 +6,24 @@ import { MarketService } from '../../market/market.service'
 import BigNumber from 'bignumber.js'
 import { BalanceModel, StakeBalanceType, TotalBalanceType } from './wallet-balance.model'
 import { fetch } from 'cross-fetch'
+import { InjectRepository } from '@nestjs/typeorm'
+import { MoreThan, Repository } from 'typeorm'
+import { WalletEntity } from './wallet.entity'
+import { AcitiveWalletsEntity } from './active-wallets.entity'
+import { time } from 'console'
 const config = require('config')
+const moment = require('moment')
 @Injectable()
 export class WalletService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+
+    @InjectRepository(WalletEntity)
+    private walletRepository: Repository<WalletEntity>,
+
+    @InjectRepository(AcitiveWalletsEntity)
+    private activeWalletsRepository: Repository<AcitiveWalletsEntity>,
+
     private marketInfo: MarketService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -214,5 +227,51 @@ export class WalletService {
     // console.log(res.json())
     await this.cacheManager.set(key, jsonInfo['rates'], { ttl: 60 * 60 * 24 * 7 })
     return jsonInfo['rates']
+  }
+
+  public async markActive(address: string, timestamp: number): Promise<void> {
+    const record = await this.walletRepository.findOne({
+      address : address
+    })
+    // console.log(record)
+    if(record){
+      record.latest_active_time = timestamp
+      await this.walletRepository.save(record)
+    }else{
+      let walletEntity = new WalletEntity()
+      walletEntity.address = address
+      walletEntity.latest_active_time = timestamp
+      await this.walletRepository.save(walletEntity)
+    }
+  }
+
+  public async snapShotActiveWallets(timestamp : number) {
+    if (moment(timestamp * 1000).minutes() < 2) {
+      const hhTimestamp = moment(moment(timestamp * 1000).format("YYYY-MM-DD HH:00:00")).unix()
+      const statisticsStartTimeStamp = moment(hhTimestamp * 1000).subtract(24, 'hours').unix()
+      const totalAmount = await this.walletRepository.count({
+        latest_active_time: MoreThan(statisticsStartTimeStamp)
+      })
+      const activeWalletLastHour = await this.walletRepository.count({
+        latest_active_time : MoreThan(moment(hhTimestamp * 1000).subtract(1, 'hours').unix())
+      })
+      const snapObj = await this.activeWalletsRepository.findOne({
+        snapshot_time: hhTimestamp,
+      })
+      if(!snapObj){
+        await this.activeWalletsRepository.insert({
+          snapshot_time: hhTimestamp,
+          active_wallets_amount: totalAmount,
+          active_wallets_amount_last_hour : activeWalletLastHour
+        })
+      }
+    }
+  }
+
+  public async getActiveWallet(startTime){
+    return await this.activeWalletsRepository.find({
+      snapshot_time : MoreThan(startTime)
+    })
+
   }
 }

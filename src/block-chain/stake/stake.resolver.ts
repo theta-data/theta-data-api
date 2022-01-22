@@ -20,14 +20,15 @@ export class StakeResolver {
   ) {}
 
   @Query(() => StakeStatisticsEntity, {
-    description: 'Return to statistics related to token pledges'
+    description: 'Return to statistics related to token pledges',
+    nullable: true
   })
   async StakeStatistics() {
     return await this.stakeService.getLatestStakeStatics()
   }
 
   // @Resolver('stake_reward')
-  @ResolveField(() => StakeRewardModel, { name: 'stake_reward' })
+  @ResolveField(() => StakeRewardModel, { name: 'stake_reward', nullable: true })
   async stake_reward(
     @Info() info,
     @Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string
@@ -35,7 +36,7 @@ export class StakeResolver {
     console.log(fieldsList(info))
     const reward = new StakeRewardModel()
     const thetaFuelMarketInfo = await this.marketInfo.getThetaFuelMarketInfo()
-
+    wallet_address = wallet_address.toLocaleLowerCase()
     for (const field of fieldsList(info)) {
       //@ts-ignore
       const rewardAmount = await this.stakeService.getStakeReward(wallet_address, field)

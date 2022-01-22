@@ -21,7 +21,9 @@ export class MarketService {
   public async getThetaFuelMarketInfo(): Promise<CMC_PRICE_INFORMATION> {
     const key = 'tfuel-market-info'
     if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
+    console.log('get cmc price')
     const res = await thetaTsSdk.cmc.getInformation()
+    console.log('cmc', res)
     if (res.tfuel.price) {
       await this.cacheManager.set(key, res.tfuel, { ttl: 60 * 60 })
     }

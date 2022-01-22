@@ -1,6 +1,6 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
-// import { ThetaTxNumByDateModel } from './theta-tx-num-by-date.model'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
+import { GraphQLString } from 'graphql'
 
 @ObjectType()
 export class ThetaTransactionStatisticsType {
@@ -70,6 +70,6 @@ export class ThetaTxNumByDateModel {
   @Field(() => Int)
   latest_block_height: number
 
-  @Field()
-  timestamp: string
+  @Field(() => Int)
+  timestamp: number
 }

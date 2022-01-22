@@ -138,7 +138,7 @@ export class StakeService {
     })
   }
 
-  async updateGcpStatus(address: string, time: string) {
+  async updateGcpStatus(address: string, time: number) {
     await this.stakeRepository.update(
       { node_type: STAKE_NODE_TYPE_ENUM.guardian, holder: address },
       {
@@ -147,7 +147,7 @@ export class StakeService {
     )
   }
 
-  async updateEenpStatus(address: string, time: string) {
+  async updateEenpStatus(address: string, time: number) {
     await this.stakeRepository.update(
       { node_type: STAKE_NODE_TYPE_ENUM.edge_cache, holder: address },
       {
@@ -170,28 +170,30 @@ export class StakeService {
     period: 'last_24_hour' | 'last_3_days' | 'last_7_days' | 'last_30_days'
   ) {
     let rewardList: Array<StakeRewardEntity> = []
+    this.logger.debug('period:' + period)
+    this.logger.debug('wallet:' + wallet_address)
     switch (period) {
       case 'last_24_hour':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(24, 'hours').format()),
+          timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_7_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(7, 'days').format()),
+          timestamp: MoreThan(moment().subtract(7, 'days').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_3_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          timestamp: MoreThan(moment().subtract(3, 'days').unix()),
           wallet_address: wallet_address
         })
         break
       case 'last_30_days':
         rewardList = await this.stakeRewardRepository.find({
-          timestamp: MoreThan(moment().subtract(3, 'days').format()),
+          timestamp: MoreThan(moment().subtract(3, 'days').unix()),
           wallet_address: wallet_address
         })
         break

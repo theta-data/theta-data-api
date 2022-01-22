@@ -1,19 +1,15 @@
 import { CacheModule, Module } from '@nestjs/common'
-import * as redisStore from 'cache-manager-redis-store'
 import { WalletResolver } from './wallet.resolver'
 import { WalletService } from './wallet.service'
 import { MarketService } from '../../market/market.service'
-const config = require('config')
+import { TypeOrmModule } from '@nestjs/typeorm'
+import { ThetaTxNumByHoursEntity } from '../tx/theta-tx-num-by-hours.entity'
+import { WalletEntity } from './wallet.entity'
+import { AcitiveWalletsEntity } from './active-wallets.entity'
 
 @Module({
-  imports: [
-    CacheModule.register({
-      store: redisStore,
-      host: config.get('REDIS')['host'],
-      port: config.get('REDIS')['port']
-    })
-  ],
+  imports: [CacheModule.register(), TypeOrmModule.forFeature([WalletEntity, AcitiveWalletsEntity])],
   providers: [WalletResolver, WalletService, MarketService],
-  exports: []
+  exports: [WalletService]
 })
-export class WalletModule {}
+export class WalletModule { }

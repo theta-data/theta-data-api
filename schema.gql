@@ -61,7 +61,45 @@ type ThetaTxNumByDateModel {
   withdraw_stake_transaction: Int!
   smart_contract_transaction: Int!
   latest_block_height: Int!
-  timestamp: String!
+  timestamp: Int!
+}
+
+type WalletModel {
+  Balance(wallet_address: String!): BalanceModel!
+}
+
+type FiatCurrencyType {
+  usd: Float!
+  cny: Float!
+  eur: Float!
+}
+
+type TokenBalanceType {
+  amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type StakeBalanceType {
+  node_address: String!
+  amount: Float!
+  withdrawn: Boolean!
+  return_height: String!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type TotalBalanceType {
+  theta_amount: Float!
+  theta_fuel_amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type BalanceModel {
+  theta: TokenBalanceType!
+  theta_fuel: TokenBalanceType!
+  stake_to_guardian: [StakeBalanceType!]
+  stake_to_elite_node: [StakeBalanceType!]
+  stake_to_validator_node: [StakeBalanceType!]
+  total: TotalBalanceType!
 }
 
 type Stake {
@@ -114,41 +152,7 @@ type StakeStatisticsEntity {
 
   """Block time for performing pledge statistics"""
   timestamp: Int!
-  stake_reward(wallet_address: String!): StakeRewardModel!
-}
-
-type FiatCurrencyType {
-  usd: Float!
-  cny: Float!
-  eur: Float!
-}
-
-type TokenBalanceType {
-  amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type StakeBalanceType {
-  node_address: String!
-  amount: Float!
-  withdrawn: Boolean!
-  return_height: String!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type TotalBalanceType {
-  theta_amount: Float!
-  theta_fuel_amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type BalanceModel {
-  theta: TokenBalanceType!
-  theta_fuel: TokenBalanceType!
-  stake_to_guardian: [StakeBalanceType!]
-  stake_to_elite_node: [StakeBalanceType!]
-  stake_to_validator_node: [StakeBalanceType!]
-  total: TotalBalanceType!
+  stake_reward(wallet_address: String!): StakeRewardModel
 }
 
 type StakeRewardModel {
@@ -486,7 +490,7 @@ type ThetaRpcModel {
 
 type SmartContractCallRecordEntity {
   """Calling time"""
-  timestamp: Float!
+  timestamp: String!
 }
 
 type SmartContractEntity {
@@ -517,17 +521,12 @@ enum RankByEnum {
   last_seven_days_call_times
 }
 
-type WalletModel {
-  Balance(wallet_address: String!): BalanceModel!
-}
-
 type Query {
-  TransactionsStatistics: ThetaTransactionStatisticsType!
-
   """Return to statistics related to token pledges"""
-  StakeStatistics: StakeStatisticsEntity!
-  MarketInformation: MarketInformationType!
-  ThetaRpc: ThetaRpcModel!
-  SmartContractStatistics: SmartContractStatisticsType!
+  StakeStatistics: StakeStatisticsEntity
   Wallet: WalletModel!
+  MarketInformation: MarketInformationType!
+  SmartContractStatistics: SmartContractStatisticsType!
+  TransactionsStatistics: ThetaTransactionStatisticsType!
+  ThetaRpc: ThetaRpcModel!
 }

@@ -4,9 +4,10 @@ import {
   Entity,
   Index,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn
 } from 'typeorm'
-import { Field, registerEnumType } from '@nestjs/graphql'
+import { registerEnumType } from '@nestjs/graphql'
 export enum STAKE_TOKEN_TYPE_ENUM {
   theta_stake = 1,
   elite_node_stake
@@ -17,29 +18,27 @@ registerEnumType(STAKE_TOKEN_TYPE_ENUM, {
 
 @Entity()
 @Index(['wallet_address', 'timestamp'])
+@Unique(['wallet_address', 'reward_height'])
 export class StakeRewardEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
-  @Column({ type: 'float' })
+  @Column({ type: 'real' })
   reward_amount: number
 
-  @Column()
+  @Column({ type: 'text' })
   wallet_address: string
 
   // @Column({ type: 'tinyint' })
   // stake_token_type: STAKE_TOKEN_TYPE_ENUM
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'integer' })
   reward_height: number
 
-  @Field()
   @Column({
-    type: 'timestamp',
-    // default: '1970-01-01 00:00:01',
-    comment: '对应精确到小时的数据'
+    type: 'integer'
   })
-  timestamp: string
+  timestamp: number
 
   @CreateDateColumn()
   create_date!: number
