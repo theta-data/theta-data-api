@@ -1,6 +1,6 @@
 {
   "ORM_CONFIG": {
-    "database": "/home/ubuntu/theta-data/database/data2.sqlite",
+    "database": "/home/ubuntu/theta-data/database/data.sqlite",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
