@@ -1,6 +1,6 @@
 {
   "ORM_CONFIG": {
-    "database": "/home/ubuntu/theta-data/database/data.sqlite",
+    "database": "/data/theta-data/database/data.sqlite",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
@@ -12,9 +12,9 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
+  "THETA_NODE_HOST" : "http://ip-172-31-35-81.ap-southeast-1.compute.internal/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_SLEEP" : 6000,
+  "ANALYSE_SLEEP" : 20,
   "REDIS": {
     "host": "127.0.0.1",
     "port": 6379
