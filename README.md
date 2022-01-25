@@ -39,6 +39,7 @@ $ npm run build
 
 # run graphql api server
 $ node dist/main
+```
 
 ## Contact
 
@@ -47,4 +48,3 @@ contact@thetadata.io
 ## License
 
 The Theta Data Api is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-```
