@@ -5,8 +5,8 @@ import { AnalyseService } from './analyse/analyse.service'
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, { cors: true })
   app.set('trust proxy', true)
-  const taskService = app.get(AnalyseService)
-  taskService.queryDataFromBlockChain()
+  // const taskService = app.get(AnalyseService)
+  // taskService.queryDataFromBlockChain()
   await app.listen(3000)
 }
 bootstrap()
