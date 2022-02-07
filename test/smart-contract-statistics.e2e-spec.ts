@@ -43,7 +43,7 @@ describe('AppController (e2e)', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 120000)
 
   afterAll(async () => {
     await app.close()
