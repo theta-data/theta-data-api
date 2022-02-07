@@ -22,19 +22,19 @@ export class SmartContractService {
     switch (rankBy) {
       case RankByEnum.last_seven_days_call_times:
         return await this.smartContractRepository.find({
-          relations: ['record'],
+          // relations: ['record'],
           order: { last_seven_days_call_times: 'DESC' },
           take: max
         })
       case RankByEnum.last_24h_call_times:
         return await this.smartContractRepository.find({
-          relations: ['record'],
+          // relations: ['record'],
           order: { last_24h_call_times: 'DESC' },
           take: max
         })
       default:
         return await this.smartContractRepository.find({
-          relations: ['record'],
+          // relations: ['record'],
           order: { call_times: 'DESC' },
           take: max
         })
@@ -66,7 +66,7 @@ export class SmartContractService {
       await this.smartContractRecordRepository.save(smartContractRecord)
     } else {
       const contractRecord = new SmartContractCallRecordEntity()
-      contractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
+      contractRecord.timestamp = Number(timestamp)
       contractRecord.smart_contract = smartContract
       smartContract.call_times++
       await this.smartContractRecordRepository.save(contractRecord)
@@ -79,11 +79,11 @@ export class SmartContractService {
     let smartContractList = await this.smartContractRepository.find()
     for (const contract of smartContractList) {
       contract.last_24h_call_times = await this.smartContractRecordRepository.count({
-        timestamp: MoreThan(moment().subtract(24, 'hours').format()),
+        timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
         smart_contract: contract
       })
       contract.last_seven_days_call_times = await this.smartContractRecordRepository.count({
-        timestamp: MoreThan(moment().subtract(7, 'days').format()),
+        timestamp: MoreThan(moment().subtract(7, 'days').unix()),
         smart_contract: contract
       })
       await this.smartContractRepository.save(contract)
