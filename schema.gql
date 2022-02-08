@@ -488,11 +488,6 @@ type ThetaRpcModel {
   GetStakeRewardDistributionByHeight(height: Int): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }
 
-type SmartContractCallRecordEntity {
-  """Calling time"""
-  timestamp: String!
-}
-
 type SmartContractEntity {
   """Address of the smart contract"""
   contract_address: String!
@@ -505,9 +500,6 @@ type SmartContractEntity {
 
   """Number of smart contract calls in the last 24 hours"""
   last_24h_call_times: Int!
-
-  """ Call log"""
-  record: [SmartContractCallRecordEntity!]!
 }
 
 """Statistics on smart contract related calls"""
