@@ -61,7 +61,7 @@ export class SmartContractService {
       smartContract.last_24h_call_times = 1
       smartContract.last_seven_days_call_times = 1
       const smartContractRecord = new SmartContractCallRecordEntity()
-      smartContractRecord.timestamp = moment(Number(timestamp) * 1000).format('YYYY-MM-DD HH:MM:SS')
+      smartContractRecord.timestamp = Number(timestamp)
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
       await this.smartContractRecordRepository.save(smartContractRecord)
     } else {

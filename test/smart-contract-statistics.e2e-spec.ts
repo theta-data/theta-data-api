@@ -28,7 +28,7 @@ describe('AppController (e2e)', () => {
           '      last_24h_call_times\n' +
           '      last_seven_days_call_times\n' +
           // '      record {\n' +
-          // '        timestamp\n' +
+          // '        timestampg\n' +
           // '      }\n' +
           '    }\n' +
           '  }}'
