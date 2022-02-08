@@ -27,9 +27,9 @@ describe('AppController (e2e)', () => {
           '      contract_address\n' +
           '      last_24h_call_times\n' +
           '      last_seven_days_call_times\n' +
-          '      record {\n' +
-          '        timestamp\n' +
-          '      }\n' +
+          // '      record {\n' +
+          // '        timestampg\n' +
+          // '      }\n' +
           '    }\n' +
           '  }}'
       })
@@ -43,7 +43,7 @@ describe('AppController (e2e)', () => {
         if (err) return done(err)
         return done()
       })
-  })
+  }, 120000)
 
   afterAll(async () => {
     await app.close()

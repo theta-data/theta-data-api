@@ -7,9 +7,15 @@ import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.ent
 import { SmartContractModule } from '../block-chain/smart-contract/smart-contract.module'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 import { WalletModule } from '../block-chain/wallet/wallet.module'
+import { BlockListEntity } from './block-list.entity'
 @Module({
   imports: [
-    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity, StakeStatisticsEntity, StakeRewardEntity]),
+    TypeOrmModule.forFeature([
+      ThetaTxNumByHoursEntity,
+      StakeStatisticsEntity,
+      StakeRewardEntity,
+      BlockListEntity
+    ]),
     CacheModule.register({}),
     StakeModule,
     SmartContractModule,
@@ -17,4 +23,4 @@ import { WalletModule } from '../block-chain/wallet/wallet.module'
   ],
   providers: [AnalyseService]
 })
-export class AnalyseModule { }
+export class AnalyseModule {}

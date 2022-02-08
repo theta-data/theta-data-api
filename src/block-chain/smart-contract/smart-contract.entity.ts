@@ -42,7 +42,7 @@ export class SmartContractEntity {
   })
   last_24h_call_times: number
 
-  @Field(() => [SmartContractCallRecordEntity], { description: ' Call log' })
+  // @Field(() => [SmartContractCallRecordEntity], { description: ' Call log' })
   @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
     cascade: true
   })
