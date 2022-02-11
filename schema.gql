@@ -513,6 +513,25 @@ enum RankByEnum {
   last_seven_days_call_times
 }
 
+type SmartContractScType {
+  address: String!
+  abi: String!
+  source_code: String!
+  verification_date: String!
+  compiler_version: String!
+  optimizer: String!
+  optimizerRuns: Float!
+  name: String!
+  function_hash: String!
+  constructor_arguments: String!
+}
+
+"""smart contract verification"""
+type SmartContractVerifyType {
+  is_verified: Boolean!
+  smart_contract: SmartContractScType
+}
+
 type Query {
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity
@@ -521,4 +540,8 @@ type Query {
   SmartContractStatistics: SmartContractStatisticsType!
   TransactionsStatistics: ThetaTransactionStatisticsType!
   ThetaRpc: ThetaRpcModel!
+}
+
+type Mutation {
+  verify(optimizerRuns: Int!, optimizer: String!, versionFullName: String!, version: String!, byteCode: String!, sourceCode: String!, address: String!): SmartContractVerifyType!
 }

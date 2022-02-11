@@ -23,6 +23,12 @@ export class SmartContractCallRecordEntity {
   })
   smart_contract: SmartContractEntity
 
+  @Column()
+  data: string
+
+  @Column()
+  receipt: string
+
   @Field(() => GraphQLString, { description: 'Calling time' })
   @Column({
     type: 'int'
