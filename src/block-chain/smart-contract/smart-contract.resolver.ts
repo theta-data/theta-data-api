@@ -6,10 +6,11 @@ import {
   SmartContractVerifyType
 } from './smart-contract.model'
 import { GraphQLInt } from 'graphql'
+import { NftService } from './nft/nft.service'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
-  constructor(private smartContractService: SmartContractService) {}
+  constructor(private smartContractService: SmartContractService, private nftService: NftService) {}
 
   @Query(() => SmartContractStatisticsType)
   async SmartContractStatistics() {
@@ -168,6 +169,7 @@ export class SmartContractResolver {
                 JSON.stringify(output.contracts['test.sol'][contractName].evm.methodIdentifiers),
                 constructor_arguments
               )
+              await this.nftService.parseRecordByContractAddress(address)
               break
             }
           }

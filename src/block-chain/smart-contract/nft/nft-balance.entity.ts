@@ -7,6 +7,11 @@ import {
   UpdateDateColumn
 } from 'typeorm'
 
+export enum NftStatusEnum {
+  invalid = 1,
+  valid = 2
+}
+
 @Entity()
 // @Unique([])
 export class NftBalanceEntity {
@@ -15,6 +20,12 @@ export class NftBalanceEntity {
 
   @Column()
   smart_contract_address: string
+
+  @Column()
+  owner: string
+
+  @Column()
+  from: string
 
   @Column()
   contract_uri: string
@@ -27,6 +38,8 @@ export class NftBalanceEntity {
 
   @Column({ type: 'int' })
   token_id: number
+  //   @Column({ type: 'int' })
+  //   status: NftStatusEnum
 
   @CreateDateColumn()
   create_date!: number

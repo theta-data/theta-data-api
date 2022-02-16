@@ -5,12 +5,16 @@ import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
 import { Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
+import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 @Injectable()
 export class NftService {
   constructor(
     @InjectRepository(NftTransferRecordEntity)
     private nftTransferRecordRepository: Repository<NftTransferRecordEntity>,
+
+    @InjectRepository(NftBalanceEntity)
+    private nftBalanceRepository: Repository<NftBalanceEntity>,
 
     @InjectRepository(SmartContractCallRecordEntity)
     private smartContractCallRecordRepository: Repository<SmartContractCallRecordEntity>,
@@ -44,6 +48,12 @@ export class NftService {
             smart_contract_address: record.smart_contract.contract_address,
             timestamp: record.timestamp
           })
+          await this.updateNftBalance(
+            contract.contract_address,
+            logInfo[0].decode.result.from,
+            logInfo[0].decode.result.to,
+            Number(logInfo[0].decode.result.tokenId)
+          )
         } catch (e) {
           console.log(e)
         }
@@ -51,7 +61,40 @@ export class NftService {
     }
   }
 
-  async updateNftBalance(contract_address: string, from: string, to: string, tokenId: number) {}
+  async updateNftBalance(contract_address: string, from: string, to: string, tokenId: number) {
+    const NftRecord = await this.nftBalanceRepository.findOne({
+      smart_contract_address: contract_address,
+      token_id: tokenId,
+      owner: from
+    })
+    const contractInfo = await this.smartContractRepository.findOne({
+      contract_address: contract_address
+    })
+    const abiInfo = JSON.stringify(contractInfo.abi)
+    if (!NftRecord) {
+      await this.nftBalanceRepository.insert({
+        smart_contract_address: contract_address,
+        owner: to,
+        from: from,
+        contract_uri: await this.getContractUri(contract_address, abiInfo),
+        base_token_uri: await this.getBaseTokenUri(contract_address, abiInfo),
+        token_id: tokenId,
+        token_uri: await this.getTokenUri(contract_address, abiInfo, tokenId)
+        // status: NftStatusEnum.valid
+      })
+    } else {
+      await this.nftBalanceRepository.update(
+        {
+          smart_contract_address: contract_address,
+          owner: from
+        },
+        {
+          owner: to,
+          from: from
+        }
+      )
+    }
+  }
 
   async getContractUri(address: string, abi: any) {
     const res = await readSmartContract(address, address, abi, 'contractURI', [], [], ['string'])
