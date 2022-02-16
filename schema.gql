@@ -544,4 +544,5 @@ type Query {
 
 type Mutation {
   verify(optimizerRuns: Int!, optimizer: String!, versionFullName: String!, version: String!, byteCode: String!, sourceCode: String!, address: String!): SmartContractVerifyType!
+  verifyWithThetaExplorer(address: String!): SmartContractVerifyType!
 }
