@@ -24,6 +24,7 @@ export class NftService {
   ) {}
 
   async parseRecordByContractAddress(contractAddress: string) {
+    const helper = require('../../../helper/utils')
     const contract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
@@ -31,23 +32,38 @@ export class NftService {
       smart_contract: contract
     })
     if (!checkTnt721(JSON.parse(contract.abi))) {
+      console.log('protocol not nft 721')
       return false
     }
+    console.log('protocol is tnt 721')
     for (const record of contractRecord) {
       const receipt = JSON.parse(record.receipt)
       if (receipt.Logs[0].data === '') {
-        receipt.Logs[0].data = record.data
+        const data = helper.getHex(record.data)
+        receipt.Logs[0].data = data
       }
+      console.log('logs', receipt.Logs)
+      console.log('abi', contract.abi)
       const logInfo = decodeLogs(receipt.Logs, JSON.parse(contract.abi))
+      console.log('logInfo', logInfo)
       if (logInfo[0].decode.eventName === 'Transfer') {
         try {
-          await this.nftTransferRecordRepository.insert({
+          const recordHistory = await this.nftTransferRecordRepository.findOne({
             from: logInfo[0].decode.result.from,
             to: logInfo[0].decode.result.to,
             token_id: Number(logInfo[0].decode.result.tokenId),
-            smart_contract_address: record.smart_contract.contract_address,
+            smart_contract_address: contractAddress,
             timestamp: record.timestamp
           })
+          if (!recordHistory) {
+            await this.nftTransferRecordRepository.insert({
+              from: logInfo[0].decode.result.from,
+              to: logInfo[0].decode.result.to,
+              token_id: Number(logInfo[0].decode.result.tokenId),
+              smart_contract_address: contractAddress,
+              timestamp: record.timestamp
+            })
+          }
           await this.updateNftBalance(
             contract.contract_address,
             logInfo[0].decode.result.from,
@@ -70,7 +86,7 @@ export class NftService {
     const contractInfo = await this.smartContractRepository.findOne({
       contract_address: contract_address
     })
-    const abiInfo = JSON.stringify(contractInfo.abi)
+    const abiInfo = JSON.parse(contractInfo.abi)
     if (!NftRecord) {
       await this.nftBalanceRepository.insert({
         smart_contract_address: contract_address,
