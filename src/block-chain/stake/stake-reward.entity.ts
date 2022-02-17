@@ -29,9 +29,6 @@ export class StakeRewardEntity {
   @Column({ type: 'text' })
   wallet_address: string
 
-  // @Column({ type: 'tinyint' })
-  // stake_token_type: STAKE_TOKEN_TYPE_ENUM
-
   @Column({ type: 'integer' })
   reward_height: number
 

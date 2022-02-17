@@ -10,8 +10,6 @@ import { SmartContractModule } from './block-chain/smart-contract/smart-contract
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerModule } from '@nestjs/throttler'
-import { APP_GUARD } from '@nestjs/core'
-import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
 import { WalletModule } from './block-chain/wallet/wallet.module'
 import * as path from 'path'
 import { AnalyseModule } from './analyse/analyse.module'
@@ -42,14 +40,9 @@ const config = require('config')
       introspection: true,
       context: ({ req, res }) => ({ req, res })
     }),
-    CacheModule.register({
-      // store: redisStore,
-      // host: config.get('REDIS')['host'],
-      // port: config.get('REDIS')['port']
-    }),
+    CacheModule.register(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'playground'),
-      // serveRoot: 'playground',
       exclude: ['/graphql*']
     }),
     ScheduleModule.forRoot(),
@@ -58,7 +51,6 @@ const config = require('config')
       limit: config.get('RATE_LIMIT')['limit']
     }),
     EventEmitterModule.forRoot(),
-
     AnalyseModule,
     TxModule,
     StakeModule,
@@ -67,11 +59,6 @@ const config = require('config')
     SmartContractModule,
     WalletModule
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: GqlThrottlerBehindProxyGuard
-    }
-  ]
+  providers: []
 })
 export class AppModule {}

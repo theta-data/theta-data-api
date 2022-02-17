@@ -14,8 +14,7 @@ import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter'
 const config = require('config')
 const moment = require('moment')
-const sleep = require('await-sleep')
-import { Cron, Interval } from '@nestjs/schedule'
+import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
 thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
