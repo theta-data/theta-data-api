@@ -36,6 +36,15 @@ export class NftBalanceEntity {
   @Column()
   token_uri: string
 
+  @Column()
+  name: string
+
+  @Column()
+  img_uri: string
+
+  @Column()
+  detail: string
+
   @Column({ type: 'int' })
   token_id: number
   //   @Column({ type: 'int' })

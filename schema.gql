@@ -532,12 +532,25 @@ type SmartContractVerifyType {
   smart_contract: SmartContractScType
 }
 
+type NftType {
+  token_uri: String!
+  token_id: Int!
+  contract_uri: String!
+  from: String!
+  name: String!
+  img_uri: String!
+  detail: String!
+  base_token_uri: String!
+  smart_contract_address: String!
+}
+
 type Query {
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity
   Wallet: WalletModel!
   MarketInformation: MarketInformationType!
   SmartContractStatistics: SmartContractStatisticsType!
+  Nfts(wallet_address: String!): [NftType!]!
   TransactionsStatistics: ThetaTransactionStatisticsType!
   ThetaRpc: ThetaRpcModel!
 }

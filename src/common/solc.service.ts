@@ -35,6 +35,7 @@ export class SolcService {
         resolve({ result: 'Done', fileName: outputName })
         return
       }
+
       console.log('Downloading version', version)
       const handleInt = () => {
         console.log(`\nInterrupted before download, removing file: ${version}.`)

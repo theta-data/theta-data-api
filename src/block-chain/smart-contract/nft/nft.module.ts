@@ -5,6 +5,7 @@ import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
+import { NftResolver } from './nft.resolver'
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { SmartContractEntity } from '../smart-contract.entity'
       SmartContractEntity
     ])
   ],
-  providers: [NftService],
+  providers: [NftService, NftResolver],
   exports: [NftService]
 })
 export class NftModule {}
