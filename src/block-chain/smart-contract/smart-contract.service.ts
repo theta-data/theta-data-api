@@ -54,7 +54,8 @@ export class SmartContractService {
     timestamp: string,
     contractAddress: string,
     data: string,
-    receipt: string
+    receipt: string,
+    height: number
   ) {
     const smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
@@ -64,6 +65,7 @@ export class SmartContractService {
     smartContractRecord.timestamp = Number(timestamp)
     smartContractRecord.data = data
     smartContractRecord.receipt = receipt
+    smartContractRecord.height = height
 
     if (!smartContract) {
       const smartContract = new SmartContractEntity()

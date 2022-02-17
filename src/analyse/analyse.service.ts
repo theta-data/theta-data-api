@@ -43,7 +43,7 @@ export class AnalyseService {
     private eventEmitter: EventEmitter2
   ) {}
 
-  @Interval(400)
+  @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
@@ -176,7 +176,8 @@ export class AnalyseService {
             row.timestamp,
             transaction.receipt.ContractAddress,
             transaction.raw.data,
-            JSON.stringify(transaction.receipt)
+            JSON.stringify(transaction.receipt),
+            height
           )
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
