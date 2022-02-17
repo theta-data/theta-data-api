@@ -44,11 +44,11 @@ export class AnalyseService {
     private eventEmitter: EventEmitter2
   ) {}
 
-  @Interval(2000)
+  @Interval(200)
   public async analyseData() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
-    height = 14029900
+    height = 8000000
     const latestBlock = await this.blockListRepository.findOne({
       order: {
         block_number: 'DESC'
