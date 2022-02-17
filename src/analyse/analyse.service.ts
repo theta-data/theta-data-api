@@ -44,7 +44,7 @@ export class AnalyseService {
     private eventEmitter: EventEmitter2
   ) {}
 
-  @Interval(200)
+  @Interval(400)
   public async analyseData() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
