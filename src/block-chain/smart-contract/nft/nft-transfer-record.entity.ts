@@ -25,6 +25,12 @@ export class NftTransferRecordEntity {
   @Column({ type: 'int' })
   token_id: number
 
+  @Column({
+    type: 'int',
+    default: 0
+  })
+  height: number
+
   @Column({ type: 'int' })
   timestamp: number
 

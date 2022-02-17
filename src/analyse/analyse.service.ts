@@ -177,7 +177,8 @@ export class AnalyseService {
             transaction.receipt.ContractAddress,
             transaction.raw.data,
             JSON.stringify(transaction.receipt),
-            height
+            height,
+            transaction.hash
           )
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
