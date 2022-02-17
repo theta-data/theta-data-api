@@ -19,26 +19,23 @@ export class SmartContractService {
     @InjectRepository(SmartContractCallRecordEntity)
     private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>,
 
-    private nftServide: NftService
+    private nftService: NftService
   ) {}
 
   async getSmartContract(rankBy: RankByEnum, max: number = 500) {
     switch (rankBy) {
       case RankByEnum.last_seven_days_call_times:
         return await this.smartContractRepository.find({
-          // relations: ['record'],
           order: { last_seven_days_call_times: 'DESC' },
           take: max
         })
       case RankByEnum.last_24h_call_times:
         return await this.smartContractRepository.find({
-          // relations: ['record'],
           order: { last_24h_call_times: 'DESC' },
           take: max
         })
       default:
         return await this.smartContractRepository.find({
-          // relations: ['record'],
           order: { call_times: 'DESC' },
           take: max
         })
@@ -79,11 +76,11 @@ export class SmartContractService {
       smartContractRecord.smart_contract = smartContract
       smartContract.call_times++
       await this.smartContractRepository.save(smartContract)
+      if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
+        await this.nftService.updateNftRecord(smartContractRecord, smartContract)
+      }
     }
     await this.smartContractRecordRepository.save(smartContractRecord)
-    if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
-      await this.nftServide.updateNftRecord(smartContractRecord, smartContract)
-    }
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
@@ -104,39 +101,163 @@ export class SmartContractService {
 
   async verifySmartContract(
     address: string,
-    abi: string,
-    source_code: string,
-    // verification_date: number,
-    compiler_version: string,
-    optimizer: string,
-    optimizerRuns: number,
-    name: string,
-    function_hash: string,
-    constructor_arguments: string
+    // abi: string,
+    sourceCode: string,
+    byteCode: string,
+    version: string,
+    versionFullName: string,
+    optimizer: boolean,
+    optimizerRuns: number
   ) {
-    let contract = await this.smartContractRepository.findOne({
-      contract_address: address
-    })
-    if (!contract) {
-      contract = new SmartContractEntity()
+    const downloader = require('../../helper/solcDownloader')
+    const solc = require('solc')
+    const helper = require('../../helper/utils')
+    const fs = require('fs')
+
+    address = helper.normalize(address.toLowerCase())
+    optimizerRuns = +optimizerRuns
+    if (Number.isNaN(optimizerRuns)) optimizerRuns = 200
+    try {
+      console.log('Verifing the source code and bytecode for address:', address)
+      let start = +new Date()
+      var input = {
+        language: 'Solidity',
+        settings: {
+          optimizer: {
+            enabled: optimizer,
+            runs: optimizerRuns
+          },
+          outputSelection: {
+            '*': {
+              '*': ['*']
+            }
+          }
+        },
+        sources: {
+          'test.sol': {
+            content: sourceCode
+          }
+        }
+      }
+      // console.log(input)
+      var output: any = ''
+      console.log(`Loading specific version starts.`)
+      console.log(`version: ${version}`)
+      const prefix = './libs'
+      const fileName = prefix + '/' + versionFullName
+      if (!fs.existsSync(fileName)) {
+        console.log(`file ${fileName} does not exsit, downloading`)
+        await downloader.downloadByVersion(version, './libs')
+      } else {
+        console.log(`file ${fileName} exsits, skip download process`)
+      }
+      console.log(`Download solc-js file takes: ${(+new Date() - start) / 1000} seconds`)
+      start = +new Date()
+      const solcjs = solc.setupMethods(require('../../.' + fileName))
+      console.log(`load solc-js version takes: ${(+new Date() - start) / 1000} seconds`)
+      start = +new Date()
+      console.log('input', input)
+      output = JSON.parse(solcjs.compile(JSON.stringify(input)))
+      console.log(`compile takes ${(+new Date() - start) / 1000} seconds`)
+      let check: any = {}
+      if (output.errors) {
+        check = output.errors.reduce((check, err) => {
+          if (err.severity === 'warning') {
+            if (!check.warnings) check.warnings = []
+            check.warnings.push(err.message)
+          }
+          if (err.severity === 'error') {
+            check.error = err.message
+          }
+          return check
+        }, {})
+      }
+      let data = {}
+      let verified = false
+      let sc
+      if (check.error) {
+        console.log(check.error)
+        data = { result: { verified: false }, err_msg: check.error }
+      } else {
+        if (output.contracts) {
+          let hexBytecode = helper.getHex(byteCode).substring(2)
+          for (var contractName in output.contracts['test.sol']) {
+            const byteCode = output.contracts['test.sol'][contractName].evm.bytecode.object
+            const deployedBytecode =
+              output.contracts['test.sol'][contractName].evm.deployedBytecode.object
+            const processed_compiled_bytecode = helper.getBytecodeWithoutMetadata(deployedBytecode)
+            const constructor_arguments = hexBytecode.slice(byteCode.length)
+            if (
+              hexBytecode.indexOf(processed_compiled_bytecode) > -1 &&
+              processed_compiled_bytecode.length > 0
+            ) {
+              verified = true
+              let abi = output.contracts['test.sol'][contractName].abi
+              const breifVersion = versionFullName.match(/^soljson-(.*).js$/)[1]
+              sc = {
+                address: address,
+                abi: JSON.stringify(abi),
+                source_code: helper.stampDate(sourceCode),
+                verification_date: +new Date(),
+                compiler_version: breifVersion,
+                optimizer: optimizer === true ? 'enabled' : 'disabled',
+                optimizerRuns: optimizerRuns,
+                name: contractName,
+                function_hash: JSON.stringify(
+                  output.contracts['test.sol'][contractName].evm.methodIdentifiers
+                ),
+                constructor_arguments: constructor_arguments
+              }
+              let contract = await this.smartContractRepository.findOne({
+                contract_address: address
+              })
+              if (!contract) {
+                contract = new SmartContractEntity()
+                contract.contract_address = address
+              }
+              contract.verified = true
+              contract.byte_code = byteCode
+              if (checkTnt721(abi)) {
+                contract.protocol = smartContractProtocol.tnt721
+              } else if (checkTnt20(abi)) {
+                contract.protocol = smartContractProtocol.tnt20
+              } else {
+                contract.protocol = smartContractProtocol.unknow
+              }
+              // contract.contract_address
+              contract.abi = JSON.stringify(abi)
+              contract.source_code = helper.stampDate(sourceCode)
+              contract.verification_date = moment().unix()
+              contract.compiler_version = breifVersion
+              contract.optimizer = optimizer === true ? 'enabled' : 'disabled'
+              contract.optimizerRuns = optimizerRuns
+              contract.name = contractName
+              contract.function_hash = JSON.stringify(
+                output.contracts['test.sol'][contractName].evm.methodIdentifiers
+              )
+              contract.constructor_arguments = constructor_arguments
+              await this.smartContractRepository.save(contract)
+              console.log('save smart contract')
+              await this.nftService.parseRecordByContractAddress(address)
+              break
+            }
+          }
+        }
+        data = { result: { verified }, warning_msg: check.warnings, smart_contract: sc }
+        return {
+          is_verified: verified,
+          smart_contract: sc
+        }
+      }
+      return {
+        is_verified: false
+      }
+    } catch (e) {
+      console.log('Error in catch:', e)
+      return {
+        is_verified: false
+      }
+      // res.status(400).send(e)
     }
-    contract.verified = true
-    if (checkTnt721(JSON.parse(abi))) {
-      contract.protocol = smartContractProtocol.tnt721
-    } else if (checkTnt20(JSON.parse(abi))) {
-      contract.protocol = smartContractProtocol.tnt20
-    } else {
-      contract.protocol = smartContractProtocol.unknow
-    }
-    contract.abi = abi
-    contract.source_code = source_code
-    contract.verification_date = moment().unix()
-    contract.compiler_version = compiler_version
-    contract.optimizer = optimizer
-    contract.optimizerRuns = optimizerRuns
-    contract.name = name
-    contract.function_hash = function_hash
-    contract.constructor_arguments = constructor_arguments
-    return await this.smartContractRepository.save(contract)
   }
 }
