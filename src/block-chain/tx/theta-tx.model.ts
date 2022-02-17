@@ -1,6 +1,5 @@
 import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { GraphQLString } from 'graphql'
 
 @ObjectType()
 export class ThetaTransactionStatisticsType {

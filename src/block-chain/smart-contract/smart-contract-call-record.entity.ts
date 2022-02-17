@@ -29,6 +29,15 @@ export class SmartContractCallRecordEntity {
   @Column()
   receipt: string
 
+  @Column({
+    type: 'int',
+    default: 0
+  })
+  height: number
+
+  @Column({ default: '' })
+  tansaction_hash: string
+
   @Field(() => GraphQLString, { description: 'Calling time' })
   @Column({
     type: 'int'

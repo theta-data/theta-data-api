@@ -14,8 +14,7 @@ import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter'
 const config = require('config')
 const moment = require('moment')
-const sleep = require('await-sleep')
-import { Cron, Interval } from '@nestjs/schedule'
+import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
 thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -44,7 +43,7 @@ export class AnalyseService {
     private eventEmitter: EventEmitter2
   ) {}
 
-  @Interval(400)
+  @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
@@ -177,7 +176,9 @@ export class AnalyseService {
             row.timestamp,
             transaction.receipt.ContractAddress,
             transaction.raw.data,
-            JSON.stringify(transaction.receipt)
+            JSON.stringify(transaction.receipt),
+            height,
+            transaction.hash
           )
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)

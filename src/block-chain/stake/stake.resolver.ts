@@ -1,6 +1,5 @@
 import { Args, Info, Parent, Query, ResolveField, ResolveProperty, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
-import { STAKE_NODE_TYPE_ENUM } from './stake.entity'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Logger } from '@nestjs/common'
 import { StakeRewardModel } from './stake.model'
@@ -27,7 +26,6 @@ export class StakeResolver {
     return await this.stakeService.getLatestStakeStatics()
   }
 
-  // @Resolver('stake_reward')
   @ResolveField(() => StakeRewardModel, { name: 'stake_reward', nullable: true })
   async stake_reward(
     @Info() info,
@@ -54,7 +52,4 @@ export class StakeResolver {
     return reward
     // return new StakeRewardModel()
   }
-
-  // @ResolveField('stake_reward.last_24_hour')
-  // async last_24_hour() {}
 }

@@ -18,12 +18,7 @@ export class StakeService {
     @InjectRepository(StakeRewardEntity)
     private stakeRewardRepository: Repository<StakeRewardEntity>
   ) {
-    // if (config.get('THETA_NODE_HOST')) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-    // } else {
-    //   // console.log('no theta node host')
-    //   thetaTsSdk.blockchain.setUrl('http://localhost:16888/rpc')
-    // }
   }
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {
@@ -56,7 +51,6 @@ export class StakeService {
 
   async updateVcp(height: string) {
     let vcpList = await thetaTsSdk.blockchain.getVcpByHeight(height)
-    // console.log('height', height, 'vcp list', JSON.stringify(vcpList))
     for (const validator of vcpList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates) {
       let res = await this.stakeRepository.findOne({
         holder: validator.Holder,
@@ -67,8 +61,6 @@ export class StakeService {
           node_type: STAKE_NODE_TYPE_ENUM.validator,
           holder: validator.Holder,
           stakes: validator.Stakes
-          // last_signature: '2000-01-01 00:00:01'
-          // last_signature: validator.
         })
       else
         await this.stakeRepository.update(

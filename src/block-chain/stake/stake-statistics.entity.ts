@@ -1,7 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat } from 'graphql'
-import { StakeRewardModel } from './stake.model'
 
 @Entity()
 @ObjectType({ description: 'Return to statistics related to token pledges' })

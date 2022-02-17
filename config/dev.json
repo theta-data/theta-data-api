@@ -14,7 +14,7 @@
   },
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_SLEEP" : 6000,
+  "ANALYSE_INTERVAL" : 2000,
   "REDIS": {
     "host": "127.0.0.1",
     "port": 6379
