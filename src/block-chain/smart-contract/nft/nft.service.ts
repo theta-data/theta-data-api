@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { ethers } from 'ethers'
 import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
 import { Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
+import fetch from 'cross-fetch'
+
 @Injectable()
 export class NftService {
   constructor(
@@ -24,7 +25,6 @@ export class NftService {
   ) {}
 
   async parseRecordByContractAddress(contractAddress: string) {
-    const helper = require('../../../helper/utils')
     const contract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
@@ -37,42 +37,47 @@ export class NftService {
     }
     console.log('protocol is tnt 721')
     for (const record of contractRecord) {
-      const receipt = JSON.parse(record.receipt)
-      if (receipt.Logs[0].data === '') {
-        const data = helper.getHex(record.data)
-        receipt.Logs[0].data = data
-      }
-      console.log('logs', receipt.Logs)
-      console.log('abi', contract.abi)
-      const logInfo = decodeLogs(receipt.Logs, JSON.parse(contract.abi))
-      console.log('logInfo', logInfo)
-      if (logInfo[0].decode.eventName === 'Transfer') {
-        try {
-          const recordHistory = await this.nftTransferRecordRepository.findOne({
+      await this.updateNftRecord(record, contract)
+    }
+  }
+
+  async updateNftRecord(record: SmartContractCallRecordEntity, contract: SmartContractEntity) {
+    const helper = require('../../../helper/utils')
+    const receipt = JSON.parse(record.receipt)
+    if (receipt.Logs[0].data === '') {
+      const data = helper.getHex(record.data)
+      receipt.Logs[0].data = data
+    }
+    console.log('logs', receipt.Logs)
+    console.log('abi', contract.abi)
+    const logInfo = decodeLogs(receipt.Logs, JSON.parse(contract.abi))
+    console.log('logInfo', logInfo)
+    if (logInfo[0].decode.eventName === 'Transfer') {
+      try {
+        const recordHistory = await this.nftTransferRecordRepository.findOne({
+          from: logInfo[0].decode.result.from,
+          to: logInfo[0].decode.result.to,
+          token_id: Number(logInfo[0].decode.result.tokenId),
+          smart_contract_address: contract.contract_address,
+          timestamp: record.timestamp
+        })
+        if (!recordHistory) {
+          await this.nftTransferRecordRepository.insert({
             from: logInfo[0].decode.result.from,
             to: logInfo[0].decode.result.to,
             token_id: Number(logInfo[0].decode.result.tokenId),
-            smart_contract_address: contractAddress,
+            smart_contract_address: contract.contract_address,
             timestamp: record.timestamp
           })
-          if (!recordHistory) {
-            await this.nftTransferRecordRepository.insert({
-              from: logInfo[0].decode.result.from,
-              to: logInfo[0].decode.result.to,
-              token_id: Number(logInfo[0].decode.result.tokenId),
-              smart_contract_address: contractAddress,
-              timestamp: record.timestamp
-            })
-          }
-          await this.updateNftBalance(
-            contract.contract_address,
-            logInfo[0].decode.result.from,
-            logInfo[0].decode.result.to,
-            Number(logInfo[0].decode.result.tokenId)
-          )
-        } catch (e) {
-          console.log(e)
         }
+        await this.updateNftBalance(
+          contract.contract_address,
+          logInfo[0].decode.result.from,
+          logInfo[0].decode.result.to,
+          Number(logInfo[0].decode.result.tokenId)
+        )
+      } catch (e) {
+        console.log(e)
       }
     }
   }
@@ -88,10 +93,24 @@ export class NftService {
     })
     const abiInfo = JSON.parse(contractInfo.abi)
     if (!NftRecord) {
+      const tokenUri = await this.getTokenUri(contract_address, abiInfo, tokenId)
+      const httpRes = await fetch(tokenUri, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      if (httpRes.status >= 400) {
+        throw new Error('Bad response from server')
+      }
+      const res: any = await httpRes.json()
       await this.nftBalanceRepository.insert({
         smart_contract_address: contract_address,
-        owner: to,
-        from: from,
+        owner: to.toLowerCase(),
+        from: from.toLowerCase(),
+        name: res.name,
+        img_uri: res.image,
+        detail: JSON.stringify(res),
         contract_uri: await this.getContractUri(contract_address, abiInfo),
         base_token_uri: await this.getBaseTokenUri(contract_address, abiInfo),
         token_id: tokenId,
@@ -133,5 +152,11 @@ export class NftService {
       ['string']
     )
     return res[0]
+  }
+
+  async getNftByWalletAddress(address: string) {
+    return await this.nftBalanceRepository.find({
+      owner: address
+    })
   }
 }

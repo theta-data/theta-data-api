@@ -6,6 +6,7 @@ import { SmartContractCallRecordEntity } from './smart-contract-call-record.enti
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { RankByEnum } from './smart-contract.model'
 import { checkTnt20, checkTnt721 } from 'src/helper/utils'
+import { NftService } from './nft/nft.service'
 
 const moment = require('moment')
 @Injectable()
@@ -16,7 +17,9 @@ export class SmartContractService {
     private smartContractRepository: Repository<SmartContractEntity>,
 
     @InjectRepository(SmartContractCallRecordEntity)
-    private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>
+    private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>,
+
+    private nftServide: NftService
   ) {}
 
   async getSmartContract(rankBy: RankByEnum, max: number = 500) {
@@ -73,14 +76,14 @@ export class SmartContractService {
       smartContract.last_seven_days_call_times = 1
       smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
     } else {
-      // const contractRecord = new SmartContractCallRecordEntity()
-      // contractRecord.timestamp = Number(timestamp)
       smartContractRecord.smart_contract = smartContract
       smartContract.call_times++
-      // await this.smartContractRecordRepository.save(contractRecord)
       await this.smartContractRepository.save(smartContract)
     }
     await this.smartContractRecordRepository.save(smartContractRecord)
+    if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
+      await this.nftServide.updateNftRecord(smartContractRecord, smartContract)
+    }
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
