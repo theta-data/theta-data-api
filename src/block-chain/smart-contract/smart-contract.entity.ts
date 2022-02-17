@@ -40,6 +40,9 @@ export class SmartContractEntity {
   @Column({ default: null })
   source_code: string
 
+  @Column({ default: null })
+  byte_code: string
+
   @Column({ type: 'int', default: 0 })
   verification_date: number
 
@@ -64,21 +67,24 @@ export class SmartContractEntity {
   @Field(() => Int, { description: 'Total number of smart contract calls' })
   @Index('call_times')
   @Column({
-    type: 'int'
+    type: 'int',
+    default: 0
   })
   call_times: number
 
   @Field(() => Int, { description: 'Number of smart contract calls in the last 7 days' })
   @Index('last_seven_days_call_times')
   @Column({
-    type: 'int'
+    type: 'int',
+    default: 0
   })
   last_seven_days_call_times: number
 
   @Field(() => Int, { description: 'Number of smart contract calls in the last 24 hours' })
   @Index('last_24h_call_times')
   @Column({
-    type: 'int'
+    type: 'int',
+    default: 0
   })
   last_24h_call_times: number
 
