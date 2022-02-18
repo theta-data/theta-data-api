@@ -17,7 +17,6 @@ const moment = require('moment')
 import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
-thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
 
 @Injectable()
 export class AnalyseService {
@@ -41,12 +40,18 @@ export class AnalyseService {
     private smartContractService: SmartContractService,
     private walletService: WalletService,
     private eventEmitter: EventEmitter2
-  ) {}
+  ) {
+    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    this.logger.debug(config.get('THETA_NODE_HOST'))
+  }
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
+    this.logger.debug('start analyse')
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
+    this.logger.debug('get height:' + height)
+
     height = 8000000
     const latestBlock = await this.blockListRepository.findOne({
       order: {
@@ -164,6 +169,7 @@ export class AnalyseService {
               .toNumber()
           }
           break
+
         case THETA_TRANSACTION_TYPE_ENUM.service_payment:
           record.service_payment_transaction++
           break

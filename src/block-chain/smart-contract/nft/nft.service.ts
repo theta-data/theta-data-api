@@ -48,10 +48,10 @@ export class NftService {
       const data = helper.getHex(record.data)
       receipt.Logs[0].data = data
     }
-    console.log('logs', receipt.Logs)
-    console.log('abi', contract.abi)
+    // console.log('logs', receipt.Logs)
+    // console.log('abi', contract.abi)
     const logInfo = decodeLogs(receipt.Logs, JSON.parse(contract.abi))
-    console.log('logInfo', logInfo)
+    // console.log('logInfo', logInfo)
     if (logInfo[0].decode.eventName === 'Transfer') {
       try {
         const recordHistory = await this.nftTransferRecordRepository.findOne({

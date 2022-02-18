@@ -62,7 +62,7 @@
     "rxjs": "^6.6.7",
     "solc": "^0.8.11",
     "sqlite3": "^5.0.2",
-    "theta-ts-sdk": "^0.2.66",
+    "theta-ts-sdk": "^0.2.74",
     "typeorm": "^0.2.32"
   },
   "devDependencies": {
