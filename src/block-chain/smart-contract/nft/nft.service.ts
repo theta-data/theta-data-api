@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
+// import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
 import { Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
+import { UtilsService } from 'src/common/utils.service'
 
 @Injectable()
 export class NftService {
@@ -21,7 +22,9 @@ export class NftService {
     private smartContractCallRecordRepository: Repository<SmartContractCallRecordEntity>,
 
     @InjectRepository(SmartContractEntity)
-    private smartContractRepository: Repository<SmartContractEntity>
+    private smartContractRepository: Repository<SmartContractEntity>,
+
+    private utilsService: UtilsService
   ) {}
 
   async parseRecordByContractAddress(contractAddress: string) {
@@ -31,7 +34,7 @@ export class NftService {
     const contractRecord = await this.smartContractCallRecordRepository.find({
       smart_contract: contract
     })
-    if (!checkTnt721(JSON.parse(contract.abi))) {
+    if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
       console.log('protocol not nft 721')
       return false
     }
@@ -50,7 +53,7 @@ export class NftService {
     }
     // console.log('logs', receipt.Logs)
     // console.log('abi', contract.abi)
-    const logInfo = decodeLogs(receipt.Logs, JSON.parse(contract.abi))
+    const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     // console.log('logInfo', logInfo)
     if (logInfo[0].decode.eventName === 'Transfer') {
       try {
@@ -132,17 +135,33 @@ export class NftService {
   }
 
   async getContractUri(address: string, abi: any) {
-    const res = await readSmartContract(address, address, abi, 'contractURI', [], [], ['string'])
+    const res = await this.utilsService.readSmartContract(
+      address,
+      address,
+      abi,
+      'contractURI',
+      [],
+      [],
+      ['string']
+    )
     return res[0]
   }
 
   async getBaseTokenUri(address: string, abi: any) {
-    const res = await readSmartContract(address, address, abi, 'baseTokenURI', [], [], ['string'])
+    const res = await this.utilsService.readSmartContract(
+      address,
+      address,
+      abi,
+      'baseTokenURI',
+      [],
+      [],
+      ['string']
+    )
     return res[0]
   }
 
   async getTokenUri(address: string, abi: any, tokenId: number) {
-    const res = await readSmartContract(
+    const res = await this.utilsService.readSmartContract(
       address,
       address,
       abi,
