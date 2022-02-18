@@ -5,8 +5,10 @@ import { MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { RankByEnum } from './smart-contract.model'
-import { checkTnt20, checkTnt721 } from 'src/helper/utils'
+// import { checkTnt20, checkTnt721 } from 'src/helper/utils'
 import { NftService } from './nft/nft.service'
+import { SolcService } from 'src/common/solc.service'
+import { UtilsService } from 'src/common/utils.service'
 
 const moment = require('moment')
 @Injectable()
@@ -19,7 +21,11 @@ export class SmartContractService {
     @InjectRepository(SmartContractCallRecordEntity)
     private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>,
 
-    private nftService: NftService
+    private nftService: NftService,
+
+    private solcService: SolcService,
+
+    private utilsService: UtilsService
   ) {}
 
   async getSmartContract(rankBy: RankByEnum, max: number = 500) {
@@ -113,12 +119,12 @@ export class SmartContractService {
     optimizer: boolean,
     optimizerRuns: number
   ) {
-    const downloader = require('../../helper/solcDownloader')
+    // const downloader = require('../../helper/solcDownloader')
     const solc = require('solc')
-    const helper = require('../../helper/utils')
+    // const helper = require('../../helper/utils')
     const fs = require('fs')
 
-    address = helper.normalize(address.toLowerCase())
+    address = this.utilsService.normalize(address.toLowerCase())
     optimizerRuns = +optimizerRuns
     if (Number.isNaN(optimizerRuns)) optimizerRuns = 200
     try {
@@ -151,7 +157,7 @@ export class SmartContractService {
       const fileName = prefix + '/' + versionFullName
       if (!fs.existsSync(fileName)) {
         console.log(`file ${fileName} does not exsit, downloading`)
-        await downloader.downloadByVersion(version, './libs')
+        await this.solcService.downloadByVersion(version, './libs')
       } else {
         console.log(`file ${fileName} exsits, skip download process`)
       }
@@ -184,12 +190,13 @@ export class SmartContractService {
         data = { result: { verified: false }, err_msg: check.error }
       } else {
         if (output.contracts) {
-          let hexBytecode = helper.getHex(byteCode).substring(2)
+          let hexBytecode = this.utilsService.getHex(byteCode).substring(2)
           for (var contractName in output.contracts['test.sol']) {
             const byteCode = output.contracts['test.sol'][contractName].evm.bytecode.object
             const deployedBytecode =
               output.contracts['test.sol'][contractName].evm.deployedBytecode.object
-            const processed_compiled_bytecode = helper.getBytecodeWithoutMetadata(deployedBytecode)
+            const processed_compiled_bytecode =
+              this.utilsService.getBytecodeWithoutMetadata(deployedBytecode)
             const constructor_arguments = hexBytecode.slice(byteCode.length)
             if (
               hexBytecode.indexOf(processed_compiled_bytecode) > -1 &&
@@ -201,7 +208,7 @@ export class SmartContractService {
               sc = {
                 address: address,
                 abi: JSON.stringify(abi),
-                source_code: helper.stampDate(sourceCode),
+                source_code: this.utilsService.stampDate(sourceCode),
                 verification_date: +new Date(),
                 compiler_version: breifVersion,
                 optimizer: optimizer === true ? 'enabled' : 'disabled',
@@ -221,16 +228,16 @@ export class SmartContractService {
               }
               contract.verified = true
               contract.byte_code = byteCode
-              if (checkTnt721(abi)) {
+              if (this.utilsService.checkTnt721(abi)) {
                 contract.protocol = smartContractProtocol.tnt721
-              } else if (checkTnt20(abi)) {
+              } else if (this.utilsService.checkTnt20(abi)) {
                 contract.protocol = smartContractProtocol.tnt20
               } else {
                 contract.protocol = smartContractProtocol.unknow
               }
               // contract.contract_address
               contract.abi = JSON.stringify(abi)
-              contract.source_code = helper.stampDate(sourceCode)
+              contract.source_code = this.utilsService.stampDate(sourceCode)
               contract.verification_date = moment().unix()
               contract.compiler_version = breifVersion
               contract.optimizer = optimizer === true ? 'enabled' : 'disabled'
