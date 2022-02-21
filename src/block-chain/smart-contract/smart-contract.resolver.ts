@@ -8,10 +8,15 @@ import {
 import { GraphQLInt } from 'graphql'
 import { NftService } from './nft/nft.service'
 import fetch from 'cross-fetch'
+import { UtilsService } from 'src/common/utils.service'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
-  constructor(private smartContractService: SmartContractService, private nftService: NftService) {}
+  constructor(
+    private smartContractService: SmartContractService,
+    private nftService: NftService,
+    private utilsService: UtilsService
+  ) {}
 
   @Query(() => SmartContractStatisticsType)
   async SmartContractStatistics() {
@@ -81,7 +86,7 @@ export class SmartContractResolver {
   ) {
     // const downloader = require('../../helper/solcDownloader')
     // const solc = require('solc')
-    const helper = require('../../helper/utils')
+    // const helper = require('../../helper/utils')
     // const fs = require('fs')
     const httpRes = await fetch(
       'https://explorer.thetatoken.org:8443/api/smartcontract/' + address,
@@ -105,7 +110,7 @@ export class SmartContractResolver {
     const versionFullName = 'soljson-' + res.body.compiler_version + '.js'
     const byteCode = res.body.bytecode
 
-    address = helper.normalize(address.toLowerCase())
+    address = this.utilsService.normalize(address.toLowerCase())
     return await this.smartContractService.verifySmartContract(
       address,
       sourceCode,

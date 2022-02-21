@@ -45,10 +45,10 @@ export class NftService {
   }
 
   async updateNftRecord(record: SmartContractCallRecordEntity, contract: SmartContractEntity) {
-    const helper = require('../../../helper/utils')
+    // const helper = require('../../../helper/utils')
     const receipt = JSON.parse(record.receipt)
     if (receipt.Logs[0].data === '') {
-      const data = helper.getHex(record.data)
+      const data = this.utilsService.getHex(record.data)
       receipt.Logs[0].data = data
     }
     // console.log('logs', receipt.Logs)
