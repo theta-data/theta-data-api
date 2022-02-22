@@ -50,7 +50,7 @@ export class AnalyseService {
     this.logger.debug('start analyse')
     let height =
       Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
-    this.logger.debug('get height:' + height)
+    this.logger.debug('analyse Data get height:' + height)
 
     height = 8000000
     const latestBlock = await this.blockListRepository.findOne({
@@ -83,6 +83,7 @@ export class AnalyseService {
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE) {
     const row = block.result
     const height = Number(row.height)
+    this.logger.debug('handle height: ' + height)
     if (Number(block.result.height) % 100 === 1) {
       const latestFinalizedBlockHeight = Number(
         (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
