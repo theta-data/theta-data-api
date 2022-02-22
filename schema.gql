@@ -532,16 +532,28 @@ type SmartContractVerifyType {
   smart_contract: SmartContractScType
 }
 
-type NftType {
-  token_uri: String!
-  token_id: Int!
-  contract_uri: String!
+type NftBalanceEntity {
+  smart_contract_address: String!
+  owner: String!
   from: String!
+  contract_uri: String!
+  base_token_uri: String!
+  token_uri: String!
   name: String!
   img_uri: String!
   detail: String!
-  base_token_uri: String!
-  smart_contract_address: String!
+  token_id: Int!
+}
+
+type NftType {
+  Balance(wallet_address: String!): [NftBalanceEntity!]!
+  NftsForContract(smart_contract_address: String!, wallet_address: String!): [NftBalanceEntity!]!
+  NftTransfers(wallet_address: String!): [NftBalanceEntity!]!
+  NftTransfersByBlock(block_height: Int!): [NftBalanceEntity!]!
+  AllTokenIds(smart_contract_address: String!): [NftBalanceEntity!]!
+  ContractNftTransfers(smart_contract_address: String!): [NftBalanceEntity!]!
+  NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
+  TokenIdOwners(token_id: Float!): [NftBalanceEntity!]!
 }
 
 type Query {
@@ -550,7 +562,7 @@ type Query {
   Wallet: WalletModel!
   MarketInformation: MarketInformationType!
   SmartContractStatistics: SmartContractStatisticsType!
-  Nfts(wallet_address: String!): [NftType!]!
+  Nfts: NftType!
   TransactionsStatistics: ThetaTransactionStatisticsType!
   ThetaRpc: ThetaRpcModel!
 }
