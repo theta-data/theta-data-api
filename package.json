@@ -10,11 +10,10 @@
     "build": "nest build",
     "docs": "docsify serve docs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "start": "NODE_ENV=dev nest start",
-    "analyse": "NODE_ENV=dev ts-node src/analyse.ts",
-    "analyse:dev": "NODE_ENV=dev ts-node src/analyse.ts --watch",
-    "start:dev": "NODE_ENV=dev nest start --watch",
-    "start:debug": "NODE_ENV=test nest start --debug --watch",
+    "start": "cross-env NODE_ENV=dev nest start",
+    "analyse:dev": "cross-envNODE_ENV=dev ts-node src/analyse.ts --watch",
+    "start:dev": "cross-env NODE_ENV=dev nest start --watch",
+    "start:debug": "cross-env NODE_ENV=test nest start --debug --watch",
     "test": "jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit"
   },
   "dependencies": {
@@ -60,7 +59,8 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^6.6.7",
-    "solc": "^0.8.11",
+    "save-dev": "^0.0.1-security",
+    "solc": "^0.8.12",
     "sqlite3": "^5.0.2",
     "theta-ts-sdk": "^0.2.74",
     "typeorm": "^0.2.32"
@@ -80,6 +80,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^4.20.0",
     "@typescript-eslint/parser": "^4.20.0",
+    "cross-env": "^7.0.3",
     "eslint": "^7.23.0",
     "eslint-config-prettier": "7.2.0",
     "eslint-plugin-prettier": "^3.1.4",
