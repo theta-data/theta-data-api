@@ -12,6 +12,19 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
+  "ORM_CONFIG_FORM": {
+    "database": "../database/form.sqlite",
+    "synchronize": true,
+    "autoLoadEntities": true,
+    "name": "FORM",
+    "type": "sqlite",
+    "entities": ["src/**/*.entity{.ts,.js}"],
+    "bigNumberStrings": false,
+    "logging": false,
+    "extra": {
+      "charset": "utf8mb4_unicode_ci"
+    }
+  },
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 10000,

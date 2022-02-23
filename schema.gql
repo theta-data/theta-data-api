@@ -556,6 +556,13 @@ type NftType {
   TokenIdOwners(token_id: Float!): [NftBalanceEntity!]!
 }
 
+type ContactEntity {
+  first_name: String!
+  last_name: String!
+  email: String!
+  content: String!
+}
+
 type Query {
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity
@@ -570,4 +577,5 @@ type Query {
 type Mutation {
   verify(optimizerRuns: Int!, optimizer: Boolean!, versionFullName: String!, version: String!, byteCode: String!, sourceCode: String!, address: String!): SmartContractVerifyType!
   verifyWithThetaExplorer(address: String!): SmartContractVerifyType!
+  newMsg(content: String!, email: String!, last_name: String!, first_name: String!): ContactEntity!
 }
