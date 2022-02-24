@@ -48,21 +48,28 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
+    let tempHeight = await this.cacheManager.get('height')
+    let height: number = 0
+    if (!tempHeight) {
+      height =
+        Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) -
+        1000
+      this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
 
-    let height =
-      Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) - 1000
-    this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
+      height = 8000000
+      const latestBlock = await this.blockListRepository.findOne({
+        order: {
+          block_number: 'DESC'
+        }
+      })
 
-    height = 8000000
-    const latestBlock = await this.blockListRepository.findOne({
-      order: {
-        block_number: 'DESC'
+      if (latestBlock && latestBlock.block_number >= height) {
+        height = latestBlock.block_number + 1
       }
-    })
-
-    if (latestBlock && latestBlock.block_number >= height) {
-      height = latestBlock.block_number + 1
+    } else {
+      height = Number(tempHeight) + 1
     }
+
     this.logger.debug('get height to analyse: ' + height)
     const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
     const row = block.result
@@ -74,6 +81,7 @@ export class AnalyseService {
         block_number: height,
         status: BlockStatus.inserted
       })
+      await this.cacheManager.set('height', height)
       this.logger.debug('send emit')
       this.eventEmitter.emit('block.analyse', block)
       return

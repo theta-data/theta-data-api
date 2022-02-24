@@ -14,6 +14,7 @@ import { WalletModule } from './block-chain/wallet/wallet.module'
 import * as path from 'path'
 import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
+import { ContactModule } from './contact/contact.module'
 
 const root: string = path.resolve(__dirname, '../../')
 const config = require('config')
@@ -33,6 +34,10 @@ const config = require('config')
         }
         return databaseConfig
       }
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG_FORM'),
+      entities: []
     }),
     GraphQLModule.forRoot({
       installSubscriptionHandlers: true,
@@ -57,7 +62,8 @@ const config = require('config')
     MarketModule,
     RpcModule,
     SmartContractModule,
-    WalletModule
+    WalletModule,
+    ContactModule
   ],
   providers: []
 })

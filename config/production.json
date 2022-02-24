@@ -12,6 +12,19 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
+  "ORM_CONFIG_FORM": {
+    "database": "/home/ubuntu/theta-data/database/data.sqlite",
+    "synchronize": true,
+    "autoLoadEntities": true,
+    "name": "FORM",
+    "type": "sqlite",
+    "entities": ["src/**/*.entity{.ts,.js}"],
+    "bigNumberStrings": false,
+    "logging": false,
+    "extra": {
+      "charset": "utf8mb4_unicode_ci"
+    }
+  },
   "THETA_NODE_HOST" : "http://ip-172-31-35-81.ap-southeast-1.compute.internal/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 2000,
