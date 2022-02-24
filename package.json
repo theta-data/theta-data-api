@@ -62,7 +62,7 @@
     "save-dev": "^0.0.1-security",
     "solc": "^0.8.12",
     "sqlite3": "^5.0.2",
-    "theta-ts-sdk": "^0.2.74",
+    "theta-ts-sdk": "^0.2.76",
     "typeorm": "^0.2.32"
   },
   "devDependencies": {

@@ -48,81 +48,91 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
-    let tempHeight = await this.cacheManager.get('height')
+    // let tempHeight = await this.cacheManager.get('height')
     let height: number = 0
-    if (!tempHeight) {
-      height =
-        Number((await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height) -
-        1000
-      this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
+    // if (!tempHeight) {
+    const lastfinalizedHeight = Number(
+      (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+    )
+    height = lastfinalizedHeight - 1000
+    this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
 
-      height = 8000000
-      const latestBlock = await this.blockListRepository.findOne({
-        order: {
-          block_number: 'DESC'
-        }
-      })
-
-      if (latestBlock && latestBlock.block_number >= height) {
-        height = latestBlock.block_number + 1
+    height = 8000000
+    const latestBlock = await this.blockListRepository.findOne({
+      order: {
+        block_number: 'DESC'
       }
-    } else {
-      height = Number(tempHeight) + 1
+    })
+
+    if (latestBlock && latestBlock.block_number >= height) {
+      height = latestBlock.block_number + 1
     }
+    // } else {
+    //   height = Number(tempHeight) + 1
+    // }
 
     this.logger.debug('get height to analyse: ' + height)
-    const blockCahce = await this.cacheManager.get('block_' + height)
-    let block
-    if (blockCahce) {
-      block = blockCahce
-    } else {
-      block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
-      await this.cacheManager.set('block_' + height, block, { ttl: 10 })
+    // const blockCahce = await this.cacheManager.get('block_' + height)
+    // let block
+    // if (blockCahce) {
+    //   block = blockCahce
+    // } else {
+    let endHeight = lastfinalizedHeight
+    if (lastfinalizedHeight - height > 4500) {
+      endHeight = height + 4500
     }
-    const row = block.result
-    if (!row || JSON.stringify(row) == '{}') {
-      this.logger.error('no data, height: ' + height)
-      return
-    } else {
+    this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
+
+    const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
+      height.toString(),
+      endHeight.toString()
+    )
+    // await this.cacheManager.set('block_' + height, block, { ttl: 10 })
+    // }
+    for (const block of blockList.result) {
       try {
+        this.logger.debug('analyse height: ' + block.height)
         await this.blockListRepository.insert({
-          block_number: height,
+          block_number: Number(block.height),
           status: BlockStatus.inserted
         })
-        await this.cacheManager.set('height', height, { ttl: 0 })
+        // await this.cacheManager.set('height', height, { ttl: 0 })
         this.logger.debug('send emit')
         this.eventEmitter.emit('block.analyse', block)
         return
       } catch (e) {
         this.logger.error(e)
       }
+      // }
     }
   }
 
   @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE) {
-    const row = block.result
-    const height = Number(row.height)
+    // const row = block
+    const height = Number(block.height)
     this.logger.debug('handle height: ' + height)
-    if (Number(block.result.height) % 100 === 1) {
+    if (Number(block.height) % 100 === 1) {
       const latestFinalizedBlockHeight = Number(
         (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
       )
-      if (latestFinalizedBlockHeight - Number(block.result.height) < 5000) {
+      if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
         await this.updateCheckPoint(block)
       } else {
         this.logger.debug('no need to calculate checkpoint block')
       }
     }
 
-    const year = Number(moment(Number(row.timestamp) * 1000).format('YYYY'))
-    const month = Number(moment(Number(row.timestamp) * 1000).format('MM'))
-    const date = Number(moment(Number(row.timestamp) * 1000).format('DD'))
-    const hour = Number(moment(Number(row.timestamp) * 1000).format('HH'))
-    const hhStr = moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD')
+    const year = Number(moment(Number(block.timestamp) * 1000).format('YYYY'))
+    const month = Number(moment(Number(block.timestamp) * 1000).format('MM'))
+    const date = Number(moment(Number(block.timestamp) * 1000).format('DD'))
+    const hour = Number(moment(Number(block.timestamp) * 1000).format('HH'))
+    const hhStr = moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD')
     let record = await this.thetaTxNumByHoursRepository.findOne({
       where: {
-        timestamp: moment(moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')).unix()
+        timestamp: moment(
+          moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
+        ).unix()
       }
     })
 
@@ -133,7 +143,7 @@ export class AnalyseService {
       record.date = date
       record.hour = hour
       record.timestamp = moment(
-        moment(Number(row.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
+        moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
       ).unix()
       record.coin_base_transaction = 0
       record.theta_fuel_burnt_by_smart_contract = 0
@@ -151,7 +161,7 @@ export class AnalyseService {
       record.active_wallet = 0
       record.theta_fuel_burnt = 0
     }
-    for (const transaction of row.transactions) {
+    for (const transaction of block.transactions) {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
           record.coin_base_transaction++
@@ -168,7 +178,7 @@ export class AnalyseService {
                 ),
                 wallet_address: output.address.toLocaleLowerCase(),
                 reward_height: height,
-                timestamp: Number(row.timestamp)
+                timestamp: Number(block.timestamp)
               })
             }
           }
@@ -200,7 +210,7 @@ export class AnalyseService {
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
           record.smart_contract_transaction++
           await this.smartContractService.updateSmartContractRecord(
-            row.timestamp,
+            block.timestamp,
             transaction.receipt.ContractAddress,
             transaction.raw.data,
             JSON.stringify(transaction.receipt),
@@ -231,13 +241,13 @@ export class AnalyseService {
       }
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
-          await this.walletService.markActive(wallet.address, Number(row.timestamp))
+          await this.walletService.markActive(wallet.address, Number(block.timestamp))
         }
       }
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          await this.walletService.markActive(wallet.address, Number(row.timestamp))
+          await this.walletService.markActive(wallet.address, Number(block.timestamp))
         }
       }
 
@@ -248,11 +258,11 @@ export class AnalyseService {
       }
     }
 
-    record.latest_block_height = Number(row.height)
+    record.latest_block_height = Number(block.height)
     record.block_number++
     // console.log(record)
     await this.thetaTxNumByHoursRepository.save(record)
-    await this.walletService.snapShotActiveWallets(Number(row.timestamp))
+    await this.walletService.snapShotActiveWallets(Number(block.timestamp))
     await this.blockListRepository.update(
       {
         status: BlockStatus.inserted,
@@ -269,7 +279,7 @@ export class AnalyseService {
 
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
     try {
-      if (Number(block.result.height) % 100 !== 1) {
+      if (Number(block.height) % 100 !== 1) {
         return
       }
       const [vaTotalNodeNum, vaEffectiveNodeNum, vaTotalThetaWei, vaEffectiveThetaWei] =
@@ -285,7 +295,7 @@ export class AnalyseService {
         BigNumber
       ] = await this.updateEenp(block)
       let res = await this.stakeStatisticsRepository.findOne({
-        block_height: Number(block.result.height)
+        block_height: Number(block.height)
       })
       if (!res) {
         this.logger.debug(
@@ -293,7 +303,7 @@ export class AnalyseService {
         )
         try {
           return await this.stakeStatisticsRepository.insert({
-            block_height: Number(block.result.height),
+            block_height: Number(block.height),
 
             total_elite_edge_node_number: eenpTotalNodeNum,
             effective_elite_edge_node_number: eenpEffectiveNodeNum,
@@ -302,7 +312,7 @@ export class AnalyseService {
               eenpEffectiveTfWei.dividedBy('1e18').toFixed()
             ),
             theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
-            timestamp: Number(block.result.timestamp),
+            timestamp: Number(block.timestamp),
 
             total_guardian_node_number: guTotalNodeNum,
             effective_guardian_node_number: guEffectiveNodeNum,
@@ -340,7 +350,7 @@ export class AnalyseService {
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
-    const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.result.height)
+    const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.height)
     if (!validatorList.result || !validatorList.result.BlockHashVcpPairs) {
       throw new Error('no validator BlockHashVcpPairs')
     }
@@ -349,7 +359,7 @@ export class AnalyseService {
       node.Stakes.forEach((stake) => {
         // if (stake.withdrawn === false) {
         totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
-        block.result.hcc.Votes.forEach((vote) => {
+        block.hcc.Votes.forEach((vote) => {
           if (vote.ID === node.Holder && !stake.withdrawn) {
             effectiveNodeNum++
             effectiveThetaWei = effectiveThetaWei.plus(new BigNumber(stake.amount))
@@ -368,15 +378,15 @@ export class AnalyseService {
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
 
-    const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.result.height)
+    const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.height)
     for (const guardian of gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians) {
       totalNodeNum++
       guardian.Stakes.forEach((stake) => {
         totalThetaWei = totalThetaWei.plus(new BigNumber(stake.amount))
       })
     }
-    for (let i = 0; i < block.result.guardian_votes.Multiplies.length; i++) {
-      if (block.result.guardian_votes.Multiplies[i] !== 0) {
+    for (let i = 0; i < block.guardian_votes.Multiplies.length; i++) {
+      if (block.guardian_votes.Multiplies[i] !== 0) {
         // await this.stakeService.updateGcpStatus(
         gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians[i].Stakes.forEach((stake) => {
           if (stake.withdrawn == false) {
@@ -394,12 +404,12 @@ export class AnalyseService {
       effectiveNodeNum = 0,
       totalTfuelWei = new BigNumber(0),
       effectiveTfuelWei = new BigNumber(0)
-    const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.result.height)
+    const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.height)
     eenpList.result.BlockHashEenpPairs[0].EENs.forEach((eenp) => {
       totalNodeNum++
       let isEffectiveNode = false
-      block.result.elite_edge_node_votes.Multiplies.forEach((value, index) => {
-        if (block.result.elite_edge_node_votes.Addresses[index] == eenp.Holder && value !== 0) {
+      block.elite_edge_node_votes.Multiplies.forEach((value, index) => {
+        if (block.elite_edge_node_votes.Addresses[index] == eenp.Holder && value !== 0) {
           isEffectiveNode = true
           effectiveNodeNum++
         }
