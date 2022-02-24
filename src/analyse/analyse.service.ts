@@ -88,7 +88,7 @@ export class AnalyseService {
         block_number: height,
         status: BlockStatus.inserted
       })
-      await this.cacheManager.set('height', height)
+      await this.cacheManager.set('height', height, { ttl: 0 })
       this.logger.debug('send emit')
       this.eventEmitter.emit('block.analyse', block)
       return
