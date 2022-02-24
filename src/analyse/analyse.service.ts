@@ -94,7 +94,7 @@ export class AnalyseService {
         this.eventEmitter.emit('block.analyse', block)
         return
       } catch (e) {
-        this.logger.debug(e)
+        this.logger.error(e)
       }
     }
   }
