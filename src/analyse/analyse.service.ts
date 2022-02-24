@@ -77,21 +77,25 @@ export class AnalyseService {
       block = blockCahce
     } else {
       block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
-      await this.cacheManager.set('block_' + height, block)
+      await this.cacheManager.set('block_' + height, block, { ttl: 60 })
     }
     const row = block.result
     if (!row || JSON.stringify(row) == '{}') {
       this.logger.error('no data, height: ' + height)
       return
     } else {
-      await this.blockListRepository.insert({
-        block_number: height,
-        status: BlockStatus.inserted
-      })
-      await this.cacheManager.set('height', height, { ttl: 0 })
-      this.logger.debug('send emit')
-      this.eventEmitter.emit('block.analyse', block)
-      return
+      try {
+        await this.blockListRepository.insert({
+          block_number: height,
+          status: BlockStatus.inserted
+        })
+        await this.cacheManager.set('height', height, { ttl: 0 })
+        this.logger.debug('send emit')
+        this.eventEmitter.emit('block.analyse', block)
+        return
+      } catch (e) {
+        this.logger.debug(e)
+      }
     }
   }
 
