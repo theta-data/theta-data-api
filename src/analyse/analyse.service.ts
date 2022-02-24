@@ -71,7 +71,14 @@ export class AnalyseService {
     }
 
     this.logger.debug('get height to analyse: ' + height)
-    const block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
+    const blockCahce = await this.cacheManager.get('block_' + height)
+    let block
+    if (blockCahce) {
+      block = blockCahce
+    } else {
+      block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
+      await this.cacheManager.set('block_' + height, block)
+    }
     const row = block.result
     if (!row || JSON.stringify(row) == '{}') {
       this.logger.error('no data, height: ' + height)
