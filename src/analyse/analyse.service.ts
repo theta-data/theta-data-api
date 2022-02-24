@@ -77,7 +77,7 @@ export class AnalyseService {
       block = blockCahce
     } else {
       block = await thetaTsSdk.blockchain.getBlockByHeight(height.toString())
-      await this.cacheManager.set('block_' + height, block, { ttl: 60 })
+      await this.cacheManager.set('block_' + height, block, { ttl: 10 })
     }
     const row = block.result
     if (!row || JSON.stringify(row) == '{}') {
