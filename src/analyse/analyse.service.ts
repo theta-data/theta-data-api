@@ -48,9 +48,7 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
-    // let tempHeight = await this.cacheManager.get('height')
     let height: number = 0
-    // if (!tempHeight) {
     const lastfinalizedHeight = Number(
       (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
     )
@@ -67,16 +65,9 @@ export class AnalyseService {
     if (latestBlock && latestBlock.block_number >= height) {
       height = latestBlock.block_number + 1
     }
-    // } else {
-    //   height = Number(tempHeight) + 1
-    // }
 
     this.logger.debug('get height to analyse: ' + height)
-    // const blockCahce = await this.cacheManager.get('block_' + height)
-    // let block
-    // if (blockCahce) {
-    //   block = blockCahce
-    // } else {
+
     let endHeight = lastfinalizedHeight
     if (lastfinalizedHeight - height > 4500) {
       endHeight = height + 4500
@@ -87,10 +78,11 @@ export class AnalyseService {
       height.toString(),
       endHeight.toString()
     )
-    // await this.cacheManager.set('block_' + height, block, { ttl: 10 })
-    // }
-    for (const block of blockList.result) {
+    this.logger.debug('block list length:' + blockList.result.length)
+
+    for (let i = 0; i < blockList.result.length; i++) {
       try {
+        const block = blockList.result[i]
         this.logger.debug('analyse height: ' + block.height)
         await this.blockListRepository.insert({
           block_number: Number(block.height),
@@ -98,8 +90,8 @@ export class AnalyseService {
         })
         // await this.cacheManager.set('height', height, { ttl: 0 })
         this.logger.debug('send emit')
-        this.eventEmitter.emit('block.analyse', block)
-        return
+        this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
+        // return
       } catch (e) {
         this.logger.error(e)
       }
@@ -108,14 +100,16 @@ export class AnalyseService {
   }
 
   @OnEvent('block.analyse')
-  async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE) {
+  async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     // const row = block
     const height = Number(block.height)
-    this.logger.debug('handle height: ' + height)
+    this.logger.debug(
+      'handle height: ' + height + ' last finalized height: ' + latestFinalizedBlockHeight
+    )
     if (Number(block.height) % 100 === 1) {
-      const latestFinalizedBlockHeight = Number(
-        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      )
+      // const latestFinalizedBlockHeight = Number(
+      //   (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      // )
       if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
         await this.updateCheckPoint(block)
       } else {
