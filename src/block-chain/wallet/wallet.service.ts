@@ -16,10 +16,10 @@ export class WalletService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
 
-    @InjectRepository(WalletEntity)
+    @InjectRepository(WalletEntity, 'wallet')
     private walletRepository: Repository<WalletEntity>,
 
-    @InjectRepository(AcitiveWalletsEntity)
+    @InjectRepository(AcitiveWalletsEntity, 'wallet')
     private activeWalletsRepository: Repository<AcitiveWalletsEntity>,
 
     private marketInfo: MarketService

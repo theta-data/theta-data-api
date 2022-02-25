@@ -15,10 +15,10 @@ const moment = require('moment')
 export class SmartContractService {
   logger = new Logger()
   constructor(
-    @InjectRepository(SmartContractEntity)
+    @InjectRepository(SmartContractEntity, 'smart_contract')
     private smartContractRepository: Repository<SmartContractEntity>,
 
-    @InjectRepository(SmartContractCallRecordEntity)
+    @InjectRepository(SmartContractCallRecordEntity, 'smart_contract')
     private smartContractRecordRepository: Repository<SmartContractCallRecordEntity>,
 
     private nftService: NftService,

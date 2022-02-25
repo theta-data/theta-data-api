@@ -6,7 +6,7 @@ import { ContactEntity } from './contact.entity'
 @Injectable()
 export class ContactService {
   constructor(
-    @InjectEntityManager('FORM')
+    @InjectEntityManager('contact')
     private entityManager: EntityManager
   ) {}
 
