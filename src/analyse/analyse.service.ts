@@ -17,6 +17,7 @@ const moment = require('moment')
 import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
+import { AnalyseLockEntity } from './analyse-lock.entity'
 
 @Injectable()
 export class AnalyseService {
@@ -34,6 +35,9 @@ export class AnalyseService {
     @InjectRepository(BlockListEntity, 'analyse')
     private blockListRepository: Repository<BlockListEntity>,
 
+    @InjectRepository(AnalyseLockEntity, 'analyse')
+    private analyseLockRepository: Repository<AnalyseLockEntity>,
+
     // @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     // private stakeService: StakeService,
@@ -48,9 +52,37 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
-    const analyseLock = await this.cacheManager.get('under_analyse')
-    if (analyseLock) return
-    await this.cacheManager.set('under_analyse', true)
+    const analyseKey = 'under_analyse'
+    // const analyseLock = await this.cacheManager.get(analyseKey)
+    const analyseLock = await this.analyseLockRepository.findOne({ lock_key: analyseKey })
+    if (!analyseLock) {
+      try {
+        return await this.analyseLockRepository.insert({
+          lock_key: analyseKey,
+          status: false
+        })
+      } catch (e) {
+        return this.logger.debug(e)
+        // return
+      }
+    }
+    if (analyseLock.status == false) {
+      try {
+        await this.analyseLockRepository.update({ status: false }, { status: true })
+      } catch (e) {
+        return this.logger.debug(e)
+      }
+    } else {
+      return this.logger.debug('under analyse')
+    }
+    // this.logger.debug('analyse lock:' + analyseLock)
+    // if (analyseLock == true) {
+    //   this.logger.debug('under analyse')
+    //   return
+    // }
+
+    await this.cacheManager.set(analyseKey, true, { ttl: 0 })
+
     let height: number = 0
     const lastfinalizedHeight = Number(
       (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
@@ -83,6 +115,7 @@ export class AnalyseService {
     )
     this.logger.debug('block list length:' + blockList.result.length)
 
+    const promiseArr = []
     for (let i = 0; i < blockList.result.length; i++) {
       try {
         const block = blockList.result[i]
@@ -100,7 +133,12 @@ export class AnalyseService {
       }
       // }
     }
-    await this.cacheManager.set('under_analyse', false)
+    try {
+      await this.analyseLockRepository.update({ status: true }, { status: false })
+    } catch (e) {
+      return this.logger.debug(e)
+    }
+    // await this.cacheManager.set(analyseKey, false, { ttl: 0 })
   }
 
   @OnEvent('block.analyse')
