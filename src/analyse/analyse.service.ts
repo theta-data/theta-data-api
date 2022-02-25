@@ -48,6 +48,9 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
+    const analyseLock = await this.cacheManager.get('under_analyse')
+    if (analyseLock) return
+    await this.cacheManager.set('under_analyse', true)
     let height: number = 0
     const lastfinalizedHeight = Number(
       (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
@@ -97,6 +100,7 @@ export class AnalyseService {
       }
       // }
     }
+    await this.cacheManager.set('under_analyse', false)
   }
 
   @OnEvent('block.analyse')
