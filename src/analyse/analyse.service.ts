@@ -69,8 +69,8 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 450) {
-      endHeight = height + 450
+    if (lastfinalizedHeight - height > 900) {
+      endHeight = height + 900
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
 
