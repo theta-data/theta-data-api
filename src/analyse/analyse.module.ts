@@ -10,12 +10,9 @@ import { WalletModule } from '../block-chain/wallet/wallet.module'
 import { BlockListEntity } from './block-list.entity'
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      ThetaTxNumByHoursEntity,
-      StakeStatisticsEntity,
-      StakeRewardEntity,
-      BlockListEntity
-    ]),
+    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity], 'tx'),
+    TypeOrmModule.forFeature([StakeStatisticsEntity, StakeRewardEntity], 'stake'),
+    TypeOrmModule.forFeature([BlockListEntity], 'analyse'),
     CacheModule.register({}),
     StakeModule,
     SmartContractModule,

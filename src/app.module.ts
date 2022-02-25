@@ -21,22 +21,60 @@ const config = require('config')
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      useFactory: async () => {
-        let databaseConfig = Object.assign(config.get('ORM_CONFIG'), {
-          entities: [join(__dirname, '**', '*.entity.{ts,js}')]
-        })
-        console.log(databaseConfig)
-        if (!databaseConfig.database) {
-          databaseConfig = Object.assign(databaseConfig, {
-            database: `${root}/data/line.sqlite`
-          })
-        }
-        return databaseConfig
-      }
+    // TypeOrmModule.forRootAsync({
+    //   useFactory: async () => {
+    //     let databaseConfig = Object.assign(config.get('ORM_CONFIG'), {
+    //       entities: [join(__dirname, '**', '*.entity.{ts,js}')]
+    //     })
+    //     console.log(databaseConfig)
+    //     if (!databaseConfig.database) {
+    //       databaseConfig = Object.assign(databaseConfig, {
+    //         database: `${root}/data/line.sqlite`
+    //       })
+    //     }
+    //     return databaseConfig
+    //   }
+    // }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'contact.sqlite',
+      name: 'contact',
+      entities: []
     }),
     TypeOrmModule.forRoot({
-      ...config.get('ORM_CONFIG_FORM'),
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'analyse.sqlite',
+      name: 'analyse',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'smart_contract.sqlite',
+      name: 'smart_contract',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'nft.sqlite',
+      name: 'nft',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'stake.sqlite',
+      name: 'stake',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'tx.sqlite',
+      name: 'tx',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'wallet.sqlite',
+      name: 'wallet',
       entities: []
     }),
     GraphQLModule.forRoot({

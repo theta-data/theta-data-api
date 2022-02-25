@@ -12,10 +12,10 @@ const config = require('config')
 export class StakeService {
   logger = new Logger()
   constructor(
-    @InjectRepository(StakeEntity) private stakeRepository: Repository<StakeEntity>,
-    @InjectRepository(StakeStatisticsEntity)
+    @InjectRepository(StakeEntity, 'stake') private stakeRepository: Repository<StakeEntity>,
+    @InjectRepository(StakeStatisticsEntity, 'stake')
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
-    @InjectRepository(StakeRewardEntity)
+    @InjectRepository(StakeRewardEntity, 'stake')
     private stakeRewardRepository: Repository<StakeRewardEntity>
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))

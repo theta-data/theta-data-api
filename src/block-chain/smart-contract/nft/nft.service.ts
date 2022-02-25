@@ -12,16 +12,16 @@ import { UtilsService } from 'src/common/utils.service'
 @Injectable()
 export class NftService {
   constructor(
-    @InjectRepository(NftTransferRecordEntity)
+    @InjectRepository(NftTransferRecordEntity, 'nft')
     private nftTransferRecordRepository: Repository<NftTransferRecordEntity>,
 
-    @InjectRepository(NftBalanceEntity)
+    @InjectRepository(NftBalanceEntity, 'nft')
     private nftBalanceRepository: Repository<NftBalanceEntity>,
 
-    @InjectRepository(SmartContractCallRecordEntity)
+    @InjectRepository(SmartContractCallRecordEntity, 'smart_contract')
     private smartContractCallRecordRepository: Repository<SmartContractCallRecordEntity>,
 
-    @InjectRepository(SmartContractEntity)
+    @InjectRepository(SmartContractEntity, 'smart_contract')
     private smartContractRepository: Repository<SmartContractEntity>,
 
     private utilsService: UtilsService

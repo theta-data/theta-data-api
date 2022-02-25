@@ -22,21 +22,21 @@ import { BlockListEntity, BlockStatus } from './block-list.entity'
 export class AnalyseService {
   private readonly logger = new Logger('analyse service')
   constructor(
-    @InjectRepository(ThetaTxNumByHoursEntity)
+    @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
 
-    @InjectRepository(StakeStatisticsEntity)
+    @InjectRepository(StakeStatisticsEntity, 'stake')
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
 
-    @InjectRepository(StakeRewardEntity)
+    @InjectRepository(StakeRewardEntity, 'stake')
     private stakeRewardRepository: Repository<StakeRewardEntity>,
 
-    @InjectRepository(BlockListEntity)
+    @InjectRepository(BlockListEntity, 'analyse')
     private blockListRepository: Repository<BlockListEntity>,
 
     // @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private stakeService: StakeService,
+    // private stakeService: StakeService,
     private smartContractService: SmartContractService,
     private walletService: WalletService,
     private eventEmitter: EventEmitter2
@@ -69,8 +69,8 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 4500) {
-      endHeight = height + 4500
+    if (lastfinalizedHeight - height > 450) {
+      endHeight = height + 450
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
 
@@ -102,172 +102,169 @@ export class AnalyseService {
   @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     // const row = block
-    const height = Number(block.height)
-    this.logger.debug(
-      'handle height: ' + height + ' last finalized height: ' + latestFinalizedBlockHeight
-    )
-    if (Number(block.height) % 100 === 1) {
-      // const latestFinalizedBlockHeight = Number(
-      //   (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-      // )
-      if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
-        await this.updateCheckPoint(block)
-      } else {
-        this.logger.debug('no need to calculate checkpoint block')
+    try {
+      const height = Number(block.height)
+      this.logger.debug(
+        'handle height: ' + height + ' last finalized height: ' + latestFinalizedBlockHeight
+      )
+      if (Number(block.height) % 100 === 1) {
+        // const latestFinalizedBlockHeight = Number(
+        //   (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+        // )
+        if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
+          await this.updateCheckPoint(block)
+        } else {
+          this.logger.debug('no need to calculate checkpoint block')
+        }
       }
-    }
-
-    const year = Number(moment(Number(block.timestamp) * 1000).format('YYYY'))
-    const month = Number(moment(Number(block.timestamp) * 1000).format('MM'))
-    const date = Number(moment(Number(block.timestamp) * 1000).format('DD'))
-    const hour = Number(moment(Number(block.timestamp) * 1000).format('HH'))
-    const hhStr = moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD')
-    let record = await this.thetaTxNumByHoursRepository.findOne({
-      where: {
-        timestamp: moment(
+      let record = await this.thetaTxNumByHoursRepository.findOne({
+        where: {
+          timestamp: moment(
+            moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
+          ).unix()
+        }
+      })
+      if (!record) {
+        record = new ThetaTxNumByHoursEntity()
+        // record.year = year
+        // record.month = month
+        // record.date = date
+        // record.hour = hour
+        record.timestamp = moment(
           moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
         ).unix()
+        record.coin_base_transaction = 0
+        record.theta_fuel_burnt_by_smart_contract = 0
+        record.theta_fuel_burnt_by_transfers = 0
+        record.deposit_stake_transaction = 0
+        record.release_fund_transaction = 0
+        record.reserve_fund_transaction = 0
+        record.send_transaction = 0
+        record.service_payment_transaction = 0
+        record.slash_transaction = 0
+        record.smart_contract_transaction = 0
+        record.split_rule_transaction = 0
+        record.withdraw_stake_transaction = 0
+        record.block_number = 0
+        record.active_wallet = 0
+        record.theta_fuel_burnt = 0
       }
-    })
-
-    if (!record) {
-      record = new ThetaTxNumByHoursEntity()
-      record.year = year
-      record.month = month
-      record.date = date
-      record.hour = hour
-      record.timestamp = moment(
-        moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-      ).unix()
-      record.coin_base_transaction = 0
-      record.theta_fuel_burnt_by_smart_contract = 0
-      record.theta_fuel_burnt_by_transfers = 0
-      record.deposit_stake_transaction = 0
-      record.release_fund_transaction = 0
-      record.reserve_fund_transaction = 0
-      record.send_transaction = 0
-      record.service_payment_transaction = 0
-      record.slash_transaction = 0
-      record.smart_contract_transaction = 0
-      record.split_rule_transaction = 0
-      record.withdraw_stake_transaction = 0
-      record.block_number = 0
-      record.active_wallet = 0
-      record.theta_fuel_burnt = 0
-    }
-    for (const transaction of block.transactions) {
-      switch (transaction.type) {
-        case THETA_TRANSACTION_TYPE_ENUM.coinbase:
-          record.coin_base_transaction++
-          for (const output of transaction.raw.outputs) {
-            // this.logger.debug('timestamp:' + row.timestamp)
-            const stakeReard = await this.stakeRewardRepository.findOne({
-              wallet_address: output.address,
-              reward_height: height
-            })
-            if (!stakeReard) {
-              await this.stakeRewardRepository.insert({
-                reward_amount: Number(
-                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-                ),
-                wallet_address: output.address.toLocaleLowerCase(),
-                reward_height: height,
-                timestamp: Number(block.timestamp)
+      for (const transaction of block.transactions) {
+        switch (transaction.type) {
+          case THETA_TRANSACTION_TYPE_ENUM.coinbase:
+            record.coin_base_transaction++
+            for (const output of transaction.raw.outputs) {
+              // this.logger.debug('timestamp:' + row.timestamp)
+              const stakeReard = await this.stakeRewardRepository.findOne({
+                wallet_address: output.address,
+                reward_height: height
               })
+              if (!stakeReard) {
+                await this.stakeRewardRepository.insert({
+                  reward_amount: Number(
+                    new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                  ),
+                  wallet_address: output.address.toLocaleLowerCase(),
+                  reward_height: height,
+                  timestamp: Number(block.timestamp)
+                })
+              }
             }
-          }
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
-          record.deposit_stake_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.release_fund:
-          record.release_fund_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
-          record.reserve_fund_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.send:
-          record.send_transaction++
-          if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-            record.theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
-              .dividedBy('1e18')
-              .toNumber()
-          }
-          break
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
+            record.deposit_stake_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.release_fund:
+            record.release_fund_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
+            record.reserve_fund_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.send:
+            record.send_transaction++
+            if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+              record.theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
+                .dividedBy('1e18')
+                .toNumber()
+            }
+            break
 
-        case THETA_TRANSACTION_TYPE_ENUM.service_payment:
-          record.service_payment_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.slash:
-          record.slash_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
-          record.smart_contract_transaction++
-          await this.smartContractService.updateSmartContractRecord(
-            block.timestamp,
-            transaction.receipt.ContractAddress,
-            transaction.raw.data,
-            JSON.stringify(transaction.receipt),
-            height,
-            transaction.hash
-          )
-          if (transaction.raw.gas_limit && transaction.raw.gas_price) {
-            record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
-              .multipliedBy(transaction.receipt.GasUsed)
-              .dividedBy('1e18')
-              .toNumber()
+          case THETA_TRANSACTION_TYPE_ENUM.service_payment:
+            record.service_payment_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.slash:
+            record.slash_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
+            record.smart_contract_transaction++
+            await this.smartContractService.updateSmartContractRecord(
+              block.timestamp,
+              transaction.receipt.ContractAddress,
+              transaction.raw.data,
+              JSON.stringify(transaction.receipt),
+              height,
+              transaction.hash
+            )
+            if (transaction.raw.gas_limit && transaction.raw.gas_price) {
+              record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toNumber()
 
-            record.theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
-              .multipliedBy(transaction.receipt.GasUsed)
-              .dividedBy('1e18')
-              .toNumber()
+              record.theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toNumber()
+            }
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.split_rule:
+            record.split_rule_transaction++
+            break
+          case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
+            record.withdraw_stake_transaction++
+            break
+          default:
+            this.logger.error('no transaction.tx_type:' + transaction.type)
+            break
+        }
+        if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
+          for (const wallet of transaction.raw.inputs) {
+            await this.walletService.markActive(wallet.address, Number(block.timestamp))
           }
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.split_rule:
-          record.split_rule_transaction++
-          break
-        case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
-          record.withdraw_stake_transaction++
-          break
-        default:
-          this.logger.error('no transaction.tx_type:' + transaction.type)
-          break
-      }
-      if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
-        for (const wallet of transaction.raw.inputs) {
-          await this.walletService.markActive(wallet.address, Number(block.timestamp))
+        }
+
+        if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
+          for (const wallet of transaction.raw.outputs) {
+            await this.walletService.markActive(wallet.address, Number(block.timestamp))
+          }
+        }
+
+        if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+          record.theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
+            .dividedBy('1e18')
+            .toNumber()
         }
       }
-
-      if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
-        for (const wallet of transaction.raw.outputs) {
-          await this.walletService.markActive(wallet.address, Number(block.timestamp))
+      record.latest_block_height = Number(block.height)
+      record.block_number++
+      await this.thetaTxNumByHoursRepository.save(record)
+      await this.walletService.snapShotActiveWallets(Number(block.timestamp))
+      await this.blockListRepository.update(
+        {
+          status: BlockStatus.inserted,
+          block_number: height
+        },
+        {
+          status: BlockStatus.analysed
         }
-      }
+      )
 
-      if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-        record.theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
-          .dividedBy('1e18')
-          .toNumber()
-      }
+      const status = await this.blockListRepository.findOne({ block_number: height })
+      this.logger.debug('block ' + height + ' analyse end, status:' + status.status)
+    } catch (e) {
+      this.logger.debug(e)
     }
 
-    record.latest_block_height = Number(block.height)
-    record.block_number++
-    // console.log(record)
-    await this.thetaTxNumByHoursRepository.save(record)
-    await this.walletService.snapShotActiveWallets(Number(block.timestamp))
-    await this.blockListRepository.update(
-      {
-        status: BlockStatus.inserted,
-        block_number: height
-      },
-      {
-        status: BlockStatus.analysed
-      }
-    )
-    const status = await this.blockListRepository.findOne({ block_number: height })
-    this.logger.debug('block ' + height + ' analyse end, status:' + status.status)
     // handle and process "OrderCreatedEvent" event
   }
 

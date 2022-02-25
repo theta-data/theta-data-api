@@ -10,12 +10,11 @@ import { CommonModule } from 'src/common/common.module'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      NftBalanceEntity,
-      NftTransferRecordEntity,
-      SmartContractCallRecordEntity,
-      SmartContractEntity
-    ]),
+    TypeOrmModule.forFeature([NftBalanceEntity, NftTransferRecordEntity], 'nft'),
+    TypeOrmModule.forFeature(
+      [SmartContractCallRecordEntity, SmartContractEntity],
+      'smart_contract'
+    ),
     CommonModule
   ],
   providers: [NftService, NftResolver],

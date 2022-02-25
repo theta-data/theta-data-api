@@ -13,7 +13,9 @@ import { MarketModule } from '../../market/market.module'
   imports: [
     WalletModule,
     MarketModule,
-    TypeOrmModule.forFeature([StakeEntity, StakeStatisticsEntity, StakeRewardEntity, WalletEntity]),
+    TypeOrmModule.forFeature([StakeEntity, StakeStatisticsEntity, StakeRewardEntity], 'stake'),
+    TypeOrmModule.forFeature([WalletEntity], 'wallet'),
+
     CacheModule.register()
   ],
   providers: [StakeService, StakeResolver],
