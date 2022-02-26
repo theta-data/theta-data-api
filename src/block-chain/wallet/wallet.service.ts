@@ -275,7 +275,7 @@ export class WalletService {
         )
       })
       await this.activeWalletsRepository.query(
-        `NSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (contract_address) DO UPDATE set snapshot_time = ${hhTimestamp}`
+        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (contract_address) DO UPDATE set snapshot_time = ${hhTimestamp}`
       )
       // const snapObj = await this.activeWalletsRepository.findOne({
       //   snapshot_time: hhTimestamp
