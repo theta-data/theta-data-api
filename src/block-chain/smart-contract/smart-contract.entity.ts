@@ -3,13 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { Field, Int, ObjectType } from '@nestjs/graphql'
-import { CONNECTING } from 'ws'
 
 export enum smartContractProtocol {
   unknow = 1,
@@ -20,13 +17,15 @@ export enum smartContractProtocol {
 @ObjectType()
 @Entity()
 export class SmartContractEntity {
-  // @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number
 
   @Field({ description: 'Address of the smart contract' })
-  @Column()
+  @Column({ unique: true })
   contract_address: string
+
+  @Column({ type: 'int', default: 0 })
+  height: number
 
   @Column({ type: Boolean, default: false })
   verified: boolean
@@ -68,7 +67,7 @@ export class SmartContractEntity {
   @Index('call_times')
   @Column({
     type: 'int',
-    default: 0
+    default: 1
   })
   call_times: number
 
@@ -76,7 +75,7 @@ export class SmartContractEntity {
   @Index('last_seven_days_call_times')
   @Column({
     type: 'int',
-    default: 0
+    default: 1
   })
   last_seven_days_call_times: number
 
@@ -84,15 +83,15 @@ export class SmartContractEntity {
   @Index('last_24h_call_times')
   @Column({
     type: 'int',
-    default: 0
+    default: 1
   })
   last_24h_call_times: number
 
   // @Field(() => [SmartContractCallRecordEntity], { description: ' Call log' })
-  @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
-    cascade: true
-  })
-  record: Array<SmartContractCallRecordEntity>
+  // @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
+  //   cascade: true
+  // })
+  // record: Array<SmartContractCallRecordEntity>
 
   // @Field()
   @CreateDateColumn()
