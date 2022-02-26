@@ -18,6 +18,7 @@ import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
 import { AnalyseLockEntity } from './analyse-lock.entity'
+import { exit } from 'process'
 
 @Injectable()
 export class AnalyseService {
@@ -46,6 +47,16 @@ export class AnalyseService {
     private eventEmitter: EventEmitter2
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    const analyseKey = 'under_analyse'
+    this.analyseLockRepository
+      .update({ lock_key: analyseKey }, { status: false })
+      .then(() => {
+        this.logger.debug('restore analyse lock success')
+      })
+      .catch((e) => {
+        this.logger.debug(e)
+      })
+
     this.logger.debug(config.get('THETA_NODE_HOST'))
   }
 
@@ -53,6 +64,11 @@ export class AnalyseService {
   public async analyseData() {
     this.logger.debug('start analyse')
     const analyseKey = 'under_analyse'
+    // const fIntervalKey = 'not_first_interval'
+    // if (!(await this.cacheManager.get(fIntervalKey))) {
+    //   await this.analyseLockRepository.update({ lock_key: analyseKey }, { status: false })
+    //   await this.cacheManager.set(fIntervalKey, true, { ttl: 0 })
+    // }
     // const analyseLock = await this.cacheManager.get(analyseKey)
     const analyseLock = await this.analyseLockRepository.findOne({ lock_key: analyseKey })
     if (!analyseLock) {
@@ -68,18 +84,16 @@ export class AnalyseService {
     }
     if (analyseLock.status == false) {
       try {
-        await this.analyseLockRepository.update({ status: false }, { status: true })
+        await this.analyseLockRepository.update(
+          { status: false, lock_key: analyseKey },
+          { status: true }
+        )
       } catch (e) {
         return this.logger.debug(e)
       }
     } else {
       return this.logger.debug('under analyse')
     }
-    // this.logger.debug('analyse lock:' + analyseLock)
-    // if (analyseLock == true) {
-    //   this.logger.debug('under analyse')
-    //   return
-    // }
 
     await this.cacheManager.set(analyseKey, true, { ttl: 0 })
 
@@ -89,8 +103,9 @@ export class AnalyseService {
     )
     height = lastfinalizedHeight - 1000
     this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
-
-    height = 8000000
+    if (config.get('START_HEIGHT')) {
+      height = config.get('START_HEIGHT')
+    }
     const latestBlock = await this.blockListRepository.findOne({
       order: {
         block_number: 'DESC'
@@ -115,7 +130,6 @@ export class AnalyseService {
     )
     this.logger.debug('block list length:' + blockList.result.length)
 
-    const promiseArr = []
     for (let i = 0; i < blockList.result.length; i++) {
       try {
         const block = blockList.result[i]
@@ -143,102 +157,82 @@ export class AnalyseService {
 
   @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
-    // const row = block
     try {
       const height = Number(block.height)
+      const timestamp = moment(
+        moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
+      ).unix()
       this.logger.debug(
         'handle height: ' + height + ' last finalized height: ' + latestFinalizedBlockHeight
       )
       if (Number(block.height) % 100 === 1) {
-        // const latestFinalizedBlockHeight = Number(
-        //   (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-        // )
         if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
           await this.updateCheckPoint(block)
         } else {
           this.logger.debug('no need to calculate checkpoint block')
         }
       }
-      let record = await this.thetaTxNumByHoursRepository.findOne({
-        where: {
-          timestamp: moment(
-            moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-          ).unix()
-        }
-      })
-      if (!record) {
-        record = new ThetaTxNumByHoursEntity()
-        // record.year = year
-        // record.month = month
-        // record.date = date
-        // record.hour = hour
-        record.timestamp = moment(
-          moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-        ).unix()
-        record.coin_base_transaction = 0
-        record.theta_fuel_burnt_by_smart_contract = 0
-        record.theta_fuel_burnt_by_transfers = 0
-        record.deposit_stake_transaction = 0
-        record.release_fund_transaction = 0
-        record.reserve_fund_transaction = 0
-        record.send_transaction = 0
-        record.service_payment_transaction = 0
-        record.slash_transaction = 0
-        record.smart_contract_transaction = 0
-        record.split_rule_transaction = 0
-        record.withdraw_stake_transaction = 0
-        record.block_number = 0
-        record.active_wallet = 0
-        record.theta_fuel_burnt = 0
-      }
+
+      let coin_base_transaction = 0,
+        theta_fuel_burnt_by_smart_contract = 0,
+        theta_fuel_burnt_by_transfers = 0,
+        deposit_stake_transaction = 0,
+        release_fund_transaction = 0,
+        reserve_fund_transaction = 0,
+        send_transaction = 0,
+        service_payment_transaction = 0,
+        slash_transaction = 0,
+        smart_contract_transaction = 0,
+        split_rule_transaction = 0,
+        withdraw_stake_transaction = 0,
+        block_number = 0,
+        active_wallet = 0,
+        theta_fuel_burnt = 0
+      // }
       for (const transaction of block.transactions) {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
-            record.coin_base_transaction++
+            coin_base_transaction++
             for (const output of transaction.raw.outputs) {
-              // this.logger.debug('timestamp:' + row.timestamp)
-              const stakeReard = await this.stakeRewardRepository.findOne({
-                wallet_address: output.address,
-                reward_height: height
-              })
-              if (!stakeReard) {
-                await this.stakeRewardRepository.insert({
+              await this.stakeRewardRepository.upsert(
+                {
                   reward_amount: Number(
                     new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
                   ),
                   wallet_address: output.address.toLocaleLowerCase(),
                   reward_height: height,
                   timestamp: Number(block.timestamp)
-                })
-              }
+                },
+                ['wallet_address', 'reward_height']
+              )
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
-            record.deposit_stake_transaction++
+            deposit_stake_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.release_fund:
-            record.release_fund_transaction++
+            release_fund_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
-            record.reserve_fund_transaction++
+            reserve_fund_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.send:
-            record.send_transaction++
+            send_transaction++
             if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-              record.theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
+              theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
                 .dividedBy('1e18')
                 .toNumber()
             }
             break
 
           case THETA_TRANSACTION_TYPE_ENUM.service_payment:
-            record.service_payment_transaction++
+            service_payment_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.slash:
-            record.slash_transaction++
+            slash_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
-            record.smart_contract_transaction++
+            smart_contract_transaction++
             await this.smartContractService.updateSmartContractRecord(
               block.timestamp,
               transaction.receipt.ContractAddress,
@@ -248,22 +242,22 @@ export class AnalyseService {
               transaction.hash
             )
             if (transaction.raw.gas_limit && transaction.raw.gas_price) {
-              record.theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
+              theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
                 .multipliedBy(transaction.receipt.GasUsed)
                 .dividedBy('1e18')
                 .toNumber()
 
-              record.theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
+              theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
                 .multipliedBy(transaction.receipt.GasUsed)
                 .dividedBy('1e18')
                 .toNumber()
             }
             break
           case THETA_TRANSACTION_TYPE_ENUM.split_rule:
-            record.split_rule_transaction++
+            split_rule_transaction++
             break
           case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
-            record.withdraw_stake_transaction++
+            withdraw_stake_transaction++
             break
           default:
             this.logger.error('no transaction.tx_type:' + transaction.type)
@@ -282,14 +276,15 @@ export class AnalyseService {
         }
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-          record.theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
+          theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
             .dividedBy('1e18')
             .toNumber()
         }
       }
-      record.latest_block_height = Number(block.height)
-      record.block_number++
-      await this.thetaTxNumByHoursRepository.save(record)
+      block_number++
+      await this.thetaTxNumByHoursRepository.query(
+        `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
+      )
       await this.walletService.snapShotActiveWallets(Number(block.timestamp))
       await this.blockListRepository.update(
         {
@@ -304,7 +299,7 @@ export class AnalyseService {
       const status = await this.blockListRepository.findOne({ block_number: height })
       this.logger.debug('block ' + height + ' analyse end, status:' + status.status)
     } catch (e) {
-      this.logger.debug(e)
+      this.logger.error(e)
     }
 
     // handle and process "OrderCreatedEvent" event
