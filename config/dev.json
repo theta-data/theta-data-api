@@ -15,7 +15,7 @@
   "START_HEIGHT":12817000,
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_INTERVAL" : 100000,
+  "ANALYSE_INTERVAL" : 10000,
   "REDIS": {
     "host": "127.0.0.1",
     "port": 6379
