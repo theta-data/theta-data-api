@@ -8,7 +8,7 @@ import { fetch } from 'cross-fetch'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
 import { WalletEntity } from './wallet.entity'
-import { AcitiveWalletsEntity } from './active-wallets.entity'
+import { ActiveWalletsEntity } from './active-wallets.entity'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -21,8 +21,8 @@ export class WalletService {
     @InjectRepository(WalletEntity, 'wallet')
     private walletRepository: Repository<WalletEntity>,
 
-    @InjectRepository(AcitiveWalletsEntity, 'wallet')
-    private activeWalletsRepository: Repository<AcitiveWalletsEntity>,
+    @InjectRepository(ActiveWalletsEntity, 'wallet')
+    private activeWalletsRepository: Repository<ActiveWalletsEntity>,
 
     private marketInfo: MarketService
   ) {
@@ -275,7 +275,7 @@ export class WalletService {
         )
       })
       await this.activeWalletsRepository.query(
-        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (contract_address) DO UPDATE set snapshot_time = ${hhTimestamp}`
+        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (snapshot_time) DO UPDATE set active_wallets_amount = ${totalAmount},active_wallets_amount_last_hour=${activeWalletLastHour}`
       )
       // const snapObj = await this.activeWalletsRepository.findOne({
       //   snapshot_time: hhTimestamp
