@@ -64,6 +64,19 @@ export class SmartContractService {
     height: number,
     tansactionHash: string
   ) {
+    // const smartContract = await this.getOrAddSmartContract(contractAddress, height)
+
+    try {
+      this.logger.debug('start insert smart contract')
+      const queryRes = await this.smartContractRepository.query(
+        `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
+      )
+      this.logger.debug('query res:' + queryRes + ' contract_address:' + contractAddress)
+    } catch (e) {
+      this.logger.debug('insert smart contract error')
+      this.logger.error(e)
+    }
+
     const smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
@@ -74,23 +87,40 @@ export class SmartContractService {
     smartContractRecord.receipt = receipt
     smartContractRecord.height = height
     smartContractRecord.tansaction_hash = tansactionHash
-
-    if (!smartContract) {
-      const smartContract = new SmartContractEntity()
-      smartContract.contract_address = contractAddress
-      smartContract.call_times = 1
-      smartContract.last_24h_call_times = 1
-      smartContract.last_seven_days_call_times = 1
-      smartContractRecord.smart_contract = await this.smartContractRepository.save(smartContract)
-    } else {
-      smartContractRecord.smart_contract = smartContract
-      smartContract.call_times++
-      await this.smartContractRepository.save(smartContract)
-      if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
-        await this.nftService.updateNftRecord(smartContractRecord, smartContract)
-      }
-    }
+    smartContractRecord.contract_id = smartContract.id
     await this.smartContractRecordRepository.save(smartContractRecord)
+    if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
+      await this.nftService.updateNftRecord(smartContractRecord, smartContract)
+    }
+    // }
+  }
+
+  async getOrAddSmartContract(contractAddress: string, height: number) {
+    // let smartContract = await this.smartContractRepository.findOne({
+    //   contract_address: contractAddress
+    // })
+    await this.smartContractRepository.query(
+      `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
+    )
+    return await this.smartContractRepository.findOne({
+      contract_address: contractAddress
+    })
+    // if (!smartContract) {
+    //   try {
+    //     await this.smartContractRepository.insert({
+    //       contract_address: contractAddress,
+    //       call_times: 1,
+    //       last_24h_call_times: 1,
+    //       last_seven_days_call_times: 1,
+    //       height: height
+    //     })
+    //   } catch (e) {
+    //     this.logger.error(e)
+    //   }
+    //   return await this.smartContractRepository.findOne({
+    //     contract_address: contractAddress
+    //   })
+    // }
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
@@ -99,11 +129,11 @@ export class SmartContractService {
     for (const contract of smartContractList) {
       contract.last_24h_call_times = await this.smartContractRecordRepository.count({
         timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
-        smart_contract: contract
+        contract_id: contract.id
       })
       contract.last_seven_days_call_times = await this.smartContractRecordRepository.count({
         timestamp: MoreThan(moment().subtract(7, 'days').unix()),
-        smart_contract: contract
+        contract_id: contract.id
       })
       await this.smartContractRepository.save(contract)
     }

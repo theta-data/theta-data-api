@@ -32,7 +32,7 @@ export class NftService {
       contract_address: contractAddress
     })
     const contractRecord = await this.smartContractCallRecordRepository.find({
-      smart_contract: contract
+      contract_id: contract.id
     })
     if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
       console.log('protocol not nft 721')
@@ -176,6 +176,54 @@ export class NftService {
   async getNftByWalletAddress(address: string) {
     return await this.nftBalanceRepository.find({
       owner: address
+    })
+  }
+
+  async getNftsBySmartContractAddress(address: string) {
+    return await this.nftBalanceRepository.find({
+      smart_contract_address: address
+    })
+  }
+
+  async getNftTransfersForSmartContract(contractAddress: string) {
+    return await this.nftTransferRecordRepository.find({
+      smart_contract_address: contractAddress
+    })
+  }
+
+  async getNftTransfersByWallet(walletAddress) {
+    return await this.nftTransferRecordRepository.find({
+      where: [
+        {
+          from: walletAddress
+        },
+        {
+          to: walletAddress
+        }
+      ]
+    })
+  }
+
+  async getNftsForContract(walletAddress: string, contractAddress: string) {
+    // let condition = {}
+    // if (walletAddress) condition['owner'] = walletAddress
+    // if (contractAddress) condition['smart_contract_address'] = contractAddress
+    return await this.nftBalanceRepository.find({
+      smart_contract_address: contractAddress,
+      owner: walletAddress
+    })
+  }
+
+  async getNftTransfersForBlockHeight(height: number) {
+    return await this.nftTransferRecordRepository.find({
+      height: height
+    })
+  }
+
+  async getNftByTokenId(tokenId: number, contractAddress: string) {
+    return await this.nftBalanceRepository.findOne({
+      token_id: tokenId,
+      smart_contract_address: contractAddress
     })
   }
 }

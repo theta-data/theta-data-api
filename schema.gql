@@ -545,15 +545,23 @@ type NftBalanceEntity {
   token_id: Int!
 }
 
+type NftTransferRecordEntity {
+  smart_contract_address: String!
+  from: String!
+  to: String!
+  token_id: Int!
+  height: Int!
+  timestamp: Int!
+}
+
 type NftType {
   Balance(wallet_address: String!): [NftBalanceEntity!]!
   NftsForContract(smart_contract_address: String!, wallet_address: String!): [NftBalanceEntity!]!
-  NftTransfers(wallet_address: String!): [NftBalanceEntity!]!
-  NftTransfersByBlock(block_height: Int!): [NftBalanceEntity!]!
-  AllTokenIds(smart_contract_address: String!): [NftBalanceEntity!]!
-  ContractNftTransfers(smart_contract_address: String!): [NftBalanceEntity!]!
+  NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
+  NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
   NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
-  TokenIdOwners(token_id: Float!): [NftBalanceEntity!]!
+  ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
+  TokenIdOwners(contract_adress: String!, token_id: Float!): NftBalanceEntity!
 }
 
 type ContactEntity {

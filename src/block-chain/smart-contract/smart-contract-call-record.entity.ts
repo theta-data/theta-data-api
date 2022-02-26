@@ -1,27 +1,15 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from 'typeorm'
-import { SmartContractEntity } from './smart-contract.entity'
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
 export class SmartContractCallRecordEntity {
-  // @Field(() => Int)
   @PrimaryGeneratedColumn()
   id!: number
 
-  // @Field(() => SmartContractEntity)
-  @ManyToOne(() => SmartContractEntity, (contract) => contract.record, {
-    onUpdate: 'CASCADE'
-  })
-  smart_contract: SmartContractEntity
+  @Column()
+  contract_id: number
 
   @Column()
   data: string
@@ -35,7 +23,7 @@ export class SmartContractCallRecordEntity {
   })
   height: number
 
-  @Column({ default: '' })
+  @Column({ default: '', unique: true })
   tansaction_hash: string
 
   @Field(() => GraphQLString, { description: 'Calling time' })

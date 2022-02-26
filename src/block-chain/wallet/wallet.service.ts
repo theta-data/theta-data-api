@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
+import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
 import { MarketService } from '../../market/market.service'
@@ -13,6 +13,8 @@ const config = require('config')
 const moment = require('moment')
 @Injectable()
 export class WalletService {
+  logger = new Logger()
+
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
 
@@ -228,19 +230,32 @@ export class WalletService {
   }
 
   public async markActive(address: string, timestamp: number): Promise<void> {
-    const record = await this.walletRepository.findOne({
-      address: address
-    })
-    // console.log(record)
-    if (record) {
-      record.latest_active_time = timestamp
-      await this.walletRepository.save(record)
-    } else {
-      let walletEntity = new WalletEntity()
-      walletEntity.address = address
-      walletEntity.latest_active_time = timestamp
-      await this.walletRepository.save(walletEntity)
+    try {
+      await this.walletRepository.query(
+        `INSERT INTO wallet_entity(address,latest_active_time) VALUES('${address}', ${timestamp}) ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
+      )
+      // await this.walletRepository.upsert(
+      //   {
+      //     address: address,
+      //     latest_active_time: timestamp
+      //   },
+      //   ['address']
+      // )
+    } catch (e) {
+      this.logger.error('update wallet fail')
+      this.logger.error(e)
     }
+
+    // console.log(record)
+    // if (record) {
+    //   record.latest_active_time = timestamp
+    //   await this.walletRepository.save(record)
+    // } else {
+    //   let walletEntity = new WalletEntity()
+    //   walletEntity.address = address
+    //   walletEntity.latest_active_time = timestamp
+    //   await this.walletRepository.save(walletEntity)
+    // }
   }
 
   public async snapShotActiveWallets(timestamp: number) {
@@ -259,16 +274,19 @@ export class WalletService {
             .unix()
         )
       })
-      const snapObj = await this.activeWalletsRepository.findOne({
-        snapshot_time: hhTimestamp
-      })
-      if (!snapObj) {
-        await this.activeWalletsRepository.insert({
-          snapshot_time: hhTimestamp,
-          active_wallets_amount: totalAmount,
-          active_wallets_amount_last_hour: activeWalletLastHour
-        })
-      }
+      await this.activeWalletsRepository.query(
+        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (contract_address) DO UPDATE set snapshot_time = ${hhTimestamp}`
+      )
+      // const snapObj = await this.activeWalletsRepository.findOne({
+      //   snapshot_time: hhTimestamp
+      // })
+      // if (!snapObj) {
+      //   await this.activeWalletsRepository.insert({
+      //     snapshot_time: hhTimestamp,
+      //     active_wallets_amount: totalAmount,
+      //     active_wallets_amount_last_hour: activeWalletLastHour
+      //   })
+      // }
     }
   }
 
