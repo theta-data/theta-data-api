@@ -300,6 +300,7 @@ export class AnalyseService {
       this.logger.debug('block ' + height + ' analyse end, status:' + status.status)
     } catch (e) {
       this.logger.error(e)
+      process.exit()
     }
 
     // handle and process "OrderCreatedEvent" event
