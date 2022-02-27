@@ -6,7 +6,6 @@ import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
-import { StakeService } from '../block-chain/stake/stake.service'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
@@ -18,11 +17,11 @@ import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
 import { AnalyseLockEntity } from './analyse-lock.entity'
-import { exit } from 'process'
 
 @Injectable()
 export class AnalyseService {
   private readonly logger = new Logger('analyse service')
+  analyseKey = 'under_analyse'
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
@@ -39,17 +38,17 @@ export class AnalyseService {
     @InjectRepository(AnalyseLockEntity, 'analyse')
     private analyseLockRepository: Repository<AnalyseLockEntity>,
 
-    // @Inject('SEND_TX_MONITOR_SERVICE') private client: ClientProxy,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    // private stakeService: StakeService,
     private smartContractService: SmartContractService,
+
     private walletService: WalletService,
+
     private eventEmitter: EventEmitter2
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-    const analyseKey = 'under_analyse'
+    // const analyseKey = 'under_analyse'
     this.analyseLockRepository
-      .update({ lock_key: analyseKey }, { status: false })
+      .update({ lock_key: this.analyseKey }, { status: false })
       .then(() => {
         this.logger.debug('restore analyse lock success')
       })
@@ -63,18 +62,12 @@ export class AnalyseService {
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     this.logger.debug('start analyse')
-    const analyseKey = 'under_analyse'
-    // const fIntervalKey = 'not_first_interval'
-    // if (!(await this.cacheManager.get(fIntervalKey))) {
-    //   await this.analyseLockRepository.update({ lock_key: analyseKey }, { status: false })
-    //   await this.cacheManager.set(fIntervalKey, true, { ttl: 0 })
-    // }
-    // const analyseLock = await this.cacheManager.get(analyseKey)
-    const analyseLock = await this.analyseLockRepository.findOne({ lock_key: analyseKey })
+    // const analyseKey = 'under_analyse'
+    const analyseLock = await this.analyseLockRepository.findOne({ lock_key: this.analyseKey })
     if (!analyseLock) {
       try {
         return await this.analyseLockRepository.insert({
-          lock_key: analyseKey,
+          lock_key: this.analyseKey,
           status: false
         })
       } catch (e) {
@@ -85,7 +78,7 @@ export class AnalyseService {
     if (analyseLock.status == false) {
       try {
         await this.analyseLockRepository.update(
-          { status: false, lock_key: analyseKey },
+          { status: false, lock_key: this.analyseKey },
           { status: true }
         )
       } catch (e) {
@@ -95,7 +88,7 @@ export class AnalyseService {
       return this.logger.debug('under analyse')
     }
 
-    await this.cacheManager.set(analyseKey, true, { ttl: 0 })
+    await this.cacheManager.set(this.analyseKey, true, { ttl: 0 })
 
     let height: number = 0
     const lastfinalizedHeight = Number(
@@ -145,14 +138,12 @@ export class AnalyseService {
       } catch (e) {
         this.logger.error(e)
       }
-      // }
     }
     try {
       await this.analyseLockRepository.update({ status: true }, { status: false })
     } catch (e) {
       return this.logger.debug(e)
     }
-    // await this.cacheManager.set(analyseKey, false, { ttl: 0 })
   }
 
   @OnEvent('block.analyse')
@@ -282,10 +273,10 @@ export class AnalyseService {
         }
       }
       block_number++
+      await this.walletService.snapShotActiveWallets(Number(block.timestamp))
       await this.thetaTxNumByHoursRepository.query(
         `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
       )
-      await this.walletService.snapShotActiveWallets(Number(block.timestamp))
       await this.blockListRepository.update(
         {
           status: BlockStatus.inserted,
@@ -296,14 +287,10 @@ export class AnalyseService {
         }
       )
 
-      const status = await this.blockListRepository.findOne({ block_number: height })
-      this.logger.debug('block ' + height + ' analyse end, status:' + status.status)
+      this.logger.debug('block ' + height + ' analyse end')
     } catch (e) {
       this.logger.error(e)
-      process.exit()
     }
-
-    // handle and process "OrderCreatedEvent" event
   }
 
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
