@@ -5,7 +5,6 @@ import { MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { RankByEnum } from './smart-contract.model'
-// import { checkTnt20, checkTnt721 } from 'src/helper/utils'
 import { NftService } from './nft/nft.service'
 import { SolcService } from 'src/common/solc.service'
 import { UtilsService } from 'src/common/utils.service'
@@ -64,14 +63,10 @@ export class SmartContractService {
     height: number,
     tansactionHash: string
   ) {
-    // const smartContract = await this.getOrAddSmartContract(contractAddress, height)
-
     try {
-      this.logger.debug('start insert smart contract')
-      const queryRes = await this.smartContractRepository.query(
+      await this.smartContractRepository.query(
         `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
       )
-      this.logger.debug('query res:' + queryRes + ' contract_address:' + contractAddress)
     } catch (e) {
       this.logger.debug('insert smart contract error')
       this.logger.error(e)
@@ -96,31 +91,12 @@ export class SmartContractService {
   }
 
   async getOrAddSmartContract(contractAddress: string, height: number) {
-    // let smartContract = await this.smartContractRepository.findOne({
-    //   contract_address: contractAddress
-    // })
     await this.smartContractRepository.query(
       `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
     )
     return await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
-    // if (!smartContract) {
-    //   try {
-    //     await this.smartContractRepository.insert({
-    //       contract_address: contractAddress,
-    //       call_times: 1,
-    //       last_24h_call_times: 1,
-    //       last_seven_days_call_times: 1,
-    //       height: height
-    //     })
-    //   } catch (e) {
-    //     this.logger.error(e)
-    //   }
-    //   return await this.smartContractRepository.findOne({
-    //     contract_address: contractAddress
-    //   })
-    // }
   }
 
   @Cron(CronExpression.EVERY_10_MINUTES)
@@ -298,7 +274,6 @@ export class SmartContractService {
       return {
         is_verified: false
       }
-      // res.status(400).send(e)
     }
   }
 }
