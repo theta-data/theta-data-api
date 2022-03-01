@@ -11,7 +11,6 @@
     "docs": "docsify serve docs",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "cross-env NODE_ENV=dev nest start",
-    "analyse:dev": "cross-env NODE_ENV=dev ts-node src/analyse.ts --watch",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
     "start:debug": "cross-env NODE_ENV=dev nest start --debug --watch",
     "test": "jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit"
