@@ -32,7 +32,7 @@ export class SmartContractResolver {
     return await this.smartContractService.getSmartContract(rank_by, take)
   }
 
-  @Mutation((returns) => SmartContractVerifyType)
+  // @Mutation((returns) => SmartContractVerifyType)
   async verify(
     @Args({
       name: 'address'
