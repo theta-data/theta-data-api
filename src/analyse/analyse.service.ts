@@ -193,7 +193,7 @@ export class AnalyseService {
                 reward_height: height,
                 timestamp: Number(block.timestamp)
               })
-              if (transacitonToBeUpserted.length > 998) {
+              if (transacitonToBeUpserted.length > 900) {
                 await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
                   'wallet_address',
                   'reward_height'
