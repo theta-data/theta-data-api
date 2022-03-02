@@ -23,6 +23,7 @@ export class AnalyseService {
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
   private counter = 0
+  private startTimestamp = 0
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
@@ -113,11 +114,12 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 4500) {
-      endHeight = height + 4500
+    const analyseNumber = config.get('ANALYSE_NUMBER')
+    if (lastfinalizedHeight - height > analyseNumber) {
+      endHeight = height + analyseNumber
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
-
+    this.startTimestamp = moment().unix()
     const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
       height.toString(),
       endHeight.toString()
@@ -191,6 +193,13 @@ export class AnalyseService {
                 reward_height: height,
                 timestamp: Number(block.timestamp)
               })
+              if (transacitonToBeUpserted.length > 500) {
+                await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
+                  'wallet_address',
+                  'reward_height'
+                ])
+                transacitonToBeUpserted.length = 0
+              }
             }
             await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
               'wallet_address',
@@ -286,20 +295,23 @@ export class AnalyseService {
         }
       )
       this.counter--
-      this.logger.debug('counter:' + this.counter)
+      this.logger.debug(
+        'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
+      )
       // try {
       if (this.counter == 0) {
         await this.analyseLockRepository.update({ status: true }, { status: false })
       }
-
       // } catch (e) {
       //   return this.logger.debug(e)
       // }
-
+      // moment().unix() - this.startTimestamp
       this.logger.debug('block ' + height + ' analyse end')
     } catch (e) {
       this.counter--
-      this.logger.debug('counter:' + this.counter)
+      this.logger.debug(
+        'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
+      )
       this.logger.error(e)
     }
   }
