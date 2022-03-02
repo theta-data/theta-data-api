@@ -568,7 +568,12 @@ type NftType {
   NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
   ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
   TokenIdOwners(contract_adress: String!, token_id: Float!): NftBalanceEntity!
-  unique_holders(smart_contract_address: String!): Int!
+  Meta(smart_contract_address: String!): NftMetaType!
+}
+
+type NftMetaType {
+  unique_holder: Int!
+  total: Float!
 }
 
 type ContactEntity {

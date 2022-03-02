@@ -1,7 +1,7 @@
 import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
-import { NftType } from './nft.model'
+import { NftMetaType, NftType } from './nft.model'
 import { NftService } from './nft.service'
 
 @Resolver(() => NftType)
@@ -59,8 +59,10 @@ export class NftResolver {
     return await this.nftService.getNftByTokenId(tokenId, contractAddress.toLowerCase())
   }
 
-  @ResolveField(() => Int)
-  async unique_holders(@Args('smart_contract_address') contractAddress: string) {
-    return await this.nftService.uniqueHolders(contractAddress.toLowerCase())
+  @ResolveField(() => NftMetaType)
+  async Meta(@Args('smart_contract_address') contractAddress: string): Promise<NftMetaType> {
+    // const uniqueHolder = await this.nftService.uniqueHolders(contractAddress.toLowerCase())
+    const [totalAmount, uniqueHolder] = await this.nftService.totalAmount(contractAddress)
+    return { unique_holder: uniqueHolder, total: totalAmount }
   }
 }
