@@ -229,11 +229,41 @@ export class WalletService {
     return jsonInfo['rates']
   }
 
-  public async markActive(address: string, timestamp: number): Promise<void> {
+  public async markActive(wallets: Array<{ address: string; timestamp: number }>): Promise<void> {
     try {
-      await this.walletRepository.query(
-        `INSERT INTO wallet_entity(address,latest_active_time) VALUES('${address}', ${timestamp}) ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
-      )
+      const sqlArr = []
+      for (const wallet of wallets) {
+        // sqlArr.push(`('${wallet.address}', ${wallet.timestamp})`)
+        sqlArr.push({
+          address: wallet.address,
+          latest_active_time: wallet.timestamp
+        })
+        // this.logger.debug(sqlArr.join(','))
+        if (sqlArr.length > 900) {
+          await this.walletRepository.upsert(sqlArr, ['address'])
+          // this.logger.debug(
+          //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
+          //     ','
+          //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
+          // )
+          // await this.walletRepository.query(
+          //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
+          //     ','
+          //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
+          // )
+          sqlArr.length = 0
+        }
+        // await this.walletRepository.query(
+        //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
+        //     ','
+        //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
+        // )
+      }
+      await this.walletRepository.upsert(sqlArr, ['address'])
+
+      // await this.walletRepository.query(
+      //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES('${address}', ${timestamp}) ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
+      // )
       // await this.walletRepository.upsert(
       //   {
       //     address: address,

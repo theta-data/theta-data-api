@@ -199,7 +199,7 @@ export class AnalyseService {
                   'wallet_address',
                   'reward_height'
                 ])
-                this.logger.debug('end stake reward upsert')
+                this.logger.debug(height + ': end stake reward upsert')
                 transacitonToBeUpserted.length = 0
               }
             }
@@ -207,6 +207,7 @@ export class AnalyseService {
               'wallet_address',
               'reward_height'
             ])
+            this.logger.debug(height + ': complete stake reward upsert')
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             deposit_stake_transaction++
@@ -264,17 +265,20 @@ export class AnalyseService {
             this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
+        const wallets = []
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
-            await this.walletService.markActive(wallet.address, Number(block.timestamp))
+            wallets.push({ address: wallet.address, timestamp: Number(block.timestamp) })
           }
         }
 
         if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
+          // const wallets = []
           for (const wallet of transaction.raw.outputs) {
-            await this.walletService.markActive(wallet.address, Number(block.timestamp))
+            wallets.push({ address: wallet.address, timestamp: Number(block.timestamp) })
           }
         }
+        await this.walletService.markActive(wallets)
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
           theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
