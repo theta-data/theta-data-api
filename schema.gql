@@ -491,6 +491,18 @@ type ThetaRpcModel {
 type SmartContractEntity {
   """Address of the smart contract"""
   contract_address: String!
+  verified: Boolean!
+  protocol: Int!
+  abi: String
+  source_code: String
+  byte_code: String
+  verification_date: Int!
+  compiler_version: String
+  optimizer: String
+  optimizerRuns: Int!
+  name: String
+  function_hash: String
+  constructor_arguments: String
 
   """Total number of smart contract calls"""
   call_times: Int!
