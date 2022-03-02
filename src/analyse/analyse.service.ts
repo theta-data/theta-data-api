@@ -22,6 +22,7 @@ import { AnalyseLockEntity } from './analyse-lock.entity'
 export class AnalyseService {
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
+  private counter = 0
   constructor(
     @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
     private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
@@ -112,8 +113,8 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 4500) {
-      endHeight = height + 4500
+    if (lastfinalizedHeight - height > 1000) {
+      endHeight = height + 1000
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
 
@@ -122,7 +123,7 @@ export class AnalyseService {
       endHeight.toString()
     )
     this.logger.debug('block list length:' + blockList.result.length)
-
+    this.counter = blockList.result.length
     for (let i = 0; i < blockList.result.length; i++) {
       try {
         const block = blockList.result[i]
@@ -138,11 +139,6 @@ export class AnalyseService {
       } catch (e) {
         this.logger.error(e)
       }
-    }
-    try {
-      await this.analyseLockRepository.update({ status: true }, { status: false })
-    } catch (e) {
-      return this.logger.debug(e)
     }
   }
 
@@ -287,8 +283,21 @@ export class AnalyseService {
         }
       )
 
+      this.counter--
+      this.logger.debug('counter:' + this.counter)
+      // try {
+      if (this.counter == 1) {
+        await this.analyseLockRepository.update({ status: true }, { status: false })
+      }
+
+      // } catch (e) {
+      //   return this.logger.debug(e)
+      // }
+
       this.logger.debug('block ' + height + ' analyse end')
     } catch (e) {
+      this.counter--
+      this.logger.debug('counter:' + this.counter)
       this.logger.error(e)
     }
   }
