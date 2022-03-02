@@ -58,4 +58,9 @@ export class NftResolver {
   ) {
     return await this.nftService.getNftByTokenId(tokenId, contractAddress.toLowerCase())
   }
+
+  @ResolveField(() => Int)
+  async unique_holders(@Args('smart_contract_address') contractAddress: string) {
+    return await this.nftService.uniqueHolders(contractAddress.toLowerCase())
+  }
 }

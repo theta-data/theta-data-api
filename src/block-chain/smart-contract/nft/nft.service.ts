@@ -268,4 +268,16 @@ export class NftService {
     }
     return nfts
   }
+
+  async uniqueHolders(contractAddress: string) {
+    const list = await this.nftBalanceRepository
+      .createQueryBuilder()
+      .from(NftBalanceEntity, 'nft')
+      .select('nft.owner')
+      .where('nft.smart_contract_address=:contractAddress', { contractAddress: contractAddress })
+      .distinct(true)
+      .getMany()
+    // this.logger.debug(JSON.stringify(list))
+    return list.length
+  }
 }
