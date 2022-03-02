@@ -113,8 +113,8 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 1000) {
-      endHeight = height + 1000
+    if (lastfinalizedHeight - height > 100) {
+      endHeight = height + 100
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
 
@@ -286,7 +286,7 @@ export class AnalyseService {
       this.counter--
       this.logger.debug('counter:' + this.counter)
       // try {
-      if (this.counter == 1) {
+      if (this.counter == 0) {
         await this.analyseLockRepository.update({ status: true }, { status: false })
       }
 
