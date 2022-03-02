@@ -194,10 +194,12 @@ export class AnalyseService {
                 timestamp: Number(block.timestamp)
               })
               if (transacitonToBeUpserted.length > 900) {
+                this.logger.debug('start stake reward upsert')
                 await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
                   'wallet_address',
                   'reward_height'
                 ])
+                this.logger.debug('end stake reward upsert')
                 transacitonToBeUpserted.length = 0
               }
             }
