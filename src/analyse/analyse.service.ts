@@ -113,8 +113,8 @@ export class AnalyseService {
     this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
-    if (lastfinalizedHeight - height > 100) {
-      endHeight = height + 100
+    if (lastfinalizedHeight - height > 4500) {
+      endHeight = height + 4500
     }
     this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
 
@@ -142,7 +142,7 @@ export class AnalyseService {
     }
   }
 
-  @OnEvent('block.analyse')
+  @OnEvent('block.analyse', { nextTick: true })
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     try {
       const height = Number(block.height)
@@ -180,19 +180,22 @@ export class AnalyseService {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             coin_base_transaction++
+            const transacitonToBeUpserted = []
             for (const output of transaction.raw.outputs) {
-              await this.stakeRewardRepository.upsert(
-                {
-                  reward_amount: Number(
-                    new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-                  ),
-                  wallet_address: output.address.toLocaleLowerCase(),
-                  reward_height: height,
-                  timestamp: Number(block.timestamp)
-                },
-                ['wallet_address', 'reward_height']
-              )
+              // this.logger.debug('upsert coinbae transaction')
+              transacitonToBeUpserted.push({
+                reward_amount: Number(
+                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                ),
+                wallet_address: output.address.toLocaleLowerCase(),
+                reward_height: height,
+                timestamp: Number(block.timestamp)
+              })
             }
+            await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
+              'wallet_address',
+              'reward_height'
+            ])
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             deposit_stake_transaction++
@@ -282,7 +285,6 @@ export class AnalyseService {
           status: BlockStatus.analysed
         }
       )
-
       this.counter--
       this.logger.debug('counter:' + this.counter)
       // try {

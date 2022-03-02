@@ -259,7 +259,7 @@ export class WalletService {
   }
 
   public async snapShotActiveWallets(timestamp: number) {
-    if (moment(timestamp * 1000).minutes() < 2) {
+    if (moment(timestamp * 1000).minutes() < 1) {
       const hhTimestamp = moment(moment(timestamp * 1000).format('YYYY-MM-DD HH:00:00')).unix()
       const statisticsStartTimeStamp = moment(hhTimestamp * 1000)
         .subtract(24, 'hours')
