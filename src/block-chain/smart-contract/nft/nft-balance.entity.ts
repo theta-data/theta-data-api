@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
@@ -15,6 +16,8 @@ export enum NftStatusEnum {
 
 @ObjectType()
 @Entity()
+@Index(['smart_contract_address'])
+@Unique(['smart_contract_address', 'token_id'])
 export class NftBalanceEntity {
   @PrimaryGeneratedColumn()
   id!: number

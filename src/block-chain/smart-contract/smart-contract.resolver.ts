@@ -9,6 +9,7 @@ import { GraphQLInt } from 'graphql'
 import { NftService } from './nft/nft.service'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import { SmartContractEntity } from './smart-contract.entity'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
@@ -32,7 +33,7 @@ export class SmartContractResolver {
     return await this.smartContractService.getSmartContract(rank_by, take)
   }
 
-  @Mutation((returns) => SmartContractVerifyType)
+  // @Mutation((returns) => SmartContractVerifyType)
   async verify(
     @Args({
       name: 'address'
@@ -77,17 +78,13 @@ export class SmartContractResolver {
     )
   }
 
-  @Mutation((returns) => SmartContractVerifyType)
+  @Mutation((returns) => SmartContractEntity)
   async verifyWithThetaExplorer(
     @Args({
       name: 'address'
     })
     address: string
   ) {
-    // const downloader = require('../../helper/solcDownloader')
-    // const solc = require('solc')
-    // const helper = require('../../helper/utils')
-    // const fs = require('fs')
     const httpRes = await fetch(
       'https://explorer.thetatoken.org:8443/api/smartcontract/' + address,
       {

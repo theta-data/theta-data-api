@@ -526,12 +526,6 @@ type SmartContractScType {
   constructor_arguments: String!
 }
 
-"""smart contract verification"""
-type SmartContractVerifyType {
-  is_verified: Boolean!
-  smart_contract: SmartContractScType
-}
-
 type NftBalanceEntity {
   smart_contract_address: String!
   owner: String!
@@ -562,6 +556,7 @@ type NftType {
   NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
   ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
   TokenIdOwners(contract_adress: String!, token_id: Float!): NftBalanceEntity!
+  unique_holders(smart_contract_address: String!): Int!
 }
 
 type ContactEntity {
@@ -583,7 +578,6 @@ type Query {
 }
 
 type Mutation {
-  verify(optimizerRuns: Int!, optimizer: Boolean!, versionFullName: String!, version: String!, byteCode: String!, sourceCode: String!, address: String!): SmartContractVerifyType!
-  verifyWithThetaExplorer(address: String!): SmartContractVerifyType!
+  verifyWithThetaExplorer(address: String!): SmartContractEntity!
   newMsg(content: String!, email: String!, last_name: String!, first_name: String!): ContactEntity!
 }
