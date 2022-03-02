@@ -8,6 +8,7 @@ import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import { orderBy } from 'lodash'
 // import { Logger } from 'ethers/lib/utils'
 // import { add } from 'lodash'
 
@@ -35,7 +36,8 @@ export class NftService {
       contract_address: contractAddress
     })
     const contractRecord = await this.smartContractCallRecordRepository.find({
-      contract_id: contract.id
+      where: { contract_id: contract.id },
+      order: { timestamp: 'ASC' }
     })
     if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
       console.log('protocol not nft 721')
@@ -91,8 +93,8 @@ export class NftService {
   async updateNftBalance(contract_address: string, from: string, to: string, tokenId: number) {
     const NftRecord = await this.nftBalanceRepository.findOne({
       smart_contract_address: contract_address,
-      token_id: tokenId,
-      owner: from
+      token_id: tokenId
+      // owner: from
     })
     // const contractInfo = await this.smartContractRepository.findOne({
     //   contract_address: contract_address
