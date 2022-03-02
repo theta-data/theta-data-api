@@ -101,17 +101,17 @@ export class NftService {
     // })
     // const abiInfo = JSON.parse(contractInfo.abi)
     if (!NftRecord) {
-      const tokenUri = '',
-        name = '',
-        img_uri = '',
-        detail = ''
+      // const tokenUri = '',
+      // name = '',
+      // img_uri = '',
+      // detail = ''
       await this.nftBalanceRepository.insert({
         smart_contract_address: contract_address,
         owner: to.toLowerCase(),
         from: from.toLowerCase(),
-        name: name, //res.name,
-        img_uri: img_uri, //res.image,
-        detail: detail, //JSON.stringify(res),
+        name: '', //res.name,
+        img_uri: '', //res.image,
+        detail: '', //JSON.stringify(res),
         contract_uri: '', //await this.getContractUri(contract_address, abiInfo),
         base_token_uri: '', //await this.getBaseTokenUri(contract_address, abiInfo),
         token_id: tokenId,
@@ -122,11 +122,11 @@ export class NftService {
       await this.nftBalanceRepository.update(
         {
           smart_contract_address: contract_address,
-          owner: from
+          token_id: tokenId
         },
         {
-          owner: to,
-          from: from
+          owner: to.toLowerCase(),
+          from: from.toLowerCase()
         }
       )
     }
@@ -279,7 +279,25 @@ export class NftService {
       .where('nft.smart_contract_address=:contractAddress', { contractAddress: contractAddress })
       .distinct(true)
       .getMany()
+
     // this.logger.debug(JSON.stringify(list))
     return list.length
+  }
+
+  async totalAmount(
+    contractAddress: string
+  ): Promise<[totalAmount: number, uniqueHolders: number]> {
+    const res = await this.nftBalanceRepository.find({
+      smart_contract_address: contractAddress
+    })
+    const userObj = {}
+    let uniqeuHolder = 0
+    for (const nft of res) {
+      if (!userObj[nft.owner]) {
+        uniqeuHolder++
+        userObj[nft.owner] = true
+      }
+    }
+    return [res.length, uniqeuHolder]
   }
 }

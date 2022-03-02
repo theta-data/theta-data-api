@@ -7,6 +7,15 @@ export class NftType {
   // balance: [NftBalanceEntity]
 }
 
+@ObjectType()
+export class NftMetaType {
+  @Field(() => Int)
+  unique_holder: number
+
+  @Field()
+  total: number
+}
+
 // @ObjectType()
 // export class NftBlanceType {
 //   @Field()
