@@ -140,7 +140,8 @@ export class AnalyseService {
         })
         // await this.cacheManager.set('height', height, { ttl: 0 })
         this.logger.debug('send emit: ' + block.height)
-        this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
+        await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
+        // this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
         // return
       } catch (e) {
         this.logger.error(e)
@@ -148,9 +149,10 @@ export class AnalyseService {
     }
   }
 
-  @OnEvent('block.analyse')
+  // @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     try {
+      const startTimestamp = moment().unix()
       const height = Number(block.height)
       const timestamp = moment(
         moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
@@ -295,7 +297,7 @@ export class AnalyseService {
         }
         await this.walletService.markActive(wallets)
         this.loggerService.timeMonitor(
-          block_number + ' insert or update wallets',
+          block.height + ' insert or update wallets',
           startUpdateWallets
         )
 
@@ -339,6 +341,7 @@ export class AnalyseService {
         'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
       )
       this.logger.error(e)
+      process.exit()
     }
   }
 
