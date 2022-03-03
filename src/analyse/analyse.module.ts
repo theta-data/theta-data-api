@@ -9,6 +9,7 @@ import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 import { WalletModule } from '../block-chain/wallet/wallet.module'
 import { BlockListEntity } from './block-list.entity'
 import { AnalyseLockEntity } from './analyse-lock.entity'
+import { CommonModule } from 'src/common/common.module'
 @Module({
   imports: [
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity], 'tx'),
@@ -17,7 +18,8 @@ import { AnalyseLockEntity } from './analyse-lock.entity'
     CacheModule.register({}),
     StakeModule,
     SmartContractModule,
-    WalletModule
+    WalletModule,
+    CommonModule
   ],
   providers: [AnalyseService]
 })

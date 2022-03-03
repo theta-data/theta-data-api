@@ -17,6 +17,7 @@ import { Interval } from '@nestjs/schedule'
 import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
 import { AnalyseLockEntity } from './analyse-lock.entity'
+import { LoggerService } from 'src/common/logger.service'
 
 @Injectable()
 export class AnalyseService {
@@ -45,7 +46,8 @@ export class AnalyseService {
 
     private walletService: WalletService,
 
-    private eventEmitter: EventEmitter2
+    private eventEmitter: EventEmitter2,
+    private loggerService: LoggerService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     // const analyseKey = 'under_analyse'
@@ -65,7 +67,9 @@ export class AnalyseService {
   public async analyseData() {
     this.logger.debug('start analyse')
     // const analyseKey = 'under_analyse'
-    const analyseLock = await this.analyseLockRepository.findOne({ lock_key: this.analyseKey })
+    const analyseLock = await this.analyseLockRepository.findOne({
+      lock_key: this.analyseKey
+    })
     if (!analyseLock) {
       try {
         return await this.analyseLockRepository.insert({
@@ -97,7 +101,7 @@ export class AnalyseService {
       (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
     )
     height = lastfinalizedHeight - 1000
-    this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
+    // this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
     if (config.get('START_HEIGHT')) {
       height = config.get('START_HEIGHT')
     }
@@ -135,7 +139,7 @@ export class AnalyseService {
           status: BlockStatus.inserted
         })
         // await this.cacheManager.set('height', height, { ttl: 0 })
-        this.logger.debug('send emit')
+        this.logger.debug('send emit: ' + block.height)
         this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
         // return
       } catch (e) {
@@ -195,14 +199,12 @@ export class AnalyseService {
                 timestamp: Number(block.timestamp)
               })
               if (transacitonToBeUpserted.length > 900) {
-                this.logger.debug('start stake reward upsert')
+                // this.logger.debug('start stake reward upsert')
                 await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
                   'wallet_address',
                   'reward_height'
                 ])
-                this.logger.debug(
-                  height + ': stake reward upsert used ' + (moment().unix() - stakeRewardStart)
-                )
+                this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
                 transacitonToBeUpserted.length = 0
               }
             }
@@ -210,7 +212,10 @@ export class AnalyseService {
               'wallet_address',
               'reward_height'
             ])
-            this.logger.debug(height + ': complete stake reward upsert')
+            this.loggerService.timeMonitor(
+              height + ': complete stake reward upsert',
+              stakeRewardStart
+            )
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             deposit_stake_transaction++
@@ -272,19 +277,26 @@ export class AnalyseService {
         const wallets = []
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
-            wallets.push({ address: wallet.address, timestamp: Number(block.timestamp) })
+            wallets.push({
+              address: wallet.address,
+              timestamp: Number(block.timestamp)
+            })
           }
         }
 
         if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
           // const wallets = []
           for (const wallet of transaction.raw.outputs) {
-            wallets.push({ address: wallet.address, timestamp: Number(block.timestamp) })
+            wallets.push({
+              address: wallet.address,
+              timestamp: Number(block.timestamp)
+            })
           }
         }
         await this.walletService.markActive(wallets)
-        this.logger.debug(
-          'insert or update wallets used time:' + (moment().unix() - startUpdateWallets)
+        this.loggerService.timeMonitor(
+          block_number + ' insert or update wallets',
+          startUpdateWallets
         )
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
@@ -296,7 +308,7 @@ export class AnalyseService {
       block_number++
       const startSnapShot = moment().unix()
       await this.walletService.snapShotActiveWallets(Number(block.timestamp))
-      this.logger.debug('snapshot used time:' + (moment().unix() - startSnapShot))
+      this.loggerService.timeMonitor('snapshot', startSnapShot)
       await this.thetaTxNumByHoursRepository.query(
         `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
       )
@@ -310,9 +322,8 @@ export class AnalyseService {
         }
       )
       this.counter--
-      this.logger.debug(
-        'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
-      )
+      this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
+
       // try {
       if (this.counter == 0) {
         await this.analyseLockRepository.update({ status: true }, { status: false })
