@@ -284,7 +284,9 @@ export class AnalyseService {
         }
         await this.walletService.markActive(wallets)
         this.logger.debug(
-          'insert or update wallets used time:' + (moment().unix() - startUpdateWallets)
+          block_number +
+            ' insert or update wallets used time:' +
+            (moment().unix() - startUpdateWallets)
         )
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
