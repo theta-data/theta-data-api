@@ -457,11 +457,7 @@ type ThetaRpcModel {
   """This field returns the version of the blockchain software."""
   GetVersion: GetVersionModel!
 
-  """
-  This Field returns the details of the account.
-  
-  
-  """
+  "This Field returns the details of the account.\n\n"
   GetAccount(address: String!): GetAccountModel!
 
   """This Field returns the details of the block"""
@@ -516,7 +512,7 @@ type SmartContractEntity {
 
 """Statistics on smart contract related calls"""
 type SmartContractStatisticsType {
-  CallRank(take: Int = 500, rank_by: RankByEnum): [SmartContractEntity!]!
+  CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
 }
 
 enum RankByEnum {
@@ -562,12 +558,12 @@ type NftTransferRecordEntity {
 
 type NftType {
   Balance(wallet_address: String!): [NftBalanceEntity!]!
-  NftsForContract(smart_contract_address: String!, wallet_address: String!): [NftBalanceEntity!]!
+  NftsForContract(wallet_address: String!, smart_contract_address: String!): [NftBalanceEntity!]!
   NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
   NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
   ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
-  TokenIdOwners(contract_adress: String!, token_id: Float!): NftBalanceEntity!
+  TokenIdOwners(token_id: Float!, contract_adress: String!): NftBalanceEntity!
   Meta(smart_contract_address: String!): NftMetaType!
 }
 
@@ -596,5 +592,5 @@ type Query {
 
 type Mutation {
   verifyWithThetaExplorer(address: String!): SmartContractEntity!
-  newMsg(content: String!, email: String!, last_name: String!, first_name: String!): ContactEntity!
+  newMsg(first_name: String!, last_name: String!, email: String!, content: String!): ContactEntity!
 }
