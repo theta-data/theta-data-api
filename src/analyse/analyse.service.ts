@@ -182,6 +182,7 @@ export class AnalyseService {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             coin_base_transaction++
+            const stakeRewardStart = moment().unix()
             const transacitonToBeUpserted = []
             for (const output of transaction.raw.outputs) {
               // this.logger.debug('upsert coinbae transaction')
@@ -199,7 +200,9 @@ export class AnalyseService {
                   'wallet_address',
                   'reward_height'
                 ])
-                this.logger.debug(height + ': end stake reward upsert')
+                this.logger.debug(
+                  height + ': stake reward upsert used ' + (moment().unix() - stakeRewardStart)
+                )
                 transacitonToBeUpserted.length = 0
               }
             }
@@ -265,6 +268,7 @@ export class AnalyseService {
             this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
+        const startUpdateWallets = moment().unix()
         const wallets = []
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
@@ -279,6 +283,9 @@ export class AnalyseService {
           }
         }
         await this.walletService.markActive(wallets)
+        this.logger.debug(
+          'insert or update wallets used time:' + (moment().unix() - startUpdateWallets)
+        )
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
           theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
