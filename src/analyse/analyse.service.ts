@@ -65,8 +65,6 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
-    // this.logger.debug('start analyse')
-    // const analyseKey = 'under_analyse'
     const analyseLock = await this.analyseLockRepository.findOne({
       lock_key: this.analyseKey
     })
@@ -101,7 +99,7 @@ export class AnalyseService {
       (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
     )
     height = lastfinalizedHeight - 1000
-    // this.logger.debug('analyse Data get latest finalized height from block chain:' + height)
+
     if (config.get('START_HEIGHT')) {
       height = config.get('START_HEIGHT')
     }
@@ -114,8 +112,6 @@ export class AnalyseService {
     if (latestBlock && latestBlock.block_number >= height) {
       height = latestBlock.block_number + 1
     }
-
-    // this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
     const analyseNumber = config.get('ANALYSE_NUMBER')
@@ -140,12 +136,7 @@ export class AnalyseService {
           status: BlockStatus.inserted
         })
         await this.logger.debug(block.height + ' insert end')
-        // this.logger.debug()
-        // await this.cacheManager.set('height', height, { ttl: 0 })
-        // this.logger.debug('send emit: ' + block.height)
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
-        // this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
-        // return
       } catch (e) {
         this.logger.error(e)
       }
@@ -155,14 +146,11 @@ export class AnalyseService {
   // @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     try {
-      const startTimestamp = moment().unix()
       const height = Number(block.height)
       const timestamp = moment(
         moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
       ).unix()
-      // this.logger.debug(
-      //   '' + height + ' last finalized height: ' + latestFinalizedBlockHeight
-      // )
+
       if (
         Number(block.height) % 100 === 1 &&
         latestFinalizedBlockHeight - Number(block.height) < 5000

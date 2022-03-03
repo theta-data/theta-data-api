@@ -6,6 +6,10 @@ module.exports = {
       instances: 1,
       autorestart: true,
       watch: false,
+
+      //@todo remove this config in the pro dev
+      cron_restart: '0 */1 * * * ',
+
       max_memory_restart: '2G',
       env_test: {
         NODE_ENV: 'test'
