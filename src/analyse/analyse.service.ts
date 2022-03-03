@@ -65,7 +65,7 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
-    this.logger.debug('start analyse')
+    // this.logger.debug('start analyse')
     // const analyseKey = 'under_analyse'
     const analyseLock = await this.analyseLockRepository.findOne({
       lock_key: this.analyseKey
@@ -115,7 +115,7 @@ export class AnalyseService {
       height = latestBlock.block_number + 1
     }
 
-    this.logger.debug('get height to analyse: ' + height)
+    // this.logger.debug('get height to analyse: ' + height)
 
     let endHeight = lastfinalizedHeight
     const analyseNumber = config.get('ANALYSE_NUMBER')
@@ -133,13 +133,16 @@ export class AnalyseService {
     for (let i = 0; i < blockList.result.length; i++) {
       try {
         const block = blockList.result[i]
-        this.logger.debug('analyse height: ' + block.height)
+        const startTimeStamp = moment().unix()
+        this.logger.debug(block.height + 'start insert')
         await this.blockListRepository.insert({
           block_number: Number(block.height),
           status: BlockStatus.inserted
         })
+        await this.logger.debug(block.height + ' insert end')
+        // this.logger.debug()
         // await this.cacheManager.set('height', height, { ttl: 0 })
-        this.logger.debug('send emit: ' + block.height)
+        // this.logger.debug('send emit: ' + block.height)
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
         // this.eventEmitter.emit('block.analyse', block, lastfinalizedHeight)
         // return
@@ -157,15 +160,21 @@ export class AnalyseService {
       const timestamp = moment(
         moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
       ).unix()
-      this.logger.debug(
-        'handle height: ' + height + ' last finalized height: ' + latestFinalizedBlockHeight
-      )
-      if (Number(block.height) % 100 === 1) {
-        if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
-          await this.updateCheckPoint(block)
-        } else {
-          this.logger.debug('no need to calculate checkpoint block')
-        }
+      // this.logger.debug(
+      //   '' + height + ' last finalized height: ' + latestFinalizedBlockHeight
+      // )
+      if (
+        Number(block.height) % 100 === 1 &&
+        latestFinalizedBlockHeight - Number(block.height) < 5000
+      ) {
+        await this.updateCheckPoint(block)
+        // if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
+        //   await this.updateCheckPoint(block)
+        // } else {
+        //   this.logger.debug('no need to calculate checkpoint block')
+        // }
+      } else {
+        this.logger.debug(height + ' no need to calculate checkpoint block')
       }
 
       let coin_base_transaction = 0,
@@ -218,6 +227,7 @@ export class AnalyseService {
               height + ': complete stake reward upsert',
               stakeRewardStart
             )
+            this.logger.debug(height + ' end upsert stake reward')
             break
           case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
             deposit_stake_transaction++
@@ -300,6 +310,7 @@ export class AnalyseService {
           block.height + ' insert or update wallets',
           startUpdateWallets
         )
+        this.logger.debug(height + ' end upsert wallets')
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
           theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
@@ -310,10 +321,13 @@ export class AnalyseService {
       block_number++
       const startSnapShot = moment().unix()
       await this.walletService.snapShotActiveWallets(Number(block.timestamp))
+      this.logger.debug(height + ' end snap shot')
       this.loggerService.timeMonitor('snapshot', startSnapShot)
       await this.thetaTxNumByHoursRepository.query(
         `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
       )
+      this.logger.debug(height + ' end update theta tx num by hours')
+
       await this.blockListRepository.update(
         {
           status: BlockStatus.inserted,
@@ -323,6 +337,8 @@ export class AnalyseService {
           status: BlockStatus.analysed
         }
       )
+      this.logger.debug(height + ' end update analyse')
+
       this.counter--
       this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
 
@@ -341,7 +357,7 @@ export class AnalyseService {
         'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
       )
       this.logger.error(e)
-      process.exit()
+      // process.exit()
     }
   }
 
