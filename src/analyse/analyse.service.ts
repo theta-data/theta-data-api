@@ -182,6 +182,7 @@ export class AnalyseService {
         switch (transaction.type) {
           case THETA_TRANSACTION_TYPE_ENUM.coinbase:
             coin_base_transaction++
+            const stakeRewardStart = moment().unix()
             const transacitonToBeUpserted = []
             for (const output of transaction.raw.outputs) {
               // this.logger.debug('upsert coinbae transaction')
@@ -199,7 +200,9 @@ export class AnalyseService {
                   'wallet_address',
                   'reward_height'
                 ])
-                this.logger.debug(height + ': end stake reward upsert')
+                this.logger.debug(
+                  height + ': stake reward upsert used ' + (moment().unix() - stakeRewardStart)
+                )
                 transacitonToBeUpserted.length = 0
               }
             }
@@ -265,6 +268,7 @@ export class AnalyseService {
             this.logger.error('no transaction.tx_type:' + transaction.type)
             break
         }
+        const startUpdateWallets = moment().unix()
         const wallets = []
         if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
           for (const wallet of transaction.raw.inputs) {
@@ -279,6 +283,9 @@ export class AnalyseService {
           }
         }
         await this.walletService.markActive(wallets)
+        this.logger.debug(
+          'insert or update wallets used time:' + (moment().unix() - startUpdateWallets)
+        )
 
         if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
           theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
@@ -287,7 +294,9 @@ export class AnalyseService {
         }
       }
       block_number++
+      const startSnapShot = moment().unix()
       await this.walletService.snapShotActiveWallets(Number(block.timestamp))
+      this.logger.debug('snapshot used time:' + (moment().unix() - startSnapShot))
       await this.thetaTxNumByHoursRepository.query(
         `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
       )

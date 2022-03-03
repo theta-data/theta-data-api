@@ -75,7 +75,7 @@ export class SmartContractService {
     const smartContract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
-    this.logger.debug('timestamp:' + timestamp)
+    // this.logger.debug('timestamp:' + timestamp)
     const smartContractRecord = new SmartContractCallRecordEntity()
     smartContractRecord.timestamp = Number(timestamp)
     smartContractRecord.data = data
