@@ -144,7 +144,7 @@ export class AnalyseService {
     }
   }
 
-  @OnEvent('block.analyse', { nextTick: true })
+  @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
     try {
       const height = Number(block.height)
