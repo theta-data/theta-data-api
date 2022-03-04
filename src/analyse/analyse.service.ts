@@ -68,34 +68,38 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
-    const analyseLock = await this.analyseLockRepository.findOne({
-      lock_key: this.analyseKey
-    })
-    if (!analyseLock) {
-      try {
-        return await this.analyseLockRepository.insert({
-          lock_key: this.analyseKey,
-          status: false
-        })
-      } catch (e) {
-        return this.logger.debug(e)
-        // return
-      }
-    }
-    if (analyseLock.status == false) {
-      try {
-        await this.analyseLockRepository.update(
-          { status: false, lock_key: this.analyseKey },
-          { status: true }
-        )
-      } catch (e) {
-        return this.logger.debug(e)
-      }
+    // const analyseLock = await this.analyseLockRepository.findOne({
+    //   lock_key: this.analyseKey
+    // })
+    // if (!analyseLock) {
+    //   try {
+    //     return await this.analyseLockRepository.insert({
+    //       lock_key: this.analyseKey,
+    //       status: false
+    //     })
+    //   } catch (e) {
+    //     return this.logger.debug(e)
+    //     // return
+    //   }
+    // }
+    // if (analyseLock.status == false) {
+    //   try {
+    //     await this.analyseLockRepository.update(
+    //       { status: false, lock_key: this.analyseKey },
+    //       { status: true }
+    //     )
+    //   } catch (e) {
+    //     return this.logger.debug(e)
+    //   }
+    // } else {
+    //   return this.logger.debug('under analyse')
+    // }
+    const analyseKey = await this.cacheManager.get(this.analyseKey)
+    if (!analyseKey) {
+      await this.cacheManager.set(this.analyseKey, true, { ttl: 0 })
     } else {
       return this.logger.debug('under analyse')
     }
-
-    await this.cacheManager.set(this.analyseKey, true, { ttl: 0 })
 
     let height: number = 0
     const lastfinalizedHeight = Number(
@@ -132,13 +136,15 @@ export class AnalyseService {
     for (let i = 0; i < blockList.result.length; i++) {
       try {
         const block = blockList.result[i]
-        const startTimeStamp = moment().unix()
+        // const startTimeStamp = moment().unix()
         await this.logger.debug(block.height + ' insert end')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       } catch (e) {
+        this.cacheManager.set(this.analyseKey, false)
         this.logger.error(e)
       }
     }
+    this.cacheManager.set(this.analyseKey, false)
   }
 
   // @OnEvent('block.analyse')
@@ -407,9 +413,13 @@ export class AnalyseService {
       this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
 
       // try {
-      if (this.counter == 0) {
-        await this.analyseLockRepository.update({ status: true }, { status: false })
-      }
+      // if (this.counter == 0) {
+      //   await analyseConnection.manager.update(
+      //     AnalyseLockEntity,
+      //     { status: true },
+      //     { status: false }
+      //   )
+      // }
       await txConnection.commitTransaction()
       await analyseConnection.commitTransaction()
       await stakeConnection.commitTransaction()
