@@ -107,6 +107,7 @@ export class AnalyseService {
       )
       this.logger.debug('block list length:' + blockList.result.length)
       this.counter = blockList.result.length
+      // this.logger.debug
       for (let i = 0; i < blockList.result.length; i++) {
         // try {
         const block = blockList.result[i]
