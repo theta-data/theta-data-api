@@ -323,46 +323,39 @@ export class AnalyseService {
       const wallets = []
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
-          // wallets.push({
-          //   address: wallet.address,
-          //   latest_active_time: Number(block.timestamp)
-          // })
-          await this.walletConnection.manager.upsert(
-            WalletEntity,
-            {
-              address: wallet.address,
-              latest_active_time: Number(block.timestamp)
-            },
-            ['address']
-          )
-          // if (wallets.length > 900) {
-          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-          //   wallets.length = 0
-          // }
+          wallets.push({
+            address: wallet.address,
+            latest_active_time: Number(block.timestamp)
+          })
+          await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+          if (wallets.length > 900) {
+            await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+            wallets.length = 0
+          }
         }
       }
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          await this.walletConnection.manager.upsert(
-            WalletEntity,
-            {
-              address: wallet.address,
-              latest_active_time: Number(block.timestamp)
-            },
-            ['address']
-          )
-          // wallets.push({
-          //   address: wallet.address,
-          //   latest_active_time: Number(block.timestamp)
-          // })
-          // if (wallets.length > 900) {
-          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-          //   wallets.length = 0
-          // }
+          // await this.walletConnection.manager.upsert(
+          //   WalletEntity,
+          //   {
+          //     address: wallet.address,
+          //     latest_active_time: Number(block.timestamp)
+          //   },
+          //   ['address']
+          // )
+          wallets.push({
+            address: wallet.address,
+            latest_active_time: Number(block.timestamp)
+          })
+          if (wallets.length > 900) {
+            await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+            wallets.length = 0
+          }
         }
       }
-      // await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+      await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
       this.loggerService.timeMonitor(block.height + ' insert or update wallets', startUpdateWallets)
       this.logger.debug(height + ' end upsert wallets')
 
