@@ -4,7 +4,7 @@
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
-    "statementCacheSize" : 200,
+    "statementCacheSize" : 500,
     "type": "better-sqlite3",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "bigNumberStrings": false,
