@@ -36,40 +36,10 @@ export class AnalyseService {
   private walletConnection: QueryRunner
 
   constructor(
-    // @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
-    // private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
-
-    // @InjectRepository(StakeStatisticsEntity, 'stake')
-    // private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
-
-    // @InjectRepository(StakeRewardEntity, 'stake')
-    // private stakeRewardRepository: Repository<StakeRewardEntity>,
-
-    // @InjectRepository(BlockListEntity, 'analyse')
-    // private blockListRepository: Repository<BlockListEntity>,
-
-    // @InjectRepository(AnalyseLockEntity, 'analyse')
-    // private analyseLockRepository: Repository<AnalyseLockEntity>,
-
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private smartContractService: SmartContractService,
-
-    private walletService: WalletService,
-
-    private eventEmitter: EventEmitter2,
     private loggerService: LoggerService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-    // const analyseKey = 'under_analyse'
-    // this.analyseConnection.manager
-    //   .update(AnalyseLockEntity, { lock_key: this.analyseKey }, { status: false })
-    //   .then(() => {
-    //     this.logger.debug('restore analyse lock success')
-    //   })
-    //   .catch((e) => {
-    //     this.logger.debug(e)
-    //   })
-
     this.logger.debug(config.get('THETA_NODE_HOST'))
   }
 
@@ -140,7 +110,6 @@ export class AnalyseService {
       for (let i = 0; i < blockList.result.length; i++) {
         // try {
         const block = blockList.result[i]
-        // const startTimeStamp = moment().unix()
         this.logger.debug(block.height + ' insert end')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
@@ -187,11 +156,6 @@ export class AnalyseService {
       latestFinalizedBlockHeight - Number(block.height) < 5000
     ) {
       await this.updateCheckPoint(block)
-      // if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
-      //   await this.updateCheckPoint(block)
-      // } else {
-      //   this.logger.debug('no need to calculate checkpoint block')
-      // }
     } else {
       this.logger.debug(height + ' no need to calculate checkpoint block')
     }
