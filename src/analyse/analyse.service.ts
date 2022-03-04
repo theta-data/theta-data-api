@@ -1,6 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { getConnection, Repository } from 'typeorm'
+import { getConnection, QueryRunner, Repository } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
@@ -28,21 +28,28 @@ export class AnalyseService {
   analyseKey = 'under_analyse'
   private counter = 0
   private startTimestamp = 0
+
+  private txConnection: QueryRunner
+  private analyseConnection: QueryRunner
+  private stakeConnection: QueryRunner
+  private smartContractConnection: QueryRunner
+  private walletConnection: QueryRunner
+
   constructor(
-    @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
-    private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
+    // @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
+    // private thetaTxNumByHoursRepository: Repository<ThetaTxNumByHoursEntity>,
 
-    @InjectRepository(StakeStatisticsEntity, 'stake')
-    private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
+    // @InjectRepository(StakeStatisticsEntity, 'stake')
+    // private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
 
-    @InjectRepository(StakeRewardEntity, 'stake')
-    private stakeRewardRepository: Repository<StakeRewardEntity>,
+    // @InjectRepository(StakeRewardEntity, 'stake')
+    // private stakeRewardRepository: Repository<StakeRewardEntity>,
 
-    @InjectRepository(BlockListEntity, 'analyse')
-    private blockListRepository: Repository<BlockListEntity>,
+    // @InjectRepository(BlockListEntity, 'analyse')
+    // private blockListRepository: Repository<BlockListEntity>,
 
-    @InjectRepository(AnalyseLockEntity, 'analyse')
-    private analyseLockRepository: Repository<AnalyseLockEntity>,
+    // @InjectRepository(AnalyseLockEntity, 'analyse')
+    // private analyseLockRepository: Repository<AnalyseLockEntity>,
 
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private smartContractService: SmartContractService,
@@ -54,401 +61,339 @@ export class AnalyseService {
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     // const analyseKey = 'under_analyse'
-    this.analyseLockRepository
-      .update({ lock_key: this.analyseKey }, { status: false })
-      .then(() => {
-        this.logger.debug('restore analyse lock success')
-      })
-      .catch((e) => {
-        this.logger.debug(e)
-      })
+    // this.analyseConnection.manager
+    //   .update(AnalyseLockEntity, { lock_key: this.analyseKey }, { status: false })
+    //   .then(() => {
+    //     this.logger.debug('restore analyse lock success')
+    //   })
+    //   .catch((e) => {
+    //     this.logger.debug(e)
+    //   })
 
     this.logger.debug(config.get('THETA_NODE_HOST'))
   }
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
-    // const analyseLock = await this.analyseLockRepository.findOne({
-    //   lock_key: this.analyseKey
-    // })
-    // if (!analyseLock) {
-    //   try {
-    //     return await this.analyseLockRepository.insert({
-    //       lock_key: this.analyseKey,
-    //       status: false
-    //     })
-    //   } catch (e) {
-    //     return this.logger.debug(e)
-    //     // return
-    //   }
-    // }
-    // if (analyseLock.status == false) {
-    //   try {
-    //     await this.analyseLockRepository.update(
-    //       { status: false, lock_key: this.analyseKey },
-    //       { status: true }
-    //     )
-    //   } catch (e) {
-    //     return this.logger.debug(e)
-    //   }
-    // } else {
-    //   return this.logger.debug('under analyse')
-    // }
     const analyseKey = await this.cacheManager.get(this.analyseKey)
     if (!analyseKey) {
-      await this.cacheManager.set(this.analyseKey, true, { ttl: 0 })
+      this.logger.debug('start analyse')
+      await this.cacheManager.set(this.analyseKey, true, { ttl: 10000 })
     } else {
       return this.logger.debug('under analyse')
     }
+    try {
+      this.txConnection = getConnection('tx').createQueryRunner()
 
-    let height: number = 0
-    const lastfinalizedHeight = Number(
-      (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
-    )
-    height = lastfinalizedHeight - 1000
+      this.analyseConnection = getConnection('analyse').createQueryRunner()
 
-    if (config.get('START_HEIGHT')) {
-      height = config.get('START_HEIGHT')
-    }
-    const latestBlock = await this.blockListRepository.findOne({
-      order: {
-        block_number: 'DESC'
+      this.stakeConnection = getConnection('stake').createQueryRunner()
+
+      this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
+
+      this.walletConnection = getConnection('wallet').createQueryRunner()
+
+      await this.txConnection.connect()
+      await this.analyseConnection.connect()
+      await this.stakeConnection.connect()
+      await this.smartContractConnection.connect()
+      await this.walletConnection.connect()
+
+      await this.txConnection.startTransaction()
+      await this.analyseConnection.startTransaction()
+      await this.stakeConnection.startTransaction()
+      await this.smartContractConnection.startTransaction()
+      await this.walletConnection.startTransaction()
+
+      let height: number = 0
+      const lastfinalizedHeight = Number(
+        (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
+      )
+      height = lastfinalizedHeight - 1000
+
+      if (config.get('START_HEIGHT')) {
+        height = config.get('START_HEIGHT')
       }
-    })
+      const latestBlock = await this.analyseConnection.manager.findOne(BlockListEntity, {
+        order: {
+          block_number: 'DESC'
+        }
+      })
 
-    if (latestBlock && latestBlock.block_number >= height) {
-      height = latestBlock.block_number + 1
-    }
+      if (latestBlock && latestBlock.block_number >= height) {
+        height = latestBlock.block_number + 1
+      }
 
-    let endHeight = lastfinalizedHeight
-    const analyseNumber = config.get('ANALYSE_NUMBER')
-    if (lastfinalizedHeight - height > analyseNumber) {
-      endHeight = height + analyseNumber
-    }
-    this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
-    this.startTimestamp = moment().unix()
-    const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
-      height.toString(),
-      endHeight.toString()
-    )
-    this.logger.debug('block list length:' + blockList.result.length)
-    this.counter = blockList.result.length
-    for (let i = 0; i < blockList.result.length; i++) {
-      try {
+      let endHeight = lastfinalizedHeight
+      const analyseNumber = config.get('ANALYSE_NUMBER')
+      if (lastfinalizedHeight - height > analyseNumber) {
+        endHeight = height + analyseNumber
+      }
+      this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
+      this.startTimestamp = moment().unix()
+      const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
+        height.toString(),
+        endHeight.toString()
+      )
+      this.logger.debug('block list length:' + blockList.result.length)
+      this.counter = blockList.result.length
+      for (let i = 0; i < blockList.result.length; i++) {
+        // try {
         const block = blockList.result[i]
         // const startTimeStamp = moment().unix()
-        await this.logger.debug(block.height + ' insert end')
+        this.logger.debug(block.height + ' insert end')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
-      } catch (e) {
-        this.cacheManager.set(this.analyseKey, false)
-        this.logger.error(e)
       }
+      await this.txConnection.commitTransaction()
+      await this.analyseConnection.commitTransaction()
+      await this.stakeConnection.commitTransaction()
+      await this.smartContractConnection.commitTransaction()
+      await this.walletConnection.commitTransaction()
+      this.logger.debug('commit success')
+    } catch (e) {
+      this.logger.error(e)
+      this.logger.error('rollback')
+      await this.txConnection.rollbackTransaction()
+      await this.analyseConnection.rollbackTransaction()
+      await this.stakeConnection.rollbackTransaction()
+      await this.smartContractConnection.rollbackTransaction()
+      await this.walletConnection.rollbackTransaction()
+      // process.exit(0)
+    } finally {
+      await this.txConnection.release()
+      await this.analyseConnection.release()
+      await this.stakeConnection.release()
+      await this.smartContractConnection.release()
+      await this.walletConnection.release()
+      this.logger.debug('release success')
+      await this.cacheManager.del(this.analyseKey)
     }
-    this.cacheManager.set(this.analyseKey, false)
   }
 
   // @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
-    const txConnection = getConnection('tx').createQueryRunner()
-    await txConnection.connect()
-    await txConnection.startTransaction()
+    this.logger.debug(block.height + 'start insert')
+    await this.analyseConnection.manager.insert(BlockListEntity, {
+      block_number: Number(block.height),
+      status: BlockStatus.inserted
+    })
+    const height = Number(block.height)
+    const timestamp = moment(
+      moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
+    ).unix()
 
-    const analyseConnection = getConnection('analyse').createQueryRunner()
-    await analyseConnection.connect()
-    await analyseConnection.startTransaction()
-
-    const stakeConnection = getConnection('stake').createQueryRunner()
-    await stakeConnection.connect()
-    await stakeConnection.startTransaction()
-
-    const smartContractConnection = getConnection('smart_contract').createQueryRunner()
-    await smartContractConnection.connect()
-    await smartContractConnection.startTransaction()
-
-    const walletConnection = getConnection('wallet').createQueryRunner()
-    await walletConnection.connect()
-    await walletConnection.startTransaction()
-
-    try {
-      this.logger.debug(block.height + 'start insert')
-
-      // await this.blockListRepository.insert({
-      //   block_number: Number(block.height),
-      //   status: BlockStatus.inserted
-      // })
-      await analyseConnection.manager.insert(BlockListEntity, {
-        block_number: Number(block.height),
-        status: BlockStatus.inserted
-      })
-      const height = Number(block.height)
-      const timestamp = moment(
-        moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-      ).unix()
-
-      if (
-        Number(block.height) % 100 === 1 &&
-        latestFinalizedBlockHeight - Number(block.height) < 5000
-      ) {
-        await this.updateCheckPoint(block)
-        // if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
-        //   await this.updateCheckPoint(block)
-        // } else {
-        //   this.logger.debug('no need to calculate checkpoint block')
-        // }
-      } else {
-        this.logger.debug(height + ' no need to calculate checkpoint block')
-      }
-
-      let coin_base_transaction = 0,
-        theta_fuel_burnt_by_smart_contract = 0,
-        theta_fuel_burnt_by_transfers = 0,
-        deposit_stake_transaction = 0,
-        release_fund_transaction = 0,
-        reserve_fund_transaction = 0,
-        send_transaction = 0,
-        service_payment_transaction = 0,
-        slash_transaction = 0,
-        smart_contract_transaction = 0,
-        split_rule_transaction = 0,
-        withdraw_stake_transaction = 0,
-        block_number = 0,
-        active_wallet = 0,
-        theta_fuel_burnt = 0
+    if (
+      Number(block.height) % 100 === 1 &&
+      latestFinalizedBlockHeight - Number(block.height) < 5000
+    ) {
+      await this.updateCheckPoint(block)
+      // if (latestFinalizedBlockHeight - Number(block.height) < 5000) {
+      //   await this.updateCheckPoint(block)
+      // } else {
+      //   this.logger.debug('no need to calculate checkpoint block')
       // }
-      for (const transaction of block.transactions) {
-        switch (transaction.type) {
-          case THETA_TRANSACTION_TYPE_ENUM.coinbase:
-            coin_base_transaction++
-            const stakeRewardStart = moment().unix()
-            const transacitonToBeUpserted = []
-            for (const output of transaction.raw.outputs) {
-              // this.logger.debug('upsert coinbae transaction')
-              transacitonToBeUpserted.push({
-                reward_amount: Number(
-                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-                ),
-                wallet_address: output.address.toLocaleLowerCase(),
-                reward_height: height,
-                timestamp: Number(block.timestamp)
-              })
-              if (transacitonToBeUpserted.length > 900) {
-                // this.logger.debug('start stake reward upsert')
-                // await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
-                //   'wallet_address',
-                //   'reward_height'
-                // ])
-                await stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
-                  'wallet_address',
-                  'reward_height'
-                ])
-
-                this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
-                transacitonToBeUpserted.length = 0
-              }
-            }
-            // await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
-            //   'wallet_address',
-            //   'reward_height'
-            // ])
-            await stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
-              'wallet_address',
-              'reward_height'
-            ])
-            this.loggerService.timeMonitor(
-              height + ': complete stake reward upsert',
-              stakeRewardStart
-            )
-            this.logger.debug(height + ' end upsert stake reward')
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
-            deposit_stake_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.release_fund:
-            release_fund_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
-            reserve_fund_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.send:
-            send_transaction++
-            if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-              theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
-                .dividedBy('1e18')
-                .toNumber()
-            }
-            break
-
-          case THETA_TRANSACTION_TYPE_ENUM.service_payment:
-            service_payment_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.slash:
-            slash_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
-            smart_contract_transaction++
-            // await this.smartContractService.updateSmartContractRecord(
-            //   block.timestamp,
-            //   transaction.receipt.ContractAddress,
-            //   transaction.raw.data,
-            //   JSON.stringify(transaction.receipt),
-            //   height,
-            //   transaction.hash
-            // )
-            await smartContractConnection.query(
-              `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${transaction.receipt.ContractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
-            )
-            const smartContract = await smartContractConnection.manager.findOne(
-              SmartContractEntity,
-              {
-                contract_address: transaction.receipt.ContractAddress
-              }
-            )
-            await smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
-              timestamp: Number(timestamp),
-              data: transaction.raw.data,
-              receipt: JSON.stringify(transaction.receipt),
-              height: height,
-              tansaction_hash: transaction.hash,
-              contract_id: smartContract.id
-            })
-            if (transaction.raw.gas_limit && transaction.raw.gas_price) {
-              theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
-                .multipliedBy(transaction.receipt.GasUsed)
-                .dividedBy('1e18')
-                .toNumber()
-
-              theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
-                .multipliedBy(transaction.receipt.GasUsed)
-                .dividedBy('1e18')
-                .toNumber()
-            }
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.split_rule:
-            split_rule_transaction++
-            break
-          case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
-            withdraw_stake_transaction++
-            break
-          default:
-            this.logger.error('no transaction.tx_type:' + transaction.type)
-            break
-        }
-        const startUpdateWallets = moment().unix()
-        const wallets = []
-        if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
-          for (const wallet of transaction.raw.inputs) {
-            wallets.push({
-              address: wallet.address,
-              latest_active_time: Number(block.timestamp)
-            })
-            if (wallets.length > 900) {
-              await walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-              wallets.length = 0
-            }
-          }
-        }
-
-        if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
-          // const wallets = []
-          for (const wallet of transaction.raw.outputs) {
-            wallets.push({
-              address: wallet.address,
-              latest_active_time: Number(block.timestamp)
-            })
-            if (wallets.length > 900) {
-              await walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-              wallets.length = 0
-            }
-          }
-        }
-        await walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-        // await this.walletService.markActive(wallets)
-        this.loggerService.timeMonitor(
-          block.height + ' insert or update wallets',
-          startUpdateWallets
-        )
-        this.logger.debug(height + ' end upsert wallets')
-
-        if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-          theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei)
-            .dividedBy('1e18')
-            .toNumber()
-        }
-      }
-      block_number++
-      const startSnapShot = moment().unix()
-      await this.walletService.snapShotActiveWallets(Number(block.timestamp))
-      this.logger.debug(height + ' end snap shot')
-      this.loggerService.timeMonitor('snapshot', startSnapShot)
-      // await this.thetaTxNumByHoursRepository.query(
-      //   `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
-      // )
-      await txConnection.query(
-        `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
-      )
-      this.logger.debug(height + ' end update theta tx num by hours')
-
-      // await this.blockListRepository.update(
-      //   {
-      //     status: BlockStatus.inserted,
-      //     block_number: height
-      //   },
-      //   {
-      //     status: BlockStatus.analysed
-      //   }
-      // )
-      await analyseConnection.manager.update(
-        BlockListEntity,
-        {
-          status: BlockStatus.inserted,
-          block_number: height
-        },
-        {
-          status: BlockStatus.analysed
-        }
-      )
-      this.logger.debug(height + ' end update analyse')
-
-      this.counter--
-      this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
-
-      // try {
-      // if (this.counter == 0) {
-      //   await analyseConnection.manager.update(
-      //     AnalyseLockEntity,
-      //     { status: true },
-      //     { status: false }
-      //   )
-      // }
-      await txConnection.commitTransaction()
-      await analyseConnection.commitTransaction()
-      await stakeConnection.commitTransaction()
-      await smartContractConnection.commitTransaction()
-      await walletConnection.commitTransaction()
-      // } catch (e) {
-      //   return this.logger.debug(e)
-      // }
-      // moment().unix() - this.startTimestamp
-      this.logger.debug('block ' + height + ' analyse end')
-    } catch (e) {
-      this.counter--
-      this.logger.debug(
-        'counter:' + this.counter + ',used time:' + (moment().unix() - this.startTimestamp)
-      )
-      this.logger.error(e)
-      await txConnection.rollbackTransaction()
-      await analyseConnection.rollbackTransaction()
-      await stakeConnection.rollbackTransaction()
-      await smartContractConnection.rollbackTransaction()
-      await walletConnection.rollbackTransaction()
-      // process.exit()
-    } finally {
-      await txConnection.release()
-      await analyseConnection.release()
-      await stakeConnection.release()
-      await smartContractConnection.release()
-      await walletConnection.release()
+    } else {
+      this.logger.debug(height + ' no need to calculate checkpoint block')
     }
+
+    let coin_base_transaction = 0,
+      theta_fuel_burnt_by_smart_contract = 0,
+      theta_fuel_burnt_by_transfers = 0,
+      deposit_stake_transaction = 0,
+      release_fund_transaction = 0,
+      reserve_fund_transaction = 0,
+      send_transaction = 0,
+      service_payment_transaction = 0,
+      slash_transaction = 0,
+      smart_contract_transaction = 0,
+      split_rule_transaction = 0,
+      withdraw_stake_transaction = 0,
+      block_number = 0,
+      active_wallet = 0,
+      theta_fuel_burnt = 0
+    // }
+    for (const transaction of block.transactions) {
+      switch (transaction.type) {
+        case THETA_TRANSACTION_TYPE_ENUM.coinbase:
+          coin_base_transaction++
+          const stakeRewardStart = moment().unix()
+          const transacitonToBeUpserted = []
+          for (const output of transaction.raw.outputs) {
+            // this.logger.debug('upsert coinbae transaction')
+            transacitonToBeUpserted.push({
+              reward_amount: Number(
+                new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+              ),
+              wallet_address: output.address.toLocaleLowerCase(),
+              reward_height: height,
+              timestamp: Number(block.timestamp)
+            })
+            if (transacitonToBeUpserted.length > 900) {
+              // this.logger.debug('start stake reward upsert')
+              // await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
+              //   'wallet_address',
+              //   'reward_height'
+              // ])
+              await this.stakeConnection.manager.upsert(
+                StakeRewardEntity,
+                transacitonToBeUpserted,
+                ['wallet_address', 'reward_height']
+              )
+
+              this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
+              transacitonToBeUpserted.length = 0
+            }
+          }
+          await this.stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
+            'wallet_address',
+            'reward_height'
+          ])
+          this.loggerService.timeMonitor(
+            height + ': complete stake reward upsert',
+            stakeRewardStart
+          )
+          this.logger.debug(height + ' end upsert stake reward')
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
+          deposit_stake_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.release_fund:
+          release_fund_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
+          reserve_fund_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.send:
+          send_transaction++
+          if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+            theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
+              .dividedBy('1e18')
+              .toNumber()
+          }
+          break
+
+        case THETA_TRANSACTION_TYPE_ENUM.service_payment:
+          service_payment_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.slash:
+          slash_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
+          smart_contract_transaction++
+          await this.smartContractConnection.query(
+            `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${transaction.receipt.ContractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
+          )
+          const smartContract = await this.smartContractConnection.manager.findOne(
+            SmartContractEntity,
+            {
+              contract_address: transaction.receipt.ContractAddress
+            }
+          )
+          await this.smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
+            timestamp: Number(timestamp),
+            data: transaction.raw.data,
+            receipt: JSON.stringify(transaction.receipt),
+            height: height,
+            tansaction_hash: transaction.hash,
+            contract_id: smartContract.id
+          })
+          if (transaction.raw.gas_limit && transaction.raw.gas_price) {
+            theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
+              .multipliedBy(transaction.receipt.GasUsed)
+              .dividedBy('1e18')
+              .toNumber()
+
+            theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
+              .multipliedBy(transaction.receipt.GasUsed)
+              .dividedBy('1e18')
+              .toNumber()
+          }
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.split_rule:
+          split_rule_transaction++
+          break
+        case THETA_TRANSACTION_TYPE_ENUM.withdraw_stake:
+          withdraw_stake_transaction++
+          break
+        default:
+          this.logger.error('no transaction.tx_type:' + transaction.type)
+          break
+      }
+      const startUpdateWallets = moment().unix()
+      const wallets = []
+      if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
+        for (const wallet of transaction.raw.inputs) {
+          // wallets.push({
+          //   address: wallet.address,
+          //   latest_active_time: Number(block.timestamp)
+          // })
+          await this.walletConnection.manager.upsert(
+            WalletEntity,
+            {
+              address: wallet.address,
+              latest_active_time: Number(block.timestamp)
+            },
+            ['address']
+          )
+          // if (wallets.length > 900) {
+          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+          //   wallets.length = 0
+          // }
+        }
+      }
+
+      if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
+        for (const wallet of transaction.raw.outputs) {
+          await this.walletConnection.manager.upsert(
+            WalletEntity,
+            {
+              address: wallet.address,
+              latest_active_time: Number(block.timestamp)
+            },
+            ['address']
+          )
+          // wallets.push({
+          //   address: wallet.address,
+          //   latest_active_time: Number(block.timestamp)
+          // })
+          // if (wallets.length > 900) {
+          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+          //   wallets.length = 0
+          // }
+        }
+      }
+      // await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+      this.loggerService.timeMonitor(block.height + ' insert or update wallets', startUpdateWallets)
+      this.logger.debug(height + ' end upsert wallets')
+
+      if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
+        theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toNumber()
+      }
+    }
+    block_number++
+    const startSnapShot = moment().unix()
+    this.logger.debug(height + ' end snap shot')
+    this.loggerService.timeMonitor('snapshot', startSnapShot)
+
+    await this.txConnection.query(
+      `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
+    )
+    this.logger.debug(height + ' end update theta tx num by hours')
+
+    await this.analyseConnection.manager.update(
+      BlockListEntity,
+      {
+        status: BlockStatus.inserted,
+        block_number: height
+      },
+      {
+        status: BlockStatus.analysed
+      }
+    )
+    this.logger.debug(height + ' end update analyse')
+
+    this.counter--
+    this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
   }
 
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
@@ -468,7 +413,7 @@ export class AnalyseService {
         BigNumber,
         BigNumber
       ] = await this.updateEenp(block)
-      let res = await this.stakeStatisticsRepository.findOne({
+      let res = await this.stakeConnection.manager.findOne(StakeStatisticsEntity, {
         block_height: Number(block.height)
       })
       if (!res) {
@@ -476,7 +421,7 @@ export class AnalyseService {
           'total guardian stake:' + parseInt(guTotalThetaWei.dividedBy('1e27').toFixed())
         )
         try {
-          return await this.stakeStatisticsRepository.insert({
+          return await this.stakeConnection.manager.insert(StakeStatisticsEntity, {
             block_height: Number(block.height),
 
             total_elite_edge_node_number: eenpTotalNodeNum,
