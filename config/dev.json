@@ -7,7 +7,7 @@
     "type": "better-sqlite3",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "bigNumberStrings": false,
-    "logging": true,
+    "logging": false,
     "extra": {
       "charset": "utf8mb4_unicode_ci"
     }
@@ -16,7 +16,7 @@
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 2000,
-  "ANALYSE_NUMBER" : 100,
+  "ANALYSE_NUMBER" : 2000,
   "REDIS": {
     "host": "127.0.0.1",
     "port": 6379
