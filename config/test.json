@@ -4,7 +4,7 @@
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
-    "type": "sqlite",
+    "type": "better-sqlite3",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "bigNumberStrings": false,
     "logging": false,
