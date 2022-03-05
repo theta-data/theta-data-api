@@ -99,7 +99,7 @@ export class SmartContractService {
     })
   }
 
-  @Cron(CronExpression.EVERY_10_MINUTES)
+  // @Cron(CronExpression.EVERY_10_MINUTES)
   async updateCallTimesByPeriod() {
     let smartContractList = await this.smartContractRepository.find()
     for (const contract of smartContractList) {
