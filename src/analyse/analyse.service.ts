@@ -1,4 +1,4 @@
-import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
+import { CACHE_MANAGER, Inject, Injectable, Logger, SerializeOptions } from '@nestjs/common'
 import { getConnection, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { thetaTsSdk } from 'theta-ts-sdk'
@@ -6,7 +6,7 @@ import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
-import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
+import * as sleep from 'await-sleep'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 const config = require('config')
 const moment = require('moment')
@@ -116,11 +116,6 @@ export class AnalyseService {
       await this.smartContractConnection.commitTransaction()
       await this.walletConnection.commitTransaction()
       this.logger.debug('commit success')
-      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000)
-
-      // await
-      // blockList = null
-      // delete(blockList)
     } catch (e) {
       this.logger.error(e)
       this.logger.error('rollback')
@@ -137,7 +132,7 @@ export class AnalyseService {
       await this.smartContractConnection.release()
       await this.walletConnection.release()
       this.logger.debug('release success')
-
+      await sleep(5000)
       await this.cacheManager.del(this.analyseKey)
     }
   }
