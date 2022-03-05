@@ -1,8 +1,6 @@
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
-import { getConnection, QueryRunner, Repository } from 'typeorm'
+import { getConnection, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
-import { ThetaTxNumByHoursEntity } from '../block-chain/tx/theta-tx-num-by-hours.entity'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
@@ -10,13 +8,10 @@ import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
 import { SmartContractService } from '../block-chain/smart-contract/smart-contract.service'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter'
 const config = require('config')
 const moment = require('moment')
 import { Interval } from '@nestjs/schedule'
-import { WalletService } from '../block-chain/wallet/wallet.service'
 import { BlockListEntity, BlockStatus } from './block-list.entity'
-import { AnalyseLockEntity } from './analyse-lock.entity'
 import { LoggerService } from 'src/common/logger.service'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
@@ -108,10 +103,11 @@ export class AnalyseService {
       this.logger.debug('block list length:' + blockList.result.length)
       this.counter = blockList.result.length
       // this.logger.debug
+      this.logger.debug('init counter', this.counter)
       for (let i = 0; i < blockList.result.length; i++) {
         // try {
         const block = blockList.result[i]
-        this.logger.debug(block.height + ' insert end')
+        this.logger.debug(block.height + ' start hanldle')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
       await this.txConnection.commitTransaction()
@@ -120,6 +116,8 @@ export class AnalyseService {
       await this.smartContractConnection.commitTransaction()
       await this.walletConnection.commitTransaction()
       this.logger.debug('commit success')
+      // blockList = null
+      // delete(blockList)
     } catch (e) {
       this.logger.error(e)
       this.logger.error('rollback')
@@ -136,6 +134,7 @@ export class AnalyseService {
       await this.smartContractConnection.release()
       await this.walletConnection.release()
       this.logger.debug('release success')
+
       await this.cacheManager.del(this.analyseKey)
     }
   }
@@ -194,11 +193,6 @@ export class AnalyseService {
               timestamp: Number(block.timestamp)
             })
             if (transacitonToBeUpserted.length > 900) {
-              // this.logger.debug('start stake reward upsert')
-              // await this.stakeRewardRepository.upsert(transacitonToBeUpserted, [
-              //   'wallet_address',
-              //   'reward_height'
-              // ])
               await this.stakeConnection.manager.upsert(
                 StakeRewardEntity,
                 transacitonToBeUpserted,
@@ -302,14 +296,6 @@ export class AnalyseService {
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          // await this.walletConnection.manager.upsert(
-          //   WalletEntity,
-          //   {
-          //     address: wallet.address,
-          //     latest_active_time: Number(block.timestamp)
-          //   },
-          //   ['address']
-          // )
           wallets.push({
             address: wallet.address,
             latest_active_time: Number(block.timestamp)

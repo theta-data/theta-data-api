@@ -8,7 +8,7 @@ module.exports = {
       watch: false,
 
       //@todo remove this config in the pro dev
-      cron_restart: '*/20 * * * * ',
+      cron_restart: '*/50 * * * * ',
 
       max_memory_restart: '2G',
       env_test: {
