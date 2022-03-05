@@ -116,6 +116,9 @@ export class AnalyseService {
       await this.smartContractConnection.commitTransaction()
       await this.walletConnection.commitTransaction()
       this.logger.debug('commit success')
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 5000)
+
+      // await
       // blockList = null
       // delete(blockList)
     } catch (e) {
