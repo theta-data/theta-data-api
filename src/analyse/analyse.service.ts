@@ -174,7 +174,7 @@ export class AnalyseService {
       active_wallet = 0,
       theta_fuel_burnt = 0
     // }
-    const wallets = []
+    const wallets = {}
     for (const transaction of block.transactions) {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
@@ -278,30 +278,38 @@ export class AnalyseService {
           break
       }
       const startUpdateWallets = moment().unix()
-
+      // wallets.reduce()
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
-          wallets.push({
-            address: wallet.address,
-            latest_active_time: Number(block.timestamp)
-          })
-          await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-          if (wallets.length > 900) {
-            await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-            wallets.length = 0
+          if (!wallets[wallet.address]) {
+            wallets[wallet.address] = {
+              address: wallet.address,
+              latest_active_time: Number(block.timestamp)
+            }
+          } else {
+            wallets[wallet.address]['latest_active_time'] = Number(block.timestamp)
           }
+          // wallets.push({
+          //   address: wallet.address,
+          //   latest_active_time: Number(block.timestamp)
+          // })
+          // await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+          // if (wallets.length > 900) {
+          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+          //   wallets.length = 0
+          // }
         }
       }
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          wallets.push({
-            address: wallet.address,
-            latest_active_time: Number(block.timestamp)
-          })
-          if (wallets.length > 900) {
-            await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-            wallets.length = 0
+          if (!wallets[wallet.address]) {
+            wallets[wallet.address] = {
+              address: wallet.address,
+              latest_active_time: Number(block.timestamp)
+            }
+          } else {
+            wallets[wallet.address]['latest_active_time'] = Number(block.timestamp)
           }
         }
       }
@@ -310,7 +318,13 @@ export class AnalyseService {
         theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toNumber()
       }
     }
-    await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
+    const walletsToUpdate = Object.values(wallets)
+    for (let i = 0; i < walletsToUpdate.length; i += 900) {
+      await this.walletConnection.manager.upsert(WalletEntity, walletsToUpdate.slice(i, i + 900), [
+        'address'
+      ])
+    }
+
     // this.loggerService.timeMonitor(block.height + ' insert or update wallets', startUpdateWallets)
     this.logger.debug(height + ' end upsert wallets')
     block_number++
