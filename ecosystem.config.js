@@ -8,11 +8,12 @@ module.exports = {
       watch: false,
 
       //@todo remove this config in the pro dev
-      cron_restart: '*/50 * * * * ',
+      // cron_restart: '*/50 * * * * ',
 
       max_memory_restart: '2G',
       env_test: {
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
+        max_memory_restart: '1G',
         // TZ: 'Asia/Shanghai'
       },
       env_production: {

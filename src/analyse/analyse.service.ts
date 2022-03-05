@@ -132,7 +132,7 @@ export class AnalyseService {
       await this.smartContractConnection.release()
       await this.walletConnection.release()
       this.logger.debug('release success')
-      await sleep(5000)
+      // await sleep(5000)
       await this.cacheManager.del(this.analyseKey)
     }
   }
