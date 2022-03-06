@@ -247,14 +247,18 @@ export class AnalyseService {
               contract_address: transaction.receipt.ContractAddress
             }
           )
-          await this.smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
-            timestamp: Number(timestamp),
-            data: transaction.raw.data,
-            receipt: JSON.stringify(transaction.receipt),
-            height: height,
-            tansaction_hash: transaction.hash,
-            contract_id: smartContract.id
-          })
+          await this.smartContractConnection.manager.upsert(
+            SmartContractCallRecordEntity,
+            {
+              timestamp: Number(timestamp),
+              data: transaction.raw.data,
+              receipt: JSON.stringify(transaction.receipt),
+              height: height,
+              tansaction_hash: transaction.hash,
+              contract_id: smartContract.id
+            },
+            ['tansaction_hash']
+          )
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
               .multipliedBy(transaction.receipt.GasUsed)
