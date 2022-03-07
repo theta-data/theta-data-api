@@ -88,6 +88,7 @@ export class AnalyseService {
       if (latestBlock && latestBlock.block_number >= height) {
         height = latestBlock.block_number + 1
       }
+      if (height <= lastfinalizedHeight) return
 
       let endHeight = lastfinalizedHeight
       const analyseNumber = config.get('ANALYSE_NUMBER')
