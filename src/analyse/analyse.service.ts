@@ -16,6 +16,7 @@ import { LoggerService } from 'src/common/logger.service'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { WalletEntity } from 'src/block-chain/wallet/wallet.entity'
+import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler'
 
 @Injectable()
 export class AnalyseService {
@@ -88,7 +89,7 @@ export class AnalyseService {
       if (latestBlock && latestBlock.block_number >= height) {
         height = latestBlock.block_number + 1
       }
-      if (height <= lastfinalizedHeight) return
+      if (height >= lastfinalizedHeight) throw new Error('no height to analyse')
 
       let endHeight = lastfinalizedHeight
       const analyseNumber = config.get('ANALYSE_NUMBER')
