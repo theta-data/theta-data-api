@@ -132,6 +132,8 @@ export class SmartContractService {
       contract = new SmartContractEntity()
       contract.contract_address = address
       contract = await this.smartContractRepository.save(contract)
+    } else {
+      if (contract.verified) return contract
     }
 
     // const downloader = require('../../helper/solcDownloader')
