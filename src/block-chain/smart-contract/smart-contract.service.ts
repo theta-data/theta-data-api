@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SmartContractEntity, smartContractProtocol } from './smart-contract.entity'
-import { MoreThan, Repository } from 'typeorm'
+import { getConnection, MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { Cron, CronExpression } from '@nestjs/schedule'
 import { RankByEnum } from './smart-contract.model'
@@ -84,9 +84,26 @@ export class SmartContractService {
     smartContractRecord.tansaction_hash = tansactionHash
     smartContractRecord.contract_id = smartContract.id
     await this.smartContractRecordRepository.save(smartContractRecord)
+    let afftectedNum = 0
     if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
-      await this.nftService.updateNftRecord(smartContractRecord, smartContract)
+      const connection = getConnection('nft').createQueryRunner()
+      await connection.connect()
+      await connection.startTransaction()
+      try {
+        const res = await this.nftService.updateNftRecord(
+          connection,
+          smartContractRecord,
+          smartContract
+        )
+        if (res) afftectedNum++
+      } catch (e) {
+        this.logger.debug(e)
+        await connection.rollbackTransaction()
+      } finally {
+        await connection.release()
+      }
     }
+
     // }
   }
 

@@ -35,27 +35,27 @@ export class NftBalanceEntity {
   from: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   contract_uri: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   base_token_uri: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   token_uri: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   name: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   img_uri: string
 
   @Field()
-  @Column()
+  @Column({ default: '' })
   detail: string
 
   @Field(() => Int)

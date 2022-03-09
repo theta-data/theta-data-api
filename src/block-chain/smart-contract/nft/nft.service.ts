@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
-import { getConnection, MoreThan, Repository } from 'typeorm'
+import { getConnection, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
@@ -43,6 +43,7 @@ export class NftService {
       where: { smart_contract_address: contract.contract_address },
       order: { timestamp: 'DESC' }
     })
+    this.logger.debug('nft record:' + JSON.stringify(nftRecord))
     const condition: any = {
       where: { contract_id: contract.id },
       order: { timestamp: 'ASC' }
@@ -50,56 +51,78 @@ export class NftService {
     if (nftRecord) {
       condition['where']['timestamp'] = MoreThan(nftRecord.timestamp)
     }
+    this.logger.debug(condition)
     const contractRecord = await this.smartContractCallRecordRepository.find(condition)
+    let afftectedNum = 0
 
+    const connection = getConnection('nft').createQueryRunner()
+    await connection.connect()
+    await connection.startTransaction()
     this.logger.debug('protocol is tnt 721')
-    for (const record of contractRecord) {
-      await this.updateNftRecord(record, contract)
+    try {
+      for (const record of contractRecord) {
+        const res = await this.updateNftRecord(connection, record, contract)
+        if (res) afftectedNum++
+      }
+      await connection.commitTransaction()
+    } catch (e) {
+      this.logger.debug(e)
+      await connection.rollbackTransaction()
+    } finally {
+      await connection.release()
     }
-    return contractRecord.length
+
+    return afftectedNum
   }
 
-  async updateNftRecord(record: SmartContractCallRecordEntity, contract: SmartContractEntity) {
+  async updateNftRecord(
+    connection: QueryRunner,
+    record: SmartContractCallRecordEntity,
+    contract: SmartContractEntity
+  ) {
     const receipt = JSON.parse(record.receipt)
+    if (!receipt.Logs[0]) {
+      this.logger.debug(JSON.stringify(receipt.Logs))
+      return
+    }
     if (receipt.Logs[0].data === '') {
       const data = this.utilsService.getHex(record.data)
       receipt.Logs[0].data = data
     }
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     if (logInfo[0].decode.eventName === 'Transfer') {
-      const connection = getConnection('nft').createQueryRunner()
-      await connection.connect()
-      await connection.startTransaction()
-      try {
-        await connection.manager.upsert(
-          NftTransferRecordEntity,
-          {
-            from: logInfo[0].decode.result.from,
-            to: logInfo[0].decode.result.to,
-            token_id: Number(logInfo[0].decode.result.tokenId),
-            smart_contract_address: contract.contract_address,
-            timestamp: record.timestamp
-          },
-          ['smart_contract_address', 'token_id', 'timestamp']
-        )
-        await connection.manager.upsert(
-          NftBalanceEntity,
-          {
-            smart_contract_address: contract.contract_address,
-            owner: logInfo[0].decode.result.to.toLowerCase(),
-            from: logInfo[0].decode.result.from.toLowerCase(),
-            token_id: Number(logInfo[0].decode.result.tokenId)
-          },
-          ['smart_contract_address', 'token_id']
-        )
-        await connection.commitTransaction()
-      } catch (e) {
-        connection.rollbackTransaction()
-        this.logger.debug(e)
-      } finally {
-        connection.release()
-      }
+      // try {
+      await connection.manager.upsert(
+        NftTransferRecordEntity,
+        {
+          from: logInfo[0].decode.result.from,
+          to: logInfo[0].decode.result.to,
+          token_id: Number(logInfo[0].decode.result.tokenId),
+          smart_contract_address: contract.contract_address,
+          timestamp: record.timestamp
+        },
+        ['smart_contract_address', 'token_id', 'timestamp']
+      )
+      await connection.manager.upsert(
+        NftBalanceEntity,
+        {
+          smart_contract_address: contract.contract_address,
+          owner: logInfo[0].decode.result.to.toLowerCase(),
+          from: logInfo[0].decode.result.from.toLowerCase(),
+          token_id: Number(logInfo[0].decode.result.tokenId)
+        },
+        ['smart_contract_address', 'token_id']
+      )
+      return true
+      // await connection.commitTransaction()
+      // } catch (e) {
+      //   connection.rollbackTransaction()
+      //   this.logger.debug(e)
+      // } finally {
+      //   connection.release()
+      // }
     }
+    return false
   }
 
   async updateNftBalance(contract_address: string, from: string, to: string, tokenId: number) {
