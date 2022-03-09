@@ -1,9 +1,17 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
+@Index(['contract_id', 'timestamp'])
 export class SmartContractCallRecordEntity {
   @PrimaryGeneratedColumn()
   id!: number
