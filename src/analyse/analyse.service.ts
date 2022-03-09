@@ -1,5 +1,5 @@
 import { CACHE_MANAGER, Inject, Injectable, Logger, SerializeOptions } from '@nestjs/common'
-import { getConnection, QueryRunner } from 'typeorm'
+import { getConnection, LessThan, MoreThan, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
@@ -107,11 +107,13 @@ export class AnalyseService {
       // this.logger.debug
       this.logger.debug('init counter', this.counter)
       for (let i = 0; i < blockList.result.length; i++) {
-        // try {
         const block = blockList.result[i]
         this.logger.debug(block.height + ' start hanldle')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
+      // await this.
+      this.logger.debug('start update calltimes by period')
+      // await this.updateCallTimesByPeriod()
       await this.txConnection.commitTransaction()
       await this.analyseConnection.commitTransaction()
       await this.stakeConnection.commitTransaction()
@@ -134,7 +136,6 @@ export class AnalyseService {
       await this.smartContractConnection.release()
       await this.walletConnection.release()
       this.logger.debug('release success')
-      // await sleep(5000)
       await this.cacheManager.del(this.analyseKey)
     }
   }
@@ -156,6 +157,7 @@ export class AnalyseService {
       latestFinalizedBlockHeight - Number(block.height) < 5000
     ) {
       await this.updateCheckPoint(block)
+      await this.clearCallTimeByPeriod()
     } else {
       this.logger.debug(height + ' no need to calculate checkpoint block')
     }
@@ -241,7 +243,9 @@ export class AnalyseService {
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
           smart_contract_transaction++
           await this.smartContractConnection.query(
-            `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${transaction.receipt.ContractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
+            `INSERT INTO smart_contract_entity(contract_address,height,call_times_update_timestamp) VALUES ('${
+              transaction.receipt.ContractAddress
+            }',${height},${moment().unix()})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1,call_times_update_timestamp=${moment().unix()};`
           )
           const smartContract = await this.smartContractConnection.manager.findOne(
             SmartContractEntity,
@@ -261,6 +265,7 @@ export class AnalyseService {
             },
             ['tansaction_hash']
           )
+          await this.updateCallTimesByPeriod(transaction.receipt.ContractAddress)
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
               .multipliedBy(transaction.receipt.GasUsed)
@@ -295,15 +300,6 @@ export class AnalyseService {
           } else {
             wallets[wallet.address]['latest_active_time'] = Number(block.timestamp)
           }
-          // wallets.push({
-          //   address: wallet.address,
-          //   latest_active_time: Number(block.timestamp)
-          // })
-          // await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-          // if (wallets.length > 900) {
-          //   await this.walletConnection.manager.upsert(WalletEntity, wallets, ['address'])
-          //   wallets.length = 0
-          // }
         }
       }
 
@@ -330,8 +326,6 @@ export class AnalyseService {
         'address'
       ])
     }
-
-    // this.loggerService.timeMonitor(block.height + ' insert or update wallets', startUpdateWallets)
     this.logger.debug(height + ' end upsert wallets')
     block_number++
     const startSnapShot = moment().unix()
@@ -342,6 +336,7 @@ export class AnalyseService {
       `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
     )
     this.logger.debug(height + ' end update theta tx num by hours')
+    await this.snapShotActiveWallets(Number(block.timestamp))
 
     await this.analyseConnection.manager.update(
       BlockListEntity,
@@ -504,5 +499,74 @@ export class AnalyseService {
       })
     })
     return [totalNodeNum, effectiveNodeNum, totalTfuelWei, effectiveTfuelWei]
+  }
+
+  async updateCallTimesByPeriod(contractAddress: string) {
+    const contract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
+      contract_address: contractAddress
+    })
+    // let count = 0
+
+    // for (const contract of smartContractList) {
+    contract.last_24h_call_times = await this.smartContractConnection.manager.count(
+      SmartContractCallRecordEntity,
+      {
+        timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
+        contract_id: contract.id
+      }
+    )
+    contract.last_seven_days_call_times = await this.smartContractConnection.manager.count(
+      SmartContractCallRecordEntity,
+      {
+        timestamp: MoreThan(moment().subtract(7, 'days').unix()),
+        contract_id: contract.id
+      }
+    )
+    // contract.call_times_update_timestamp
+    await this.smartContractConnection.manager.save(contract)
+    // count++
+    // this.logger.debug(
+    //   'updateCallTimesByPeriod total: ' + smartContractList.length + ' complete: ' + count
+    // )
+    // }
+  }
+
+  async clearCallTimeByPeriod() {
+    await this.smartContractConnection.manager.update(
+      SmartContractEntity,
+      {
+        call_times_update_timestamp: LessThan(moment().subtract(24, 'hours').unix())
+      },
+      { last_24h_call_times: 0 }
+    )
+    await this.smartContractConnection.manager.update(
+      SmartContractEntity,
+      {
+        call_times_update_timestamp: LessThan(moment().subtract(7, 'days').unix())
+      },
+      { last_seven_days_call_times: 0 }
+    )
+  }
+
+  async snapShotActiveWallets(timestamp: number) {
+    if (moment(timestamp * 1000).minutes() < 1) {
+      const hhTimestamp = moment(moment(timestamp * 1000).format('YYYY-MM-DD HH:00:00')).unix()
+      const statisticsStartTimeStamp = moment(hhTimestamp * 1000)
+        .subtract(24, 'hours')
+        .unix()
+      const totalAmount = await this.walletConnection.manager.count(WalletEntity, {
+        latest_active_time: MoreThan(statisticsStartTimeStamp)
+      })
+      const activeWalletLastHour = await this.walletConnection.manager.count(WalletEntity, {
+        latest_active_time: MoreThan(
+          moment(hhTimestamp * 1000)
+            .subtract(1, 'hours')
+            .unix()
+        )
+      })
+      await this.walletConnection.manager.query(
+        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (snapshot_time) DO UPDATE set active_wallets_amount = ${totalAmount},active_wallets_amount_last_hour=${activeWalletLastHour}`
+      )
+    }
   }
 }

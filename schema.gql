@@ -508,6 +508,9 @@ type SmartContractEntity {
 
   """Number of smart contract calls in the last 24 hours"""
   last_24h_call_times: Int!
+
+  """call times update timestamp"""
+  call_times_update_timestamp: Int!
 }
 
 """Statistics on smart contract related calls"""
