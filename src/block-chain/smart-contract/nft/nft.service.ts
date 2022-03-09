@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
-import { Repository } from 'typeorm'
+import { getConnection, MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
@@ -31,105 +31,87 @@ export class NftService {
     private utilsService: UtilsService
   ) {}
 
-  async parseRecordByContractAddress(contractAddress: string) {
+  async parseRecordByContractAddress(contractAddress: string): Promise<number> {
     const contract = await this.smartContractRepository.findOne({
       contract_address: contractAddress
     })
-    const contractRecord = await this.smartContractCallRecordRepository.find({
+    if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
+      this.logger.debug('protocol not nft 721')
+      return 0
+    }
+    const nftRecord = await this.nftTransferRecordRepository.findOne({
+      where: { smart_contract_address: contract.contract_address },
+      order: { timestamp: 'DESC' }
+    })
+    const condition: any = {
       where: { contract_id: contract.id },
       order: { timestamp: 'ASC' }
-    })
-    if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
-      console.log('protocol not nft 721')
-      return false
     }
-    console.log('protocol is tnt 721')
+    if (nftRecord) {
+      condition['where']['timestamp'] = MoreThan(nftRecord.timestamp)
+    }
+    const contractRecord = await this.smartContractCallRecordRepository.find(condition)
+
+    this.logger.debug('protocol is tnt 721')
     for (const record of contractRecord) {
       await this.updateNftRecord(record, contract)
     }
+    return contractRecord.length
   }
 
   async updateNftRecord(record: SmartContractCallRecordEntity, contract: SmartContractEntity) {
-    // const helper = require('../../../helper/utils')
     const receipt = JSON.parse(record.receipt)
     if (receipt.Logs[0].data === '') {
       const data = this.utilsService.getHex(record.data)
       receipt.Logs[0].data = data
     }
-    // console.log('logs', receipt.Logs)
-    // console.log('abi', contract.abi)
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
-    // console.log('logInfo', logInfo)
     if (logInfo[0].decode.eventName === 'Transfer') {
+      const connection = getConnection('nft').createQueryRunner()
+      await connection.connect()
+      await connection.startTransaction()
       try {
-        const recordHistory = await this.nftTransferRecordRepository.findOne({
-          from: logInfo[0].decode.result.from,
-          to: logInfo[0].decode.result.to,
-          token_id: Number(logInfo[0].decode.result.tokenId),
-          smart_contract_address: contract.contract_address,
-          timestamp: record.timestamp
-        })
-        if (!recordHistory) {
-          await this.nftTransferRecordRepository.insert({
+        await connection.manager.upsert(
+          NftTransferRecordEntity,
+          {
             from: logInfo[0].decode.result.from,
             to: logInfo[0].decode.result.to,
             token_id: Number(logInfo[0].decode.result.tokenId),
             smart_contract_address: contract.contract_address,
             timestamp: record.timestamp
-          })
-        }
-        await this.updateNftBalance(
-          contract.contract_address,
-          logInfo[0].decode.result.from,
-          logInfo[0].decode.result.to,
-          Number(logInfo[0].decode.result.tokenId)
+          },
+          ['smart_contract_address', 'token_id', 'timestamp']
         )
+        await connection.manager.upsert(
+          NftBalanceEntity,
+          {
+            smart_contract_address: contract.contract_address,
+            owner: logInfo[0].decode.result.to.toLowerCase(),
+            from: logInfo[0].decode.result.from.toLowerCase(),
+            token_id: Number(logInfo[0].decode.result.tokenId)
+          },
+          ['smart_contract_address', 'token_id']
+        )
+        await connection.commitTransaction()
       } catch (e) {
-        console.log(e)
+        connection.rollbackTransaction()
+        this.logger.debug(e)
+      } finally {
+        connection.release()
       }
     }
   }
 
   async updateNftBalance(contract_address: string, from: string, to: string, tokenId: number) {
-    const NftRecord = await this.nftBalanceRepository.findOne({
-      smart_contract_address: contract_address,
-      token_id: tokenId
-      // owner: from
-    })
-    // const contractInfo = await this.smartContractRepository.findOne({
-    //   contract_address: contract_address
-    // })
-    // const abiInfo = JSON.parse(contractInfo.abi)
-    if (!NftRecord) {
-      // const tokenUri = '',
-      // name = '',
-      // img_uri = '',
-      // detail = ''
-      await this.nftBalanceRepository.insert({
+    await this.nftBalanceRepository.upsert(
+      {
         smart_contract_address: contract_address,
         owner: to.toLowerCase(),
         from: from.toLowerCase(),
-        name: '', //res.name,
-        img_uri: '', //res.image,
-        detail: '', //JSON.stringify(res),
-        contract_uri: '', //await this.getContractUri(contract_address, abiInfo),
-        base_token_uri: '', //await this.getBaseTokenUri(contract_address, abiInfo),
-        token_id: tokenId,
-        token_uri: '' //await this.getTokenUri(contract_address, abiInfo, tokenId)
-        // status: NftStatusEnum.valid
-      })
-    } else {
-      await this.nftBalanceRepository.update(
-        {
-          smart_contract_address: contract_address,
-          token_id: tokenId
-        },
-        {
-          owner: to.toLowerCase(),
-          from: from.toLowerCase()
-        }
-      )
-    }
+        token_id: tokenId
+      },
+      ['smart_contract_address', 'token_id']
+    )
   }
 
   async getContractUri(address: string, abi: any) {
