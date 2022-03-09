@@ -1,4 +1,4 @@
-import { Field, ObjectType, registerEnumType } from '@nestjs/graphql'
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { GraphQLBoolean } from 'graphql'
 import { SmartContractEntity } from './smart-contract.entity'
 
@@ -6,6 +6,12 @@ import { SmartContractEntity } from './smart-contract.entity'
 export class SmartContractStatisticsType {
   @Field(() => [SmartContractEntity])
   CallRank: Array<SmartContractEntity>
+}
+
+@ObjectType()
+export class UpdateRecordType {
+  @Field(() => Int)
+  affected_rows: number
 }
 
 @ObjectType()

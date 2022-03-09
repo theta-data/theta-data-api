@@ -3,7 +3,8 @@ import { SmartContractService } from './smart-contract.service'
 import {
   RankByEnum,
   SmartContractStatisticsType,
-  SmartContractVerifyType
+  SmartContractVerifyType,
+  UpdateRecordType
 } from './smart-contract.model'
 import { GraphQLInt } from 'graphql'
 import { NftService } from './nft/nft.service'
@@ -117,5 +118,16 @@ export class SmartContractResolver {
       optimizer,
       optimizerRuns
     )
+  }
+
+  @Mutation(() => UpdateRecordType)
+  async updateRecord(
+    @Args({
+      name: 'address'
+    })
+    address: string
+  ) {
+    const affectedRows = await this.nftService.parseRecordByContractAddress(address)
+    return { affected_rows: affectedRows }
   }
 }

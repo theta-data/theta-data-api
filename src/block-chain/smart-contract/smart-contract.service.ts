@@ -200,8 +200,6 @@ export class SmartContractService {
         }, {})
       }
       let data = {}
-      // let verified = false
-      // let sc
       if (check.error) {
         console.log(check.error)
         data = { result: { verified: false }, err_msg: check.error }
@@ -219,30 +217,8 @@ export class SmartContractService {
               hexBytecode.indexOf(processed_compiled_bytecode) > -1 &&
               processed_compiled_bytecode.length > 0
             ) {
-              // verified = true
               let abi = output.contracts['test.sol'][contractName].abi
               const breifVersion = versionFullName.match(/^soljson-(.*).js$/)[1]
-              // sc = {
-              //   address: address,
-              //   abi: JSON.stringify(abi),
-              //   source_code: this.utilsService.stampDate(sourceCode),
-              //   verification_date: +new Date(),
-              //   compiler_version: breifVersion,
-              //   optimizer: optimizer === true ? 'enabled' : 'disabled',
-              //   optimizerRuns: optimizerRuns,
-              //   name: contractName,
-              //   function_hash: JSON.stringify(
-              //     output.contracts['test.sol'][contractName].evm.methodIdentifiers
-              //   ),
-              //   constructor_arguments: constructor_arguments
-              // }
-              // let contract = await this.smartContractRepository.findOne({
-              //   contract_address: address
-              // })
-              // if (!contract) {
-              //   contract = new SmartContractEntity()
-              //   contract.contract_address = address
-              // }
               contract.verified = true
               contract.byte_code = byteCode
               if (this.utilsService.checkTnt721(abi)) {
@@ -266,7 +242,7 @@ export class SmartContractService {
               contract.constructor_arguments = constructor_arguments
               await this.smartContractRepository.save(contract)
               console.log('save smart contract')
-              await this.nftService.parseRecordByContractAddress(address)
+              // await this.nftService.parseRecordByContractAddress(address)
               // return contract
               break
             }
