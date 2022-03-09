@@ -502,12 +502,11 @@ export class AnalyseService {
   }
 
   async updateCallTimesByPeriod(contractAddress: string) {
+    this.logger.debug('start update call times by period')
     const contract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
       contract_address: contractAddress
     })
-    // let count = 0
 
-    // for (const contract of smartContractList) {
     contract.last_24h_call_times = await this.smartContractConnection.manager.count(
       SmartContractCallRecordEntity,
       {
@@ -522,13 +521,8 @@ export class AnalyseService {
         contract_id: contract.id
       }
     )
-    // contract.call_times_update_timestamp
     await this.smartContractConnection.manager.save(contract)
-    // count++
-    // this.logger.debug(
-    //   'updateCallTimesByPeriod total: ' + smartContractList.length + ' complete: ' + count
-    // )
-    // }
+    this.logger.debug('end update call times by period')
   }
 
   async clearCallTimeByPeriod() {
