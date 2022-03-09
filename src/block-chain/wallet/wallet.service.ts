@@ -288,38 +288,6 @@ export class WalletService {
     // }
   }
 
-  public async snapShotActiveWallets(timestamp: number) {
-    if (moment(timestamp * 1000).minutes() < 1) {
-      const hhTimestamp = moment(moment(timestamp * 1000).format('YYYY-MM-DD HH:00:00')).unix()
-      const statisticsStartTimeStamp = moment(hhTimestamp * 1000)
-        .subtract(24, 'hours')
-        .unix()
-      const totalAmount = await this.walletRepository.count({
-        latest_active_time: MoreThan(statisticsStartTimeStamp)
-      })
-      const activeWalletLastHour = await this.walletRepository.count({
-        latest_active_time: MoreThan(
-          moment(hhTimestamp * 1000)
-            .subtract(1, 'hours')
-            .unix()
-        )
-      })
-      await this.activeWalletsRepository.query(
-        `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (snapshot_time) DO UPDATE set active_wallets_amount = ${totalAmount},active_wallets_amount_last_hour=${activeWalletLastHour}`
-      )
-      // const snapObj = await this.activeWalletsRepository.findOne({
-      //   snapshot_time: hhTimestamp
-      // })
-      // if (!snapObj) {
-      //   await this.activeWalletsRepository.insert({
-      //     snapshot_time: hhTimestamp,
-      //     active_wallets_amount: totalAmount,
-      //     active_wallets_amount_last_hour: activeWalletLastHour
-      //   })
-      // }
-    }
-  }
-
   public async getActiveWallet(startTime) {
     return await this.activeWalletsRepository.find({
       snapshot_time: MoreThan(startTime)

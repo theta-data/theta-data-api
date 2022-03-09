@@ -100,11 +100,13 @@ export class SmartContractEntity {
   })
   last_24h_call_times: number
 
-  // @Field(() => [SmartContractCallRecordEntity], { description: ' Call log' })
-  // @OneToMany(() => SmartContractCallRecordEntity, (record) => record.smart_contract, {
-  //   cascade: true
-  // })
-  // record: Array<SmartContractCallRecordEntity>
+  @Field(() => Int, { description: 'call times update timestamp' })
+  @Index('call_times_update_date')
+  @Column({
+    type: 'int',
+    default: 0
+  })
+  call_times_update_timestamp: number
 
   // @Field()
   @CreateDateColumn()

@@ -82,7 +82,7 @@ export class NftService {
   ) {
     const receipt = JSON.parse(record.receipt)
     if (!receipt.Logs[0]) {
-      this.logger.debug(JSON.stringify(receipt.Logs))
+      this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
     if (receipt.Logs[0].data === '') {
