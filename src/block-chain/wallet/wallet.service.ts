@@ -241,36 +241,11 @@ export class WalletService {
         // this.logger.debug(sqlArr.join(','))
         if (sqlArr.length > 900) {
           await this.walletRepository.upsert(sqlArr, ['address'])
-          // this.logger.debug(
-          //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
-          //     ','
-          //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
-          // )
-          // await this.walletRepository.query(
-          //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
-          //     ','
-          //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
-          // )
+
           sqlArr.length = 0
         }
-        // await this.walletRepository.query(
-        //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES${sqlArr.join(
-        //     ','
-        //   )} ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
-        // )
       }
       await this.walletRepository.upsert(sqlArr, ['address'])
-
-      // await this.walletRepository.query(
-      //   `INSERT INTO wallet_entity(address,latest_active_time) VALUES('${address}', ${timestamp}) ON CONFLICT (address) DO UPDATE set latest_active_time=latest_active_time`
-      // )
-      // await this.walletRepository.upsert(
-      //   {
-      //     address: address,
-      //     latest_active_time: timestamp
-      //   },
-      //   ['address']
-      // )
     } catch (e) {
       this.logger.error('update wallet fail')
       this.logger.error(e)
