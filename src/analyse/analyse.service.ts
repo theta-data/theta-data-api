@@ -612,7 +612,9 @@ export class AnalyseService {
       }
     )
     if (httpRes.status >= 400) {
-      throw new Error('Bad response from server')
+      this.logger.error('Get smart contract ' + address + ': Bad response from server')
+      return false
+      // throw new Error('Get smart contract Info: Bad response from server')
     }
     const res: any = await httpRes.json()
     if (res.body.verification_date == '') return false

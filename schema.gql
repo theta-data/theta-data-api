@@ -514,6 +514,8 @@ type SmartContractEntity {
 
   """verification check timestamp"""
   verification_check_timestamp: Int!
+  contract_uri: String!
+  contract_uri_detail: String!
 }
 
 """Statistics on smart contract related calls"""
