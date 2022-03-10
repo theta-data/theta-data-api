@@ -556,6 +556,7 @@ export class AnalyseService {
   }
 
   async clearCallTimeByPeriod() {
+    if (config.get('IGNORE')) return false
     await this.smartContractConnection.manager.update(
       SmartContractEntity,
       {
