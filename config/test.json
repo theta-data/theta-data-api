@@ -18,7 +18,7 @@
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 60000,
   "ANALYSE_NUMBER" : 1000,
-  
+  "IGNORE" : true,
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60
