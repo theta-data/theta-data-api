@@ -16,7 +16,12 @@ import { LoggerService } from 'src/common/logger.service'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { WalletEntity } from 'src/block-chain/wallet/wallet.entity'
-import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler'
+import { UtilsService } from 'src/common/utils.service'
+// import { SmartContractScType } from 'src/block-chain/smart-contract/smart-contract.model'
+import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
+import fetch from 'cross-fetch'
+import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
+// import { rmSync } from 'fs'
 
 @Injectable()
 export class AnalyseService {
@@ -30,10 +35,14 @@ export class AnalyseService {
   private stakeConnection: QueryRunner
   private smartContractConnection: QueryRunner
   private walletConnection: QueryRunner
+  private nftConnection: QueryRunner
 
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private loggerService: LoggerService
+    private loggerService: LoggerService,
+    private utilsService: UtilsService,
+    private nftService: NftService,
+    private smartContractService: SmartContractService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     this.logger.debug(config.get('THETA_NODE_HOST'))
@@ -59,17 +68,22 @@ export class AnalyseService {
 
       this.walletConnection = getConnection('wallet').createQueryRunner()
 
+      this.nftConnection = getConnection('nft').createQueryRunner()
+
       await this.txConnection.connect()
       await this.analyseConnection.connect()
       await this.stakeConnection.connect()
       await this.smartContractConnection.connect()
       await this.walletConnection.connect()
 
+      await this.nftConnection.connect()
+
       await this.txConnection.startTransaction()
       await this.analyseConnection.startTransaction()
       await this.stakeConnection.startTransaction()
       await this.smartContractConnection.startTransaction()
       await this.walletConnection.startTransaction()
+      await this.nftConnection.startTransaction()
 
       let height: number = 0
       const lastfinalizedHeight = Number(
@@ -104,21 +118,19 @@ export class AnalyseService {
       )
       this.logger.debug('block list length:' + blockList.result.length)
       this.counter = blockList.result.length
-      // this.logger.debug
       this.logger.debug('init counter', this.counter)
       for (let i = 0; i < blockList.result.length; i++) {
         const block = blockList.result[i]
         this.logger.debug(block.height + ' start hanldle')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
-      // await this.
       this.logger.debug('start update calltimes by period')
-      // await this.updateCallTimesByPeriod()
       await this.txConnection.commitTransaction()
       await this.analyseConnection.commitTransaction()
       await this.stakeConnection.commitTransaction()
       await this.smartContractConnection.commitTransaction()
       await this.walletConnection.commitTransaction()
+      await this.nftConnection.commitTransaction()
       this.logger.debug('commit success')
     } catch (e) {
       this.logger.error(e)
@@ -128,6 +140,7 @@ export class AnalyseService {
       await this.stakeConnection.rollbackTransaction()
       await this.smartContractConnection.rollbackTransaction()
       await this.walletConnection.rollbackTransaction()
+      await this.nftConnection.rollbackTransaction()
       // process.exit(0)
     } finally {
       await this.txConnection.release()
@@ -135,6 +148,7 @@ export class AnalyseService {
       await this.stakeConnection.release()
       await this.smartContractConnection.release()
       await this.walletConnection.release()
+      await this.nftConnection.release()
       this.logger.debug('release success')
       await this.cacheManager.del(this.analyseKey)
     }
@@ -156,6 +170,7 @@ export class AnalyseService {
       Number(block.height) % 100 === 1 &&
       latestFinalizedBlockHeight - Number(block.height) < 5000
     ) {
+      this.logger.debug('update checkpoint')
       await this.updateCheckPoint(block)
       await this.clearCallTimeByPeriod()
     } else {
@@ -253,6 +268,20 @@ export class AnalyseService {
               contract_address: transaction.receipt.ContractAddress
             }
           )
+          if (
+            smartContract.call_times > 10 &&
+            !smartContract.verified &&
+            moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
+          ) {
+            const checkInfo = await this.verifyWithThetaExplorer(smartContract.contract_address)
+            if (checkInfo) {
+              Object.assign(smartContract, checkInfo)
+              smartContract.verification_check_timestamp = moment().unix()
+            } else {
+              smartContract.verification_check_timestamp = moment().unix()
+            }
+            await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
+          }
           await this.smartContractConnection.manager.upsert(
             SmartContractCallRecordEntity,
             {
@@ -264,6 +293,12 @@ export class AnalyseService {
               contract_id: smartContract.id
             },
             ['tansaction_hash']
+          )
+          this.logger.debug('start parse nft record')
+          await this.nftService.parseRecordByContractAddressWithConnection(
+            this.nftConnection,
+            this.smartContractConnection,
+            smartContract
           )
           await this.updateCallTimesByPeriod(transaction.receipt.ContractAddress)
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
@@ -506,6 +541,7 @@ export class AnalyseService {
     const contract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
       contract_address: contractAddress
     })
+    // await this.
 
     contract.last_24h_call_times = await this.smartContractConnection.manager.count(
       SmartContractCallRecordEntity,
@@ -562,5 +598,42 @@ export class AnalyseService {
         `INSERT INTO active_wallets_entity(snapshot_time,active_wallets_amount,active_wallets_amount_last_hour) VALUES(${hhTimestamp}, ${totalAmount}, ${activeWalletLastHour}) ON CONFLICT (snapshot_time) DO UPDATE set active_wallets_amount = ${totalAmount},active_wallets_amount_last_hour=${activeWalletLastHour}`
       )
     }
+  }
+
+  async verifyWithThetaExplorer(address: string) {
+    this.logger.debug('start verify: ' + address)
+    const httpRes = await fetch(
+      'https://explorer.thetatoken.org:8443/api/smartcontract/' + address,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    if (httpRes.status >= 400) {
+      throw new Error('Bad response from server')
+    }
+    const res: any = await httpRes.json()
+    if (res.body.verification_date == '') return false
+    console.log('theta explorer res optimizer ', res.body.optimizer)
+    const optimizer = res.body.optimizer === 'disabled' ? false : true
+    // console.log('optimizer', optimizer)
+    const optimizerRuns = res.body.optimizerRuns ? res.body.optimizerRuns : 200
+    const sourceCode = res.body.source_code
+    const version = res.body.compiler_version.match(/[\d,\.]+/g)[0]
+    const versionFullName = 'soljson-' + res.body.compiler_version + '.js'
+    const byteCode = res.body.bytecode
+
+    address = this.utilsService.normalize(address.toLowerCase())
+    return this.smartContractService.getVerifyInfo(
+      address,
+      sourceCode,
+      byteCode,
+      version,
+      versionFullName,
+      optimizer,
+      optimizerRuns
+    )
   }
 }

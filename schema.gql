@@ -511,6 +511,9 @@ type SmartContractEntity {
 
   """call times update timestamp"""
   call_times_update_timestamp: Int!
+
+  """verification check timestamp"""
+  verification_check_timestamp: Int!
 }
 
 """Statistics on smart contract related calls"""

@@ -10,6 +10,7 @@ import { WalletModule } from '../block-chain/wallet/wallet.module'
 import { BlockListEntity } from './block-list.entity'
 import { AnalyseLockEntity } from './analyse-lock.entity'
 import { CommonModule } from 'src/common/common.module'
+import { NftModule } from 'src/block-chain/smart-contract/nft/nft.module'
 @Module({
   imports: [
     TypeOrmModule.forFeature([ThetaTxNumByHoursEntity], 'tx'),
@@ -19,7 +20,8 @@ import { CommonModule } from 'src/common/common.module'
     StakeModule,
     SmartContractModule,
     WalletModule,
-    CommonModule
+    CommonModule,
+    NftModule
   ],
   providers: [AnalyseService]
 })
