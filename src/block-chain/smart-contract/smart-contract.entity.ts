@@ -108,6 +108,13 @@ export class SmartContractEntity {
   })
   call_times_update_timestamp: number
 
+  @Field(() => Int, { description: 'verification check timestamp' })
+  @Column({
+    type: 'int',
+    default: 0
+  })
+  verification_check_timestamp: number
+
   // @Field()
   @CreateDateColumn()
   create_date!: number

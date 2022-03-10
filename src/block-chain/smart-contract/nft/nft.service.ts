@@ -75,6 +75,50 @@ export class NftService {
     return afftectedNum
   }
 
+  async parseRecordByContractAddressWithConnection(
+    nftConnection: QueryRunner,
+    smartContractConnection: QueryRunner,
+    contract: SmartContractEntity
+  ): Promise<number> {
+    this.logger.debug('start parese record')
+    if (!contract.verified) {
+      return 0
+    }
+    if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
+      this.logger.debug('protocol not nft 721')
+      return 0
+    }
+    this.logger.debug('protocol is tnt 721')
+    const nftRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+      where: { smart_contract_address: contract.contract_address },
+      order: { timestamp: 'DESC' }
+    })
+    this.logger.debug('nft record:' + JSON.stringify(nftRecord))
+    const condition: any = {
+      where: { contract_id: contract.id },
+      order: { timestamp: 'ASC' }
+    }
+    if (nftRecord) {
+      condition['where']['timestamp'] = MoreThan(nftRecord.timestamp)
+    }
+    this.logger.debug(condition)
+    const contractRecord = await smartContractConnection.manager.find(
+      SmartContractCallRecordEntity,
+      condition
+    )
+    let afftectedNum = 0
+    // const connection = getConnection('nft').createQueryRunner()
+    // await connection.connect()
+    // await connection.startTransaction()
+
+    // try {
+    for (const record of contractRecord) {
+      const res = await this.updateNftRecord(nftConnection, record, contract)
+      if (res) afftectedNum++
+    }
+    return afftectedNum
+  }
+
   async updateNftRecord(
     connection: QueryRunner,
     record: SmartContractCallRecordEntity,
