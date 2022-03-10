@@ -158,13 +158,6 @@ export class NftService {
         ['smart_contract_address', 'token_id']
       )
       return true
-      // await connection.commitTransaction()
-      // } catch (e) {
-      //   connection.rollbackTransaction()
-      //   this.logger.debug(e)
-      // } finally {
-      //   connection.release()
-      // }
     }
     return false
   }

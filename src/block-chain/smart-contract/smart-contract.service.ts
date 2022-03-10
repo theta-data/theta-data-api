@@ -8,6 +8,7 @@ import { RankByEnum } from './smart-contract.model'
 import { NftService } from './nft/nft.service'
 import { SolcService } from 'src/common/solc.service'
 import { UtilsService } from 'src/common/utils.service'
+import fetch from 'cross-fetch'
 
 const moment = require('moment')
 @Injectable()
@@ -371,6 +372,32 @@ export class SmartContractService {
               contract.byte_code = byteCode
               if (this.utilsService.checkTnt721(abi)) {
                 contract.protocol = smartContractProtocol.tnt721
+                this.logger.debug('read 721  contract uri')
+                const res = await this.utilsService.readSmartContract(
+                  address,
+                  address,
+                  abi,
+                  'contractURI',
+                  [],
+                  [],
+                  ['string']
+                )
+                this.logger.debug('contract uri:' + res[0])
+                if (res[0]) {
+                  // const contractUri: string = res[0]
+                  const httpRes = await fetch(res[0], {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    }
+                  })
+                  if (httpRes.status >= 400) {
+                    throw new Error('Bad response from server')
+                  }
+                  const jsonRes: any = await httpRes.json()
+                  contract.contract_uri = res[0]
+                  contract.contract_uri_detail = JSON.stringify(jsonRes)
+                }
               } else if (this.utilsService.checkTnt20(abi)) {
                 contract.protocol = smartContractProtocol.tnt20
               } else {

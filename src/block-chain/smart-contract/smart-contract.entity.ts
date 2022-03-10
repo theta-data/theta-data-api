@@ -115,6 +115,14 @@ export class SmartContractEntity {
   })
   verification_check_timestamp: number
 
+  @Field()
+  @Column({ default: '' })
+  contract_uri: string
+
+  @Field()
+  @Column({ default: '' })
+  contract_uri_detail: string
+
   // @Field()
   @CreateDateColumn()
   create_date!: number
