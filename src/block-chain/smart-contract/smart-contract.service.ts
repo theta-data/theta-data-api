@@ -315,24 +315,24 @@ export class SmartContractService {
       }
       // console.log(input)
       var output: any = ''
-      console.log(`Loading specific version starts.`)
-      console.log(`version: ${version}`)
+      // console.log(`Loading specific version starts.`)
+      // console.log(`version: ${version}`)
       const prefix = './libs'
       const fileName = prefix + '/' + versionFullName
       if (!fs.existsSync(fileName)) {
-        console.log(`file ${fileName} does not exsit, downloading`)
+        this.logger.debug(`file ${fileName} does not exsit, downloading`)
         await this.solcService.downloadByVersion(version, './libs')
       } else {
-        console.log(`file ${fileName} exsits, skip download process`)
+        this.logger.debug(`file ${fileName} exsits, skip download process`)
       }
-      console.log(`Download solc-js file takes: ${(+new Date() - start) / 1000} seconds`)
+      this.logger.debug(`Download solc-js file takes: ${(+new Date() - start) / 1000} seconds`)
       start = +new Date()
       const solcjs = solc.setupMethods(require('../../.' + fileName))
-      console.log(`load solc-js version takes: ${(+new Date() - start) / 1000} seconds`)
+      this.logger.debug(`load solc-js version takes: ${(+new Date() - start) / 1000} seconds`)
       start = +new Date()
-      console.log('input', input)
+      // console.log('input', input)
       output = JSON.parse(solcjs.compile(JSON.stringify(input)))
-      console.log(`compile takes ${(+new Date() - start) / 1000} seconds`)
+      this.logger.debug(`compile takes ${(+new Date() - start) / 1000} seconds`)
       let check: any = {}
       if (output.errors) {
         check = output.errors.reduce((check, err) => {
@@ -349,7 +349,7 @@ export class SmartContractService {
       // let data = {}
       const contract: any = {}
       if (check.error) {
-        console.log(check.error)
+        this.logger.error(check.error)
         return false
         // data = { result: { verified: false }, err_msg: check.error }
       } else {
@@ -422,7 +422,7 @@ export class SmartContractService {
       }
       // return contract
     } catch (e) {
-      console.log('Error in catch:', e)
+      this.logger.error('Error in catch:' + e)
       return false
       // return contract
     }
