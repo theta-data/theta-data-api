@@ -614,7 +614,7 @@ export class AnalyseService {
     }
     const res: any = await httpRes.json()
     if (res.body.verification_date == '') return false
-    console.log('theta explorer res optimizer ', res.body.optimizer)
+    // console.log('theta explorer res optimizer ', res.body.optimizer)
     const optimizer = res.body.optimizer === 'disabled' ? false : true
     // console.log('optimizer', optimizer)
     const optimizerRuns = res.body.optimizerRuns ? res.body.optimizerRuns : 200
