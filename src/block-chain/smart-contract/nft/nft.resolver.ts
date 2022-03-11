@@ -1,4 +1,5 @@
 import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import { NftMetaType, NftType } from './nft.model'
@@ -13,12 +14,17 @@ export class NftResolver {
     return {}
   }
 
+  @ResolveField(() => [SmartContractEntity], { nullable: true })
+  async SearchNfts(@Args('name') name: string) {
+    return await this.nftService.findNftsByName(name)
+  }
+
   @ResolveField(() => [NftBalanceEntity])
   async Balance(@Args('wallet_address') walletAddress: string) {
     return await this.nftService.getNftByWalletAddress(walletAddress.toLowerCase())
   }
 
-  @ResolveField(() => [NftBalanceEntity])
+  @ResolveField(() => [NftBalanceEntity], { nullable: true })
   async NftsForContract(
     @Args('wallet_address') walletAddress: string,
     @Args('smart_contract_address') contractAddress: string

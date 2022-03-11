@@ -569,8 +569,9 @@ type NftTransferRecordEntity {
 }
 
 type NftType {
+  SearchNfts(name: String!): [SmartContractEntity!]
   Balance(wallet_address: String!): [NftBalanceEntity!]!
-  NftsForContract(wallet_address: String!, smart_contract_address: String!): [NftBalanceEntity!]!
+  NftsForContract(wallet_address: String!, smart_contract_address: String!): [NftBalanceEntity!]
   NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
   NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!

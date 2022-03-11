@@ -1,14 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
-import { getConnection, MoreThan, QueryRunner, Repository } from 'typeorm'
+import { getConnection, Like, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
-import { SmartContractEntity } from '../smart-contract.entity'
+import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import { orderBy } from 'lodash'
+import { TokenType } from 'src/block-chain/rpc/rpc.model'
 // import { Logger } from 'ethers/lib/utils'
 // import { add } from 'lodash'
 
@@ -341,5 +342,12 @@ export class NftService {
       }
     }
     return [res.length, uniqeuHolder]
+  }
+
+  async findNftsByName(name: string) {
+    return await this.smartContractRepository.find({
+      protocol: smartContractProtocol.tnt721,
+      name: Like('%' + name + '%')
+    })
   }
 }
