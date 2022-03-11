@@ -397,11 +397,14 @@ export class SmartContractService {
                   const jsonRes: any = await httpRes.json()
                   contract.contract_uri = res[0]
                   contract.contract_uri_detail = JSON.stringify(jsonRes)
+                  contract.name = jsonRes.name
                 }
               } else if (this.utilsService.checkTnt20(abi)) {
                 contract.protocol = smartContractProtocol.tnt20
+                contract.name = contractName
               } else {
                 contract.protocol = smartContractProtocol.unknow
+                contract.name = contractName
               }
               // contract.contract_address
               contract.abi = JSON.stringify(abi)
@@ -410,7 +413,6 @@ export class SmartContractService {
               contract.compiler_version = breifVersion
               contract.optimizer = optimizer === true ? 'enabled' : 'disabled'
               contract.optimizerRuns = optimizerRuns
-              contract.name = contractName
               contract.function_hash = JSON.stringify(
                 output.contracts['test.sol'][contractName].evm.methodIdentifiers
               )
