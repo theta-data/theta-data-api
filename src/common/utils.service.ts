@@ -68,8 +68,9 @@ export class UtilsService {
         }
         return log
       } catch (e) {
-        log.decode = 'Something wrong while decoding, met error: ' + e
-        return log
+        throw new Error('Something wrong while decoding, met error: ' + e)
+        // log.decode = 'Something wrong while decoding, met error: ' + e
+        // return log
       }
     })
   }
