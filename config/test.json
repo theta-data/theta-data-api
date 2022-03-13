@@ -17,7 +17,7 @@
   "THETA_NODE_HOST" : "http://ip-172-31-35-81.ap-southeast-1.compute.internal/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 3000,
-  "ANALYSE_NUMBER" : 500,
+  "ANALYSE_NUMBER" : 4500,
   "IGNORE" : true,
   "RATE_LIMIT": {
     "ttl": 60,

@@ -13,7 +13,7 @@ module.exports = {
       max_memory_restart: '2G',
       env_test: {
         NODE_ENV: 'test',
-        max_memory_restart: '1G',
+        max_memory_restart: '2G',
         // TZ: 'Asia/Shanghai'
       },
       env_production: {
