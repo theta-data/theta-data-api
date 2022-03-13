@@ -108,11 +108,6 @@ export class NftService {
       condition
     )
     let afftectedNum = 0
-    // const connection = getConnection('nft').createQueryRunner()
-    // await connection.connect()
-    // await connection.startTransaction()
-
-    // try {
     for (const record of contractRecord) {
       const res = await this.updateNftRecord(nftConnection, record, contract)
       if (res) afftectedNum++
@@ -130,10 +125,12 @@ export class NftService {
       this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
-    if (receipt.Logs[0].data === '') {
+    this.logger.debug(JSON.stringify(receipt))
+    if (record.data) {
       const data = this.utilsService.getHex(record.data)
       receipt.Logs[0].data = data
     }
+
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     if (logInfo[0].decode.eventName === 'Transfer') {
       // try {
