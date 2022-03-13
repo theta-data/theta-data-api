@@ -383,6 +383,7 @@ export class SmartContractService {
                 ['string']
               )
               this.logger.debug('contract uri:' + res[0])
+              contract.contract_uri = res[0]
               if (res[0]) {
                 // const contractUri: string = res[0]
                 const httpRes = await fetch(res[0], {
@@ -392,12 +393,16 @@ export class SmartContractService {
                   }
                 })
                 if (httpRes.status >= 400) {
-                  throw new Error('Bad response from server')
+                  this.logger.error('Fetch contract uri: Bad response from server')
+                  contract.contract_uri_detail = ''
+                  contract.name = contractName
+                  // throw new Error('Bad response from server')
+                } else {
+                  const jsonRes: any = await httpRes.json()
+
+                  contract.contract_uri_detail = JSON.stringify(jsonRes)
+                  contract.name = jsonRes.name
                 }
-                const jsonRes: any = await httpRes.json()
-                contract.contract_uri = res[0]
-                contract.contract_uri_detail = JSON.stringify(jsonRes)
-                contract.name = jsonRes.name
               }
             } else if (this.utilsService.checkTnt20(abi)) {
               contract.protocol = smartContractProtocol.tnt20
