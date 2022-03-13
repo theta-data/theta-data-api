@@ -137,21 +137,21 @@ export class UtilsService {
   ) {
     const iface = new ethers.utils.Interface(abi || [])
     const functionSignature = iface.getSighash(functionName)
-    try {
-      var abiCoder = new ethers.utils.AbiCoder()
-      var encodedParameters = abiCoder.encode(inputTypes, inputValues).slice(2)
-      const data = functionSignature + encodedParameters
-      const res = await thetaTsSdk.blockchain.callSmartContract(from, to, data)
-      console.log('read smart contract', res)
-      const outputValues = /^0x/i.test(res.result.vm_return)
-        ? res.result.vm_return
-        : '0x' + res.result.vm_return
-      const decodeValues = abiCoder.decode(outputTypes, outputValues)
-      console.log('decode', decodeValues)
-      return decodeValues
-    } catch (e) {
-      console.log('error occurs:', e)
-    }
+    // try {
+    var abiCoder = new ethers.utils.AbiCoder()
+    var encodedParameters = abiCoder.encode(inputTypes, inputValues).slice(2)
+    const data = functionSignature + encodedParameters
+    const res = await thetaTsSdk.blockchain.callSmartContract(from, to, data)
+    console.log('read smart contract', res)
+    const outputValues = /^0x/i.test(res.result.vm_return)
+      ? res.result.vm_return
+      : '0x' + res.result.vm_return
+    const decodeValues = abiCoder.decode(outputTypes, outputValues)
+    console.log('decode', decodeValues)
+    return decodeValues
+    // } catch (e) {
+    //   console.log('error occurs:', e)
+    // }
   }
 
   normalize = function (hash) {
