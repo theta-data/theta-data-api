@@ -17,7 +17,8 @@ export enum smartContractProtocol {
 
 @ObjectType()
 @Entity()
-@Index(['name'])
+@Index(['name', 'protocol'])
+// @Index(['name'])
 export class SmartContractEntity {
   @PrimaryGeneratedColumn()
   id!: number
