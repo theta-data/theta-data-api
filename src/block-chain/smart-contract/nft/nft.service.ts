@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
-import { getConnection, Like, MoreThan, QueryRunner, Repository } from 'typeorm'
+import { getConnection, Like, MoreThan, MoreThanOrEqual, QueryRunner, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
@@ -100,7 +100,7 @@ export class NftService {
       order: { timestamp: 'ASC' }
     }
     if (nftRecord) {
-      condition['where']['timestamp'] = MoreThan(nftRecord.timestamp)
+      condition['where']['timestamp'] = MoreThanOrEqual(nftRecord.timestamp)
     }
     this.logger.debug(condition)
     const contractRecord = await smartContractConnection.manager.find(
@@ -136,10 +136,6 @@ export class NftService {
         log.data = data
       }
     })
-    // if (record.data) {
-    // const data = this.utilsService.getHex(record.data)
-    // receipt.Logs[0].data = data
-    // }
 
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     if (logInfo[0].decode.eventName === 'Transfer') {
@@ -151,6 +147,7 @@ export class NftService {
           to: logInfo[0].decode.result.to,
           token_id: Number(logInfo[0].decode.result.tokenId),
           smart_contract_address: contract.contract_address,
+          height: record.height,
           timestamp: record.timestamp
         },
         ['smart_contract_address', 'token_id', 'timestamp']
