@@ -420,7 +420,7 @@ export class SmartContractService {
                 )
                 this.logger.debug('get name:' + JSON.stringify(res))
                 if (res[0]) {
-                  contract.name = ''
+                  contract.name = res[0]
                 }
               }
             } else if (this.utilsService.checkTnt20(abi)) {
