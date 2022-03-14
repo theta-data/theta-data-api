@@ -126,10 +126,18 @@ export class NftService {
       return
     }
     this.logger.debug(JSON.stringify(receipt))
-    if (record.data) {
-      const data = this.utilsService.getHex(record.data)
-      receipt.Logs[0].data = data
-    }
+    receipt.Logs.forEach((log) => {
+      if (log.data == '') {
+        log.data = '0x'
+      }
+      if (record.data) {
+        log.data = record.data
+      }
+    })
+    // if (record.data) {
+    //   const data = this.utilsService.getHex(record.data)
+    //   receipt.Logs[0].data = data
+    // }
 
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     if (logInfo[0].decode.eventName === 'Transfer') {
