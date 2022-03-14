@@ -372,36 +372,55 @@ export class SmartContractService {
             contract.byte_code = byteCode
             if (this.utilsService.checkTnt721(abi)) {
               contract.protocol = smartContractProtocol.tnt721
-              this.logger.debug('read 721  contract uri')
-              const res = await this.utilsService.readSmartContract(
-                address,
-                address,
-                abi,
-                'contractURI',
-                [],
-                [],
-                ['string']
-              )
-              this.logger.debug('contract uri:' + res[0])
-              contract.contract_uri = res[0]
-              if (res[0]) {
-                // const contractUri: string = res[0]
-                const httpRes = await fetch(res[0], {
-                  method: 'GET',
-                  headers: {
-                    'Content-Type': 'application/json'
-                  }
-                })
-                if (httpRes.status >= 400) {
-                  this.logger.error('Fetch contract uri: Bad response from server')
-                  contract.contract_uri_detail = ''
-                  contract.name = contractName
-                  // throw new Error('Bad response from server')
-                } else {
-                  const jsonRes: any = await httpRes.json()
+              this.logger.debug('read 721  contract uri,address:' + address)
+              const contractUri = abi.find((v) => v.name == 'contractURI')
+              if (contractUri) {
+                const res = await this.utilsService.readSmartContract(
+                  address,
+                  address,
+                  abi,
+                  'contractURI',
+                  [],
+                  [],
+                  ['string']
+                )
+                this.logger.debug('contract uri:' + res[0])
+                contract.contract_uri = res[0]
+                if (res[0]) {
+                  // const contractUri: string = res[0]
+                  const httpRes = await fetch(res[0], {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    }
+                  })
+                  if (httpRes.status >= 400) {
+                    this.logger.error('Fetch contract uri: Bad response from server')
+                    contract.contract_uri_detail = ''
+                    contract.name = contractName
+                    // throw new Error('Bad response from server')
+                  } else {
+                    const jsonRes: any = await httpRes.json()
 
-                  contract.contract_uri_detail = JSON.stringify(jsonRes)
-                  contract.name = jsonRes.name
+                    contract.contract_uri_detail = JSON.stringify(jsonRes)
+                    contract.name = jsonRes.name
+                  }
+                }
+              }
+              const name = abi.find((v) => v.name == 'name')
+              if (name) {
+                const res = await this.utilsService.readSmartContract(
+                  address,
+                  address,
+                  abi,
+                  'name',
+                  [],
+                  [],
+                  ['string']
+                )
+                this.logger.debug('get name:' + JSON.stringify(res))
+                if (res[0]) {
+                  contract.name = ''
                 }
               }
             } else if (this.utilsService.checkTnt20(abi)) {
