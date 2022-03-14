@@ -194,6 +194,7 @@ export class AnalyseService {
       theta_fuel_burnt = 0
     // }
     const wallets = {}
+    const smartContractToDeal: { [index: string]: SmartContractEntity } = {}
     for (const transaction of block.transactions) {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
@@ -285,7 +286,7 @@ export class AnalyseService {
           await this.smartContractConnection.manager.upsert(
             SmartContractCallRecordEntity,
             {
-              timestamp: Number(timestamp),
+              timestamp: Number(block.timestamp),
               data: transaction.raw.data,
               receipt: JSON.stringify(transaction.receipt),
               height: height,
@@ -295,12 +296,7 @@ export class AnalyseService {
             ['tansaction_hash']
           )
           this.logger.debug('start parse nft record')
-          await this.nftService.parseRecordByContractAddressWithConnection(
-            this.nftConnection,
-            this.smartContractConnection,
-            smartContract
-          )
-          await this.updateCallTimesByPeriod(transaction.receipt.ContractAddress)
+          smartContractToDeal[smartContract.contract_address] = smartContract
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
             theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
               .multipliedBy(transaction.receipt.GasUsed)
@@ -364,6 +360,16 @@ export class AnalyseService {
     await this.txConnection.query(
       `INSERT INTO theta_tx_num_by_hours_entity (block_number,theta_fuel_burnt,theta_fuel_burnt_by_smart_contract,theta_fuel_burnt_by_transfers,active_wallet,coin_base_transaction,slash_transaction,send_transaction,reserve_fund_transaction,release_fund_transaction,service_payment_transaction,split_rule_transaction,deposit_stake_transaction,withdraw_stake_transaction,smart_contract_transaction,latest_block_height,timestamp) VALUES (${block_number},${theta_fuel_burnt}, ${theta_fuel_burnt_by_smart_contract},${theta_fuel_burnt_by_transfers},0,${coin_base_transaction},${slash_transaction},${send_transaction},${reserve_fund_transaction},${release_fund_transaction},${service_payment_transaction},${split_rule_transaction},${deposit_stake_transaction},${withdraw_stake_transaction},${smart_contract_transaction},${height},${timestamp})  ON CONFLICT (timestamp) DO UPDATE set block_number=block_number+${block_number},  theta_fuel_burnt=theta_fuel_burnt+${theta_fuel_burnt},theta_fuel_burnt_by_smart_contract=theta_fuel_burnt_by_smart_contract+${theta_fuel_burnt_by_smart_contract},theta_fuel_burnt_by_transfers=theta_fuel_burnt_by_transfers+${theta_fuel_burnt_by_transfers},coin_base_transaction=coin_base_transaction+${coin_base_transaction},slash_transaction=slash_transaction+${slash_transaction},send_transaction=send_transaction+${send_transaction},reserve_fund_transaction=reserve_fund_transaction+${reserve_fund_transaction},release_fund_transaction=release_fund_transaction+${release_fund_transaction},service_payment_transaction=service_payment_transaction+${service_payment_transaction},split_rule_transaction=split_rule_transaction+${split_rule_transaction},deposit_stake_transaction=deposit_stake_transaction+${deposit_stake_transaction},withdraw_stake_transaction=withdraw_stake_transaction+${withdraw_stake_transaction},smart_contract_transaction=smart_contract_transaction+${smart_contract_transaction},latest_block_height=${height};`
     )
+    const smartContractList = Object.values(smartContractToDeal)
+    for (const smartContract of smartContractList) {
+      await this.nftService.parseRecordByContractAddressWithConnection(
+        this.nftConnection,
+        this.smartContractConnection,
+        smartContract
+      )
+      await this.updateCallTimesByPeriod(smartContract.contract_address)
+    }
+
     this.logger.debug(height + ' end update theta tx num by hours')
     await this.snapShotActiveWallets(Number(block.timestamp))
 
