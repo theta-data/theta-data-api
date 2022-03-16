@@ -334,16 +334,38 @@ export class NftService {
     })
   }
 
-  async getNftsForContract(walletAddress: string, contractAddress: string) {
-    // let condition = {}
-    // if (walletAddress) condition['owner'] = walletAddress
-    // if (contractAddress) condition['smart_contract_address'] = contractAddress
-    return await this.checkSources(
-      await this.nftBalanceRepository.find({
+  async getNftsForContract(
+    walletAddress: string,
+    contractAddress: string,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
+    const condition: FindManyOptions<NftBalanceEntity> = {
+      where: {
         smart_contract_address: contractAddress,
         owner: walletAddress
-      })
-    )
+      },
+      take: take + 1,
+      order: {
+        id: 'ASC'
+      }
+    }
+    if (after) {
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = MoreThan(id)
+    }
+    const totalNft = await this.nftBalanceRepository.count({
+      smart_contract_address: contractAddress,
+      owner: walletAddress
+    })
+    let nftList = await this.nftBalanceRepository.find(condition)
+    let hasNextPage = false
+    if (nftList.length > take) {
+      hasNextPage = true
+      nftList = nftList.slice(0, take)
+    }
+    return [hasNextPage, totalNft, await this.checkSources(nftList)]
   }
 
   async getNftTransfersForBlockHeight(height: number) {
@@ -428,10 +450,38 @@ export class NftService {
     return [res.length, uniqeuHolder]
   }
 
-  async findNftsByName(name: string) {
-    return await this.smartContractRepository.find({
+  async findNftsByName(
+    name: string,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<SmartContractEntity>]> {
+    const condition: FindManyOptions<SmartContractEntity> = {
+      where: {
+        protocol: smartContractProtocol.tnt721,
+        name: Like('%' + name + '%')
+      },
+      take: take + 1,
+      order: {
+        id: 'ASC'
+      }
+    }
+    this.logger.debug(condition)
+    if (after) {
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = MoreThan(id)
+    }
+    const totalNft = await this.smartContractRepository.count({
       protocol: smartContractProtocol.tnt721,
       name: Like('%' + name + '%')
     })
+    let nftList = await this.smartContractRepository.find(condition)
+    let hasNextPage = false
+    if (nftList.length > take) {
+      hasNextPage = true
+      nftList = nftList.slice(0, take)
+    }
+    return [hasNextPage, totalNft, nftList]
+    // return
   }
 }

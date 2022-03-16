@@ -3,7 +3,7 @@ import { buffer } from 'stream/consumers'
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
-import { NftMetaType, NftType, PaginatedNftBalance } from './nft.model'
+import { NftMetaType, NftType, PaginatedNftBalance, PaginatedSmartContract } from './nft.model'
 import { NftService } from './nft.service'
 
 @Resolver(() => NftType)
@@ -15,9 +15,25 @@ export class NftResolver {
     return {}
   }
 
-  @ResolveField(() => [SmartContractEntity], { nullable: true })
-  async SearchNfts(@Args('name') name: string) {
-    return await this.nftService.findNftsByName(name)
+  @ResolveField(() => PaginatedSmartContract, { nullable: true })
+  async SearchNfts(
+    @Args('name') name: string,
+    @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
+    @Args('after', { nullable: true }) after: string
+  ) {
+    const [hasNextPage, totalNumber, res] = await this.nftService.findNftsByName(name, take, after)
+    let endCursor = ''
+    if (res.length > 0) {
+      // this.console.log();
+      console.log(res[res.length - 1].create_date)
+      endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
+    }
+    return {
+      endCursor: endCursor,
+      hasNextPage: hasNextPage,
+      nodes: res,
+      totalCount: totalNumber
+    }
   }
 
   @ResolveField(() => PaginatedNftBalance)
@@ -45,15 +61,31 @@ export class NftResolver {
     }
   }
 
-  @ResolveField(() => [NftBalanceEntity], { nullable: true })
+  @ResolveField(() => PaginatedNftBalance, { nullable: true })
   async NftsForContract(
     @Args('wallet_address') walletAddress: string,
-    @Args('smart_contract_address') contractAddress: string
+    @Args('smart_contract_address') contractAddress: string,
+    @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
+    @Args('after', { nullable: true }) after: string
   ) {
-    return await this.nftService.getNftsForContract(
+    const [hasNextPage, totalNumber, res] = await this.nftService.getNftsForContract(
       walletAddress.toLowerCase(),
-      contractAddress.toLowerCase()
+      contractAddress.toLowerCase(),
+      take,
+      after
     )
+    let endCursor = ''
+    if (res.length > 0) {
+      // this.console.log();
+      console.log(res[res.length - 1].create_date)
+      endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
+    }
+    return {
+      endCursor: endCursor,
+      hasNextPage: hasNextPage,
+      nodes: res,
+      totalCount: totalNumber
+    }
   }
 
   @ResolveField(() => [NftTransferRecordEntity])
