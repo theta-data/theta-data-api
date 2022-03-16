@@ -79,10 +79,12 @@ export class NftService {
   async parseRecordByContractAddressWithConnection(
     nftConnection: QueryRunner,
     smartContractConnection: QueryRunner,
-    contract: SmartContractEntity
+    contract: SmartContractEntity,
+    height: number = 0
   ): Promise<number> {
     this.logger.debug('start parese record')
     if (!contract.verified) {
+      this.logger.debug(contract.contract_address + ' not verified')
       return 0
     }
     if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
@@ -92,22 +94,24 @@ export class NftService {
     this.logger.debug('protocol is tnt 721')
     const nftRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
       where: { smart_contract_address: contract.contract_address },
-      order: { timestamp: 'DESC' }
+      order: { height: 'DESC' }
     })
     this.logger.debug('nft record:' + JSON.stringify(nftRecord))
     const condition: any = {
       where: { contract_id: contract.id },
-      order: { timestamp: 'ASC' }
+      order: { height: 'ASC' }
     }
     if (nftRecord) {
-      condition['where']['timestamp'] = MoreThanOrEqual(nftRecord.timestamp)
+      condition['where']['height'] = MoreThanOrEqual(nftRecord.height)
     }
     this.logger.debug(condition)
     const contractRecord = await smartContractConnection.manager.find(
       SmartContractCallRecordEntity,
       condition
     )
+    // if (height == 12817368) process.exit(0)
     let afftectedNum = 0
+    // if(contract.)
     for (const record of contractRecord) {
       const res = await this.updateNftRecord(nftConnection, record, contract)
       if (res) afftectedNum++
@@ -138,13 +142,15 @@ export class NftService {
     })
 
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
+    this.logger.debug(contract.contract_address)
+    this.logger.debug(JSON.stringify(logInfo))
     if (logInfo[0].decode.eventName === 'Transfer') {
       // try {
       await connection.manager.upsert(
         NftTransferRecordEntity,
         {
-          from: logInfo[0].decode.result.from,
-          to: logInfo[0].decode.result.to,
+          from: logInfo[0].decode.result.from.toLowerCase(),
+          to: logInfo[0].decode.result.to.toLowerCase(),
           token_id: Number(logInfo[0].decode.result.tokenId),
           smart_contract_address: contract.contract_address,
           height: record.height,

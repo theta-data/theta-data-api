@@ -270,7 +270,7 @@ export class AnalyseService {
             }
           )
           if (
-            smartContract.call_times > 10 &&
+            // smartContract.call_times > 10 &&
             !smartContract.verified &&
             moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
           ) {
@@ -365,7 +365,8 @@ export class AnalyseService {
       await this.nftService.parseRecordByContractAddressWithConnection(
         this.nftConnection,
         this.smartContractConnection,
-        smartContract
+        smartContract,
+        height
       )
       await this.updateCallTimesByPeriod(smartContract.contract_address)
     }
