@@ -15,7 +15,7 @@
   "START_HEIGHT":	12816368, 
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_INTERVAL" : 12000,
+  "ANALYSE_INTERVAL" : 36000,
   "ANALYSE_NUMBER" : 500,
   "IGNORE" : false,
   "RATE_LIMIT": {

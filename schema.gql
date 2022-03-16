@@ -574,7 +574,7 @@ type NftType {
   NftsForContract(wallet_address: String!, smart_contract_address: String!): [NftBalanceEntity!]
   NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
-  NftOwners(smart_contract_address: String!): [NftBalanceEntity!]!
+  NftOwners(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
   ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
   TokenIdOwners(token_id: Float!, contract_adress: String!): NftBalanceEntity!
   Meta(smart_contract_address: String!): NftMetaType!

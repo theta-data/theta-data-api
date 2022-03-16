@@ -66,9 +66,29 @@ export class NftResolver {
     return await this.nftService.getNftTransfersForBlockHeight(blockHeight)
   }
 
-  @ResolveField(() => [NftBalanceEntity])
-  async NftOwners(@Args('smart_contract_address') contractAddress: string) {
-    return await this.nftService.getNftsBySmartContractAddress(contractAddress.toLowerCase())
+  @ResolveField(() => PaginatedNftBalance)
+  async NftOwners(
+    @Args('smart_contract_address') contractAddress: string,
+    @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
+    @Args('after', { nullable: true }) after: string
+  ) {
+    const [hasNextPage, totalNumber, res] = await this.nftService.getNftsBySmartContractAddress(
+      contractAddress.toLowerCase(),
+      take,
+      after
+    )
+    let endCursor = ''
+    if (res.length > 0) {
+      console.log(res[res.length - 1].create_date)
+      endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
+    }
+    return {
+      endCursor: endCursor,
+      hasNextPage: hasNextPage,
+      nodes: res,
+      totalCount: totalNumber
+    }
+    // return
   }
 
   @ResolveField(() => [NftTransferRecordEntity])
