@@ -277,7 +277,8 @@ export class NftService {
     let nftList = await this.nftBalanceRepository.find(condition)
     let hasNextPage = false
     if (nftList.length > take) {
-      ;(hasNextPage = true), (nftList = nftList.slice(0, take))
+      hasNextPage = true
+      nftList = nftList.slice(0, take)
     }
     this.logger.debug('nft length  :' + nftList.length)
     return [hasNextPage, totalNft, await this.checkSources(nftList)]
