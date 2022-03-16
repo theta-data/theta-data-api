@@ -570,7 +570,7 @@ type NftTransferRecordEntity {
 
 type NftType {
   SearchNfts(name: String!): [SmartContractEntity!]
-  Balance(wallet_address: String!): [NftBalanceEntity!]!
+  Balance(wallet_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
   NftsForContract(wallet_address: String!, smart_contract_address: String!): [NftBalanceEntity!]
   NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
@@ -583,6 +583,13 @@ type NftType {
 type NftMetaType {
   unique_holder: Int!
   total: Float!
+}
+
+type PaginatedNftBalance {
+  nodes: [NftBalanceEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  endCursor: String!
 }
 
 type ContactEntity {

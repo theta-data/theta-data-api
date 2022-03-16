@@ -65,8 +65,8 @@ export class NftBalanceEntity {
   //   status: NftStatusEnum
 
   @CreateDateColumn()
-  create_date!: number
+  create_date!: Date
 
   @UpdateDateColumn()
-  update_date!: number
+  update_date!: string
 }

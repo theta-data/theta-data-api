@@ -1,7 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
-import { getConnection, Like, MoreThan, MoreThanOrEqual, QueryRunner, Repository } from 'typeorm'
+import {
+  FindCondition,
+  FindConditions,
+  FindManyOptions,
+  getConnection,
+  Like,
+  MoreThan,
+  MoreThanOrEqual,
+  QueryRunner,
+  Repository
+} from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
 import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
@@ -224,13 +234,39 @@ export class NftService {
     return res[0]
   }
 
-  async getNftByWalletAddress(address: string) {
+  async getNftByWalletAddress(
+    address: string,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     this.logger.debug('address: ' + address)
-    const nftList = await this.nftBalanceRepository.find({
+    const condition: FindManyOptions<NftBalanceEntity> = {
+      where: {
+        owner: address
+      },
+      take: take + 1,
+      order: {
+        create_date: 'ASC'
+      }
+    }
+    if (after) {
+      // let after = 'MjAyMi0wMy0xNlQwNToyOTo1NS4wMDBa'
+      const createDate = Buffer.from(after, 'base64').toString('ascii')
+      console.log(createDate)
+      condition.where['create_date'] = MoreThan(createDate)
+      // create_date:
+    }
+
+    const totalNft = await this.nftBalanceRepository.count({
       owner: address
     })
+    let nftList = await this.nftBalanceRepository.find(condition)
+    let hasNextPage = false
+    if (nftList.length > take) {
+      ;(hasNextPage = true), (nftList = nftList.slice(0, take))
+    }
     this.logger.debug('nft length  :' + nftList.length)
-    return await this.checkSources(nftList)
+    return [hasNextPage, totalNft, await this.checkSources(nftList)]
   }
 
   async getNftsBySmartContractAddress(address: string) {
