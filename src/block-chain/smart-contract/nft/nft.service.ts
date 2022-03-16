@@ -168,16 +168,32 @@ export class NftService {
         },
         ['smart_contract_address', 'token_id', 'timestamp']
       )
-      await connection.manager.upsert(
-        NftBalanceEntity,
-        {
+      const balance = await connection.manager.findOne(NftBalanceEntity, {
+        smart_contract_address: contract.contract_address,
+        token_id: Number(logInfo[0].decode.result.tokenId)
+      })
+      if (balance) {
+        balance.owner = logInfo[0].decode.result.to.toLowerCase()
+        balance.from = logInfo[0].decode.result.from.toLowerCase()
+        await connection.manager.save(NftBalanceEntity, balance)
+      } else {
+        await connection.manager.insert(NftBalanceEntity, {
           smart_contract_address: contract.contract_address,
           owner: logInfo[0].decode.result.to.toLowerCase(),
           from: logInfo[0].decode.result.from.toLowerCase(),
           token_id: Number(logInfo[0].decode.result.tokenId)
-        },
-        ['smart_contract_address', 'token_id']
-      )
+        })
+      }
+      // await connection.manager.upsert(
+      //   NftBalanceEntity,
+      //   {
+      //     smart_contract_address: contract.contract_address,
+      //     owner: logInfo[0].decode.result.to.toLowerCase(),
+      //     from: logInfo[0].decode.result.from.toLowerCase(),
+      //     token_id: Number(logInfo[0].decode.result.tokenId)
+      //   },
+      //   ['smart_contract_address', 'token_id']
+      // )
       return true
     }
     return false
@@ -246,14 +262,14 @@ export class NftService {
       },
       take: take + 1,
       order: {
-        create_date: 'ASC'
+        id: 'ASC'
       }
     }
     if (after) {
       // let after = 'MjAyMi0wMy0xNlQwNToyOTo1NS4wMDBa'
-      const createDate = Buffer.from(after, 'base64').toString('ascii')
-      console.log(createDate)
-      condition.where['create_date'] = MoreThan(createDate)
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      console.log(id)
+      condition.where['id'] = MoreThan(id)
       // create_date:
     }
 
