@@ -19,7 +19,7 @@ export enum NftStatusEnum {
 @Index(['smart_contract_address'])
 @Unique(['smart_contract_address', 'token_id'])
 export class NftBalanceEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('increment')
   id!: number
 
   @Field()
