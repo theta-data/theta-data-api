@@ -25,7 +25,7 @@ import { TokenType } from 'src/block-chain/rpc/rpc.model'
 
 @Injectable()
 export class NftService {
-  logger = new Logger('nft service')
+  logger = new Logger()
   constructor(
     @InjectRepository(NftTransferRecordEntity, 'nft')
     private nftTransferRecordRepository: Repository<NftTransferRecordEntity>,
@@ -266,11 +266,9 @@ export class NftService {
       }
     }
     if (after) {
-      // let after = 'MjAyMi0wMy0xNlQwNToyOTo1NS4wMDBa'
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
-      console.log(id)
+      this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
-      // create_date:
     }
 
     const totalNft = await this.nftBalanceRepository.count({
@@ -285,12 +283,35 @@ export class NftService {
     return [hasNextPage, totalNft, await this.checkSources(nftList)]
   }
 
-  async getNftsBySmartContractAddress(address: string) {
-    return await this.checkSources(
-      await this.nftBalanceRepository.find({
+  async getNftsBySmartContractAddress(
+    address: string,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
+    const condition: FindManyOptions<NftBalanceEntity> = {
+      where: {
         smart_contract_address: address
-      })
-    )
+      },
+      take: take + 1,
+      order: {
+        id: 'ASC'
+      }
+    }
+    if (after) {
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = MoreThan(id)
+    }
+    const totalNft = await this.nftBalanceRepository.count({
+      smart_contract_address: address
+    })
+    let nftList = await this.nftBalanceRepository.find(condition)
+    let hasNextPage = false
+    if (nftList.length > take) {
+      hasNextPage = true
+      nftList = nftList.slice(0, take)
+    }
+    return [hasNextPage, totalNft, await this.checkSources(nftList)]
   }
 
   async getNftTransfersForSmartContract(contractAddress: string) {
