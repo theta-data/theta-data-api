@@ -1,5 +1,6 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
 import { Paginated } from 'src/common/common.model'
+import { SmartContractEntity } from '../smart-contract.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 
 @ObjectType()
@@ -19,3 +20,6 @@ export class NftMetaType {
 
 @ObjectType()
 export class PaginatedNftBalance extends Paginated(NftBalanceEntity) {}
+
+@ObjectType()
+export class PaginatedSmartContract extends Paginated(SmartContractEntity) {}
