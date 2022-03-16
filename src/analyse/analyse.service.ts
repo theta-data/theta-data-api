@@ -365,7 +365,8 @@ export class AnalyseService {
       await this.nftService.parseRecordByContractAddressWithConnection(
         this.nftConnection,
         this.smartContractConnection,
-        smartContract
+        smartContract,
+        height
       )
       await this.updateCallTimesByPeriod(smartContract.contract_address)
     }

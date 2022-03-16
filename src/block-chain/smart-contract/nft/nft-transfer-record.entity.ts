@@ -12,7 +12,7 @@ import {
 @Entity()
 @Unique(['smart_contract_address', 'token_id', 'timestamp'])
 export class NftTransferRecordEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('uuid')
   id!: number
 
   @Field()
