@@ -388,6 +388,8 @@ export class NftService {
         const contractInfo = smartContractList[nft.smart_contract_address]
         const abiInfo = JSON.parse(contractInfo.abi)
         const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
+        nft.name = smartContractList[nft.smart_contract_address].name
+        nft.contract_uri = smartContractList[nft.smart_contract_address].contract_uri
         if (hasTokenUri) {
           const tokenUri = await this.getTokenUri(nft.smart_contract_address, abiInfo, nft.token_id)
           nft.token_uri = tokenUri
@@ -414,8 +416,6 @@ export class NftService {
         if (hasBaseTokenUri) {
           nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
         }
-        nft.name = smartContractList[nft.smart_contract_address].name
-        nft.contract_uri = smartContractList[nft.smart_contract_address].contract_uri
         await this.nftBalanceRepository.save(nft)
       }
       // } catch (e) {
