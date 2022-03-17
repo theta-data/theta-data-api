@@ -24,6 +24,10 @@ export class NftTransferRecordEntity {
   from: string
 
   @Field()
+  @Column({ default: '' })
+  name: string
+
+  @Field()
   @Column()
   to: string
 

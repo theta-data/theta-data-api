@@ -164,6 +164,7 @@ export class NftService {
           token_id: Number(logInfo[0].decode.result.tokenId),
           smart_contract_address: contract.contract_address,
           height: record.height,
+          name: contract.name,
           timestamp: record.timestamp
         },
         ['smart_contract_address', 'token_id', 'timestamp']
@@ -377,7 +378,6 @@ export class NftService {
     this.logger.debug('nfts length: ' + nfts.length)
     const smartContractList: { [prop: string]: SmartContractEntity } = {}
     for (const nft of nfts) {
-      // try {
       if (!nft.name || !nft.img_uri) {
         if (!smartContractList[nft.smart_contract_address]) {
           smartContractList[nft.smart_contract_address] =
@@ -411,16 +411,12 @@ export class NftService {
             this.logger.error(e)
           }
         }
-
         const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
         if (hasBaseTokenUri) {
           nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
         }
         await this.nftBalanceRepository.save(nft)
       }
-      // } catch (e) {
-      //   this.logger.error(e)
-      // }
     }
     return nfts
   }
