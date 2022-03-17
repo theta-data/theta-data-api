@@ -562,6 +562,7 @@ type NftBalanceEntity {
 type NftTransferRecordEntity {
   smart_contract_address: String!
   from: String!
+  name: String!
   to: String!
   token_id: Int!
   height: Int!
