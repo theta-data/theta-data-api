@@ -578,12 +578,6 @@ type NftType {
   NftOwners(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
   ContractNftTransfers(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
   TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
-  Meta(smart_contract_address: String!): NftMetaType!
-}
-
-type NftMetaType {
-  unique_holder: Int!
-  total: Float!
 }
 
 type PaginatedNftBalance {
