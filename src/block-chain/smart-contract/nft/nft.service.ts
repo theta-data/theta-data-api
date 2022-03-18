@@ -143,12 +143,14 @@ export class NftService {
     receipt.Logs.forEach((log) => {
       if (log.data == '') {
         log.data = '0x'
+      } else {
+        log.data = this.utilsService.getHex(log.data)
       }
-      if (record.data) {
-        const data = this.utilsService.getHex(record.data)
-        // receipt.Logs[0].data = data
-        log.data = data
-      }
+      // if (record.data) {
+      //   const data = this.utilsService.getHex(record.data)
+      //   // receipt.Logs[0].data = data
+      //   log.data = data
+      // }
     })
 
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
