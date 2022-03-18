@@ -573,11 +573,11 @@ type NftType {
   SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
   Balance(wallet_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
   NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
-  NftTransfers(wallet_address: String!): [NftTransferRecordEntity!]!
+  NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
   NftOwners(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
-  ContractNftTransfers(smart_contract_address: String!): [NftTransferRecordEntity!]!
-  TokenIdOwners(token_id: Float!, contract_adress: String!): NftBalanceEntity!
+  ContractNftTransfers(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
+  TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
   Meta(smart_contract_address: String!): NftMetaType!
 }
 
@@ -595,6 +595,13 @@ type PaginatedNftBalance {
 
 type PaginatedSmartContract {
   nodes: [SmartContractEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  endCursor: String!
+}
+
+type PaginatedNftTransferRecord {
+  nodes: [NftTransferRecordEntity!]
   totalCount: Int!
   hasNextPage: Boolean!
   endCursor: String!

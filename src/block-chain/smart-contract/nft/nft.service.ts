@@ -306,14 +306,62 @@ export class NftService {
     return [hasNextPage, totalNft, await this.checkSources(nftList)]
   }
 
-  async getNftTransfersForSmartContract(contractAddress: string) {
-    return await this.nftTransferRecordRepository.find({
-      smart_contract_address: contractAddress
+  async getNftTransfersForSmartContract(
+    contractAddress: string,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<NftTransferRecordEntity>]> {
+    const condition: FindManyOptions<NftTransferRecordEntity> = {
+      where: { smart_contract_address: contractAddress },
+      take: take + 1,
+      order: {
+        id: 'ASC'
+      }
+    }
+    if (after) {
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = MoreThan(id)
+    }
+    const totalRecord = await this.nftTransferRecordRepository.count({
+      where: {
+        smart_contract_address: contractAddress
+      }
     })
+    let recordList = await this.nftTransferRecordRepository.find(condition)
+    let hasNextPage = false
+    if (recordList.length > take) {
+      hasNextPage = true
+      recordList = recordList.slice(0, take)
+    }
+    return [hasNextPage, totalRecord, recordList]
   }
 
-  async getNftTransfersByWallet(walletAddress) {
-    return await this.nftTransferRecordRepository.find({
+  async getNftTransfersByWallet(
+    walletAddress,
+    take: number = 20,
+    after: string | undefined
+  ): Promise<[boolean, number, Array<NftTransferRecordEntity>]> {
+    const condition: FindManyOptions<NftTransferRecordEntity> = {
+      where: [
+        {
+          from: walletAddress
+        },
+        {
+          to: walletAddress
+        }
+      ],
+      take: take + 1,
+      order: {
+        id: 'ASC'
+      }
+    }
+    if (after) {
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = MoreThan(id)
+    }
+    const totalRecord = await this.nftTransferRecordRepository.count({
       where: [
         {
           from: walletAddress
@@ -323,6 +371,13 @@ export class NftService {
         }
       ]
     })
+    let recordList = await this.nftTransferRecordRepository.find(condition)
+    let hasNextPage = false
+    if (recordList.length > take) {
+      hasNextPage = true
+      recordList = recordList.slice(0, take)
+    }
+    return [hasNextPage, totalRecord, recordList]
   }
 
   async getNftsForContract(
