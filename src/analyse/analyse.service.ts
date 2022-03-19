@@ -199,38 +199,41 @@ export class AnalyseService {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
           coin_base_transaction++
-          const stakeRewardStart = moment().unix()
-          const transacitonToBeUpserted = []
-          for (const output of transaction.raw.outputs) {
-            // this.logger.debug('upsert coinbae transaction')
-            transacitonToBeUpserted.push({
-              reward_amount: Number(
-                new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-              ),
-              wallet_address: output.address.toLocaleLowerCase(),
-              reward_height: height,
-              timestamp: Number(block.timestamp)
-            })
-            if (transacitonToBeUpserted.length > 900) {
-              await this.stakeConnection.manager.upsert(
-                StakeRewardEntity,
-                transacitonToBeUpserted,
-                ['wallet_address', 'reward_height']
-              )
+          if (latestFinalizedBlockHeight - height < 30 * 15000) {
+            const stakeRewardStart = moment().unix()
+            const transacitonToBeUpserted = []
+            for (const output of transaction.raw.outputs) {
+              // this.logger.debug('upsert coinbae transaction')
+              transacitonToBeUpserted.push({
+                reward_amount: Number(
+                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                ),
+                wallet_address: output.address.toLocaleLowerCase(),
+                reward_height: height,
+                timestamp: Number(block.timestamp)
+              })
+              if (transacitonToBeUpserted.length > 900) {
+                await this.stakeConnection.manager.upsert(
+                  StakeRewardEntity,
+                  transacitonToBeUpserted,
+                  ['wallet_address', 'reward_height']
+                )
 
-              this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
-              transacitonToBeUpserted.length = 0
+                this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
+                transacitonToBeUpserted.length = 0
+              }
             }
+            await this.stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
+              'wallet_address',
+              'reward_height'
+            ])
+            this.loggerService.timeMonitor(
+              height + ': complete stake reward upsert',
+              stakeRewardStart
+            )
+            this.logger.debug(height + ' end upsert stake reward')
           }
-          await this.stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
-            'wallet_address',
-            'reward_height'
-          ])
-          this.loggerService.timeMonitor(
-            height + ': complete stake reward upsert',
-            stakeRewardStart
-          )
-          this.logger.debug(height + ' end upsert stake reward')
+
           break
         case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
           deposit_stake_transaction++
