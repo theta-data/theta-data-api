@@ -6,9 +6,10 @@ module.exports = {
       instances: 2,
       exec_mode: "cluster",
       autorestart: true,
-      watch: false,
+      watch: true,
       max_memory_restart: '2G',
       increment_var : 'PORT',
+      instance_var: 'INSTANCE_ID',
       env_test: {
         NODE_ENV: 'test',
         PORT: 3000,
