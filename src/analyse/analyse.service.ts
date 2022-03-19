@@ -156,7 +156,7 @@ export class AnalyseService {
 
   // @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
-    this.logger.debug(block.height + 'start insert')
+    this.logger.debug(block.height + ' start insert')
     await this.analyseConnection.manager.insert(BlockListEntity, {
       block_number: Number(block.height),
       status: BlockStatus.inserted
