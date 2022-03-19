@@ -283,18 +283,38 @@ export class AnalyseService {
             }
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
-          await this.smartContractConnection.manager.upsert(
+          const record = await this.smartContractConnection.manager.find(
             SmartContractCallRecordEntity,
             {
-              timestamp: Number(block.timestamp),
-              data: transaction.raw.data,
-              receipt: JSON.stringify(transaction.receipt),
-              height: height,
-              tansaction_hash: transaction.hash,
-              contract_id: smartContract.id
-            },
-            ['tansaction_hash']
+              tansaction_hash: transaction.hash
+            }
           )
+          if (!record) {
+            await this.smartContractConnection.manager.insert(
+              SmartContractCallRecordEntity,
+              {
+                timestamp: Number(block.timestamp),
+                data: transaction.raw.data,
+                receipt: JSON.stringify(transaction.receipt),
+                height: height,
+                tansaction_hash: transaction.hash,
+                contract_id: smartContract.id
+              }
+              // ['tansaction_hash']
+            )
+          }
+          // await this.smartContractConnection.manager.upsert(
+          //   SmartContractCallRecordEntity,
+          //   {
+          //     timestamp: Number(block.timestamp),
+          //     data: transaction.raw.data,
+          //     receipt: JSON.stringify(transaction.receipt),
+          //     height: height,
+          //     tansaction_hash: transaction.hash,
+          //     contract_id: smartContract.id
+          //   },
+          //   ['tansaction_hash']
+          // )
           this.logger.debug('start parse nft record')
           smartContractToDeal[smartContract.contract_address] = smartContract
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
