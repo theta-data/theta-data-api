@@ -50,6 +50,8 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
+    if (process.env.NODE_APP_INSTANCE === '0') return
+
     const analyseKey = await this.cacheManager.get(this.analyseKey)
     if (!analyseKey) {
       this.logger.debug('start analyse')
