@@ -156,39 +156,42 @@ export class NftService {
     const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
     this.logger.debug(contract.contract_address)
     this.logger.debug(JSON.stringify(logInfo))
-    if (logInfo[0].decode.eventName === 'Transfer') {
-      // try {
-      await connection.manager.upsert(
-        NftTransferRecordEntity,
-        {
-          from: logInfo[0].decode.result.from.toLowerCase(),
-          to: logInfo[0].decode.result.to.toLowerCase(),
-          token_id: Number(logInfo[0].decode.result.tokenId),
+    for (const log of logInfo) {
+      if (log.decode.eventName === 'Transfer') {
+        // try {
+        await connection.manager.upsert(
+          NftTransferRecordEntity,
+          {
+            from: log.decode.result.from.toLowerCase(),
+            to: log.decode.result.to.toLowerCase(),
+            token_id: Number(log.decode.result.tokenId),
+            smart_contract_address: contract.contract_address,
+            height: record.height,
+            name: contract.name,
+            timestamp: record.timestamp
+          },
+          ['smart_contract_address', 'token_id', 'timestamp']
+        )
+        const balance = await connection.manager.findOne(NftBalanceEntity, {
           smart_contract_address: contract.contract_address,
-          height: record.height,
-          name: contract.name,
-          timestamp: record.timestamp
-        },
-        ['smart_contract_address', 'token_id', 'timestamp']
-      )
-      const balance = await connection.manager.findOne(NftBalanceEntity, {
-        smart_contract_address: contract.contract_address,
-        token_id: Number(logInfo[0].decode.result.tokenId)
-      })
-      if (balance) {
-        balance.owner = logInfo[0].decode.result.to.toLowerCase()
-        balance.from = logInfo[0].decode.result.from.toLowerCase()
-        await connection.manager.save(NftBalanceEntity, balance)
-      } else {
-        await connection.manager.insert(NftBalanceEntity, {
-          smart_contract_address: contract.contract_address,
-          owner: logInfo[0].decode.result.to.toLowerCase(),
-          from: logInfo[0].decode.result.from.toLowerCase(),
-          token_id: Number(logInfo[0].decode.result.tokenId)
+          token_id: Number(log.decode.result.tokenId)
         })
+        if (balance) {
+          balance.owner = log.decode.result.to.toLowerCase()
+          balance.from = log.decode.result.from.toLowerCase()
+          await connection.manager.save(NftBalanceEntity, balance)
+        } else {
+          await connection.manager.insert(NftBalanceEntity, {
+            smart_contract_address: contract.contract_address,
+            owner: log.decode.result.to.toLowerCase(),
+            from: log.decode.result.from.toLowerCase(),
+            token_id: Number(log.decode.result.tokenId)
+          })
+        }
+        return true
       }
-      return true
     }
+
     return false
   }
 
