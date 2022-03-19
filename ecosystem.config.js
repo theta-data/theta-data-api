@@ -6,7 +6,7 @@ module.exports = {
       instances: 2,
       exec_mode: "cluster",
       autorestart: true,
-      watch: true,
+      watch: false,
       max_memory_restart: '2G',
       increment_var : 'PORT',
       env_test: {
