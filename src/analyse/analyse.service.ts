@@ -321,26 +321,26 @@ export class AnalyseService {
       }
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
-          if (!wallets[wallet.address]) {
-            wallets[wallet.address] = {
-              address: wallet.address,
+          if (!wallets[wallet.address.toLowerCase()]) {
+            wallets[wallet.address.toLowerCase()] = {
+              address: wallet.address.toLowerCase(),
               latest_active_time: Number(block.timestamp)
             }
           } else {
-            wallets[wallet.address]['latest_active_time'] = Number(block.timestamp)
+            wallets[wallet.address.toLowerCase()]['latest_active_time'] = Number(block.timestamp)
           }
         }
       }
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          if (!wallets[wallet.address]) {
-            wallets[wallet.address] = {
-              address: wallet.address,
+          if (!wallets[wallet.address.toLowerCase()]) {
+            wallets[wallet.address.toLowerCase()] = {
+              address: wallet.address.toLowerCase(),
               latest_active_time: Number(block.timestamp)
             }
           } else {
-            wallets[wallet.address]['latest_active_time'] = Number(block.timestamp)
+            wallets[wallet.address.toLowerCase()]['latest_active_time'] = Number(block.timestamp)
           }
         }
       }
@@ -351,6 +351,7 @@ export class AnalyseService {
     }
     const walletsToUpdate = Object.values(wallets)
     for (let i = 0; i < walletsToUpdate.length; i += 900) {
+      this.logger.debug('start upsert wallet')
       await this.walletConnection.manager.upsert(WalletEntity, walletsToUpdate.slice(i, i + 900), [
         'address'
       ])
