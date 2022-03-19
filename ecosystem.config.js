@@ -3,16 +3,15 @@ module.exports = {
     {
       name: 'theta-data-api',
       script: './dist/main.js',
-      instances: 1,
+      instances: 2,
+      exec_mode: "cluster",
       autorestart: true,
-      watch: false,
-
-      //@todo remove this config in the pro dev
-      // cron_restart: '*/50 * * * * ',
-
+      watch: true,
       max_memory_restart: '2G',
+      increment_var : 'PORT',
       env_test: {
         NODE_ENV: 'test',
+        PORT: 3000,
         max_memory_restart: '2G',
         // TZ: 'Asia/Shanghai'
       },
@@ -20,20 +19,5 @@ module.exports = {
         NODE_ENV: 'production',
       }
     }
-    // {
-    //   name: 'theta-data-analyse',
-    //   script: './dist/analyse.js',
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '2G',
-    //   env_test: {
-    //     NODE_ENV: 'test' // TZ: 'Asia/Shanghai'
-    //   },
-    //   env_production: {
-    //     NODE_ENV: 'production',
-    //     NODE_CONFIG_DIR: '/home/ubuntu/actions-runner/_work/config/config/theta-data-api'
-    //   }
-    // }
   ]
 }

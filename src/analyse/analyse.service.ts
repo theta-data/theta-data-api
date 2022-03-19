@@ -50,6 +50,8 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
+    if (process.env.NODE_APP_INSTANCE === '0') return
+
     const analyseKey = await this.cacheManager.get(this.analyseKey)
     if (!analyseKey) {
       this.logger.debug('start analyse')
@@ -156,7 +158,7 @@ export class AnalyseService {
 
   // @OnEvent('block.analyse')
   async handleOrderCreatedEvent(block: THETA_BLOCK_INTERFACE, latestFinalizedBlockHeight: number) {
-    this.logger.debug(block.height + 'start insert')
+    this.logger.debug(block.height + ' start insert')
     await this.analyseConnection.manager.insert(BlockListEntity, {
       block_number: Number(block.height),
       status: BlockStatus.inserted
