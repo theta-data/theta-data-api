@@ -199,38 +199,41 @@ export class AnalyseService {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
           coin_base_transaction++
-          const stakeRewardStart = moment().unix()
-          const transacitonToBeUpserted = []
-          for (const output of transaction.raw.outputs) {
-            // this.logger.debug('upsert coinbae transaction')
-            transacitonToBeUpserted.push({
-              reward_amount: Number(
-                new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
-              ),
-              wallet_address: output.address.toLocaleLowerCase(),
-              reward_height: height,
-              timestamp: Number(block.timestamp)
-            })
-            if (transacitonToBeUpserted.length > 900) {
-              await this.stakeConnection.manager.upsert(
-                StakeRewardEntity,
-                transacitonToBeUpserted,
-                ['wallet_address', 'reward_height']
-              )
+          if (latestFinalizedBlockHeight - height < 30 * 15000) {
+            const stakeRewardStart = moment().unix()
+            const transacitonToBeUpserted = []
+            for (const output of transaction.raw.outputs) {
+              // this.logger.debug('upsert coinbae transaction')
+              transacitonToBeUpserted.push({
+                reward_amount: Number(
+                  new BigNumber(output.coins.tfuelwei).dividedBy('1e18').toFixed()
+                ),
+                wallet_address: output.address.toLocaleLowerCase(),
+                reward_height: height,
+                timestamp: Number(block.timestamp)
+              })
+              if (transacitonToBeUpserted.length > 900) {
+                await this.stakeConnection.manager.upsert(
+                  StakeRewardEntity,
+                  transacitonToBeUpserted,
+                  ['wallet_address', 'reward_height']
+                )
 
-              this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
-              transacitonToBeUpserted.length = 0
+                this.loggerService.timeMonitor(height + ': stake reward upsert ', stakeRewardStart)
+                transacitonToBeUpserted.length = 0
+              }
             }
+            await this.stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
+              'wallet_address',
+              'reward_height'
+            ])
+            this.loggerService.timeMonitor(
+              height + ': complete stake reward upsert',
+              stakeRewardStart
+            )
+            this.logger.debug(height + ' end upsert stake reward')
           }
-          await this.stakeConnection.manager.upsert(StakeRewardEntity, transacitonToBeUpserted, [
-            'wallet_address',
-            'reward_height'
-          ])
-          this.loggerService.timeMonitor(
-            height + ': complete stake reward upsert',
-            stakeRewardStart
-          )
-          this.logger.debug(height + ' end upsert stake reward')
+
           break
         case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
           deposit_stake_transaction++
@@ -283,38 +286,34 @@ export class AnalyseService {
             }
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
-          const record = await this.smartContractConnection.manager.find(
-            SmartContractCallRecordEntity,
-            {
-              tansaction_hash: transaction.hash
-            }
-          )
-          if (!record) {
-            await this.smartContractConnection.manager.insert(
-              SmartContractCallRecordEntity,
-              {
-                timestamp: Number(block.timestamp),
-                data: transaction.raw.data,
-                receipt: JSON.stringify(transaction.receipt),
-                height: height,
-                tansaction_hash: transaction.hash,
-                contract_id: smartContract.id
-              }
-              // ['tansaction_hash']
-            )
-          }
-          // await this.smartContractConnection.manager.upsert(
+          // const record = await this.smartContractConnection.manager.find(
           //   SmartContractCallRecordEntity,
           //   {
+          //     transaction_hash: transaction.hash
+          //   }
+          // )
+          // if (!record) {
+          //   await this.smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
           //     timestamp: Number(block.timestamp),
           //     data: transaction.raw.data,
           //     receipt: JSON.stringify(transaction.receipt),
           //     height: height,
-          //     tansaction_hash: transaction.hash,
+          //     transaction_hash: transaction.hash,
           //     contract_id: smartContract.id
-          //   },
-          //   ['tansaction_hash']
-          // )
+          //   })
+          // }
+          await this.smartContractConnection.manager.upsert(
+            SmartContractCallRecordEntity,
+            {
+              timestamp: Number(block.timestamp),
+              data: transaction.raw.data,
+              receipt: JSON.stringify(transaction.receipt),
+              height: height,
+              transaction_hash: transaction.hash,
+              contract_id: smartContract.id
+            },
+            ['transaction_hash']
+          )
           this.logger.debug('start parse nft record')
           smartContractToDeal[smartContract.contract_address] = smartContract
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {

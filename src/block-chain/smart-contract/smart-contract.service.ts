@@ -82,7 +82,7 @@ export class SmartContractService {
     smartContractRecord.data = data
     smartContractRecord.receipt = receipt
     smartContractRecord.height = height
-    smartContractRecord.tansaction_hash = tansactionHash
+    smartContractRecord.transaction_hash = tansactionHash
     smartContractRecord.contract_id = smartContract.id
     await this.smartContractRecordRepository.save(smartContractRecord)
     let afftectedNum = 0

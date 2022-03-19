@@ -13,7 +13,7 @@ import { GraphQLString } from 'graphql'
 @Entity()
 @Index(['contract_id', 'timestamp'])
 export class SmartContractCallRecordEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id!: number
 
   @Column()
@@ -32,7 +32,7 @@ export class SmartContractCallRecordEntity {
   height: number
 
   @Column({ default: '', unique: true })
-  tansaction_hash: string
+  transaction_hash: string
 
   @Field(() => GraphQLString, { description: 'Calling time' })
   @Column({
