@@ -532,18 +532,17 @@ export class NftService {
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
     }
-    const totalNfts = await this.smartContractRepository.find({
+    const totalNft = await this.smartContractRepository.count({
       protocol: smartContractProtocol.tnt721,
       name: Like('%' + name + '%')
     })
-    let nftList = []
-    // let nftList = await this.smartContractRepository.find(condition)
+    let nftList = await this.smartContractRepository.find(condition)
     let hasNextPage = false
-    if (totalNfts.length > take) {
+    if (nftList.length > take) {
       hasNextPage = true
-      nftList = totalNfts.slice(0, take)
+      nftList = nftList.slice(0, take)
     }
-    return [hasNextPage, totalNfts.length, nftList]
+    return [hasNextPage, totalNft, nftList]
     // return
   }
 }
