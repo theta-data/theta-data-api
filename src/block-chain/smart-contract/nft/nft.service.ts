@@ -532,7 +532,7 @@ export class NftService {
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
     }
-    const totalNft = await this.smartContractRepository.find({
+    const totalNft = await this.smartContractRepository.count({
       protocol: smartContractProtocol.tnt721,
       name: Like('%' + name + '%')
     })
