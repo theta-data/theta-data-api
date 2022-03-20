@@ -181,11 +181,54 @@ export class NftService {
           balance.from = log.decode.result.from.toLowerCase()
           await connection.manager.save(NftBalanceEntity, balance)
         } else {
+          // let name = ''
+          let imgUri = ''
+          let detail = ''
+          let tokenUri = ''
+          let baseTokenUri = ''
+          const abiInfo = JSON.parse(contract.abi)
+          const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
+          let name = contract.name
+          let contractUri = contract.contract_uri
+          if (hasTokenUri) {
+            tokenUri = await this.getTokenUri(
+              contract.contract_address,
+              abiInfo,
+              Number(log.decode.result.tokenId)
+            )
+            try {
+              const httpRes = await fetch(tokenUri, {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+              if (httpRes.status >= 400) {
+                throw new Error('Bad response from server')
+              }
+              const res: any = await httpRes.json()
+              name = res.name
+              imgUri = res.image
+              detail = JSON.stringify(res)
+            } catch (e) {
+              this.logger.error(e)
+            }
+          }
+          const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
+          if (hasBaseTokenUri) {
+            baseTokenUri = await this.getBaseTokenUri(contract.contract_address, abiInfo)
+          }
           await connection.manager.insert(NftBalanceEntity, {
             smart_contract_address: contract.contract_address,
             owner: log.decode.result.to.toLowerCase(),
             from: log.decode.result.from.toLowerCase(),
-            token_id: Number(log.decode.result.tokenId)
+            token_id: Number(log.decode.result.tokenId),
+            name: name,
+            img_uri: imgUri,
+            detail: detail,
+            contract_uri: contractUri,
+            token_uri: tokenUri,
+            base_token_uri: baseTokenUri
           })
         }
         return true
@@ -480,6 +523,51 @@ export class NftService {
     }
     return nfts
   }
+
+  // async checkSourcesWithConnection(
+  //   nfts: Array<NftBalanceEntity>,
+  //   smartContract: SmartContractEntity,
+  //   nftConnection: QueryRunner
+  // ) {
+  //   this.logger.debug('nfts length: ' + nfts.length)
+  //   // const smartContractList: { [prop: string]: SmartContractEntity } = {}
+  //   for (const nft of nfts) {
+  //     if (!nft.name || !nft.img_uri) {
+  //       const contractInfo = smartContract[nft.smart_contract_address]
+  //       const abiInfo = JSON.parse(contractInfo.abi)
+  //       const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
+  //       nft.name = smartContract[nft.smart_contract_address].name
+  //       nft.contract_uri = smartContract[nft.smart_contract_address].contract_uri
+  //       if (hasTokenUri) {
+  //         const tokenUri = await this.getTokenUri(nft.smart_contract_address, abiInfo, nft.token_id)
+  //         nft.token_uri = tokenUri
+  //         try {
+  //           const httpRes = await fetch(tokenUri, {
+  //             method: 'GET',
+  //             headers: {
+  //               'Content-Type': 'application/json'
+  //             }
+  //           })
+  //           if (httpRes.status >= 400) {
+  //             throw new Error('Bad response from server')
+  //           }
+  //           const res: any = await httpRes.json()
+  //           nft.name = res.name
+  //           nft.img_uri = res.image
+  //           nft.detail = JSON.stringify(res)
+  //         } catch (e) {
+  //           this.logger.error(e)
+  //         }
+  //       }
+  //       const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
+  //       if (hasBaseTokenUri) {
+  //         nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
+  //       }
+  //       await nftConnection.save(nft)
+  //     }
+  //   }
+  //   return nfts
+  // }
 
   async uniqueHolders(contractAddress: string) {
     const list = await this.nftBalanceRepository
