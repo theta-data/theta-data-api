@@ -6,7 +6,6 @@ import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../block-chain/stake/stake-statistics.entity'
-import * as sleep from 'await-sleep'
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 const config = require('config')
 const moment = require('moment')
@@ -17,11 +16,9 @@ import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/sm
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { WalletEntity } from 'src/block-chain/wallet/wallet.entity'
 import { UtilsService } from 'src/common/utils.service'
-// import { SmartContractScType } from 'src/block-chain/smart-contract/smart-contract.model'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import fetch from 'cross-fetch'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
-// import { rmSync } from 'fs'
 
 @Injectable()
 export class AnalyseService {
