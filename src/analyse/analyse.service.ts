@@ -19,6 +19,7 @@ import { UtilsService } from 'src/common/utils.service'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import fetch from 'cross-fetch'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
+import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
 
 @Injectable()
 export class AnalyseService {
@@ -84,6 +85,8 @@ export class AnalyseService {
       await this.walletConnection.startTransaction()
       await this.nftConnection.startTransaction()
 
+      await this.updateSources()
+
       let height: number = 0
       const lastfinalizedHeight = Number(
         (await thetaTsSdk.blockchain.getStatus()).result.latest_finalized_block_height
@@ -103,7 +106,7 @@ export class AnalyseService {
         height = latestBlock.block_number + 1
       }
       if (height >= lastfinalizedHeight) throw new Error('no height to analyse')
-
+      // await this.
       let endHeight = lastfinalizedHeight
       const analyseNumber = config.get('ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
@@ -659,5 +662,66 @@ export class AnalyseService {
       optimizer,
       optimizerRuns
     )
+  }
+
+  async updateSources() {
+    // this.logger.debug('nfts length: ' + nfts.length)
+    this.logger.debug('start update sources')
+    const nfts = await this.nftConnection.manager.find(NftBalanceEntity, {
+      where: {
+        name: ''
+      },
+      take: 5000
+    })
+    const smartContractList: { [prop: string]: SmartContractEntity } = {}
+    for (const nft of nfts) {
+      if (!nft.name || !nft.img_uri) {
+        if (!smartContractList[nft.smart_contract_address]) {
+          smartContractList[nft.smart_contract_address] =
+            await this.smartContractConnection.manager.findOne(SmartContractEntity, {
+              contract_address: nft.smart_contract_address
+            })
+        }
+        const contractInfo = smartContractList[nft.smart_contract_address]
+        const abiInfo = JSON.parse(contractInfo.abi)
+        const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
+        nft.name = smartContractList[nft.smart_contract_address].name
+        nft.contract_uri = smartContractList[nft.smart_contract_address].contract_uri
+        if (hasTokenUri) {
+          const tokenUri = await this.nftService.getTokenUri(
+            nft.smart_contract_address,
+            abiInfo,
+            nft.token_id
+          )
+          nft.token_uri = tokenUri
+          try {
+            const httpRes = await fetch(tokenUri, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            if (httpRes.status >= 400) {
+              throw new Error('Bad response from server')
+            }
+            const res: any = await httpRes.json()
+            nft.name = res.name
+            nft.img_uri = res.image
+            nft.detail = JSON.stringify(res)
+          } catch (e) {
+            this.logger.error(e)
+          }
+        }
+        const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
+        if (hasBaseTokenUri) {
+          nft.base_token_uri = await this.nftService.getBaseTokenUri(
+            nft.smart_contract_address,
+            abiInfo
+          )
+        }
+        await this.nftConnection.manager.save(nft)
+      }
+    }
+    this.logger.debug('end update sources')
   }
 }
