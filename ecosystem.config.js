@@ -12,7 +12,7 @@ module.exports = {
       instance_var: 'INSTANCE_ID',
       env_test: {
         NODE_ENV: 'test',
-        PORT: 3000,
+        PORT: 2999,
         max_memory_restart: '2G',
         // TZ: 'Asia/Shanghai'
       },

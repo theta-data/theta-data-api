@@ -48,7 +48,7 @@ export class AnalyseService {
 
   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
-    if (process.env.INSTANCE_ID === '0') return
+    if (process.env.INSTANCE_ID && process.env.INSTANCE_ID !== '0') return
 
     const analyseKey = await this.cacheManager.get(this.analyseKey)
     if (!analyseKey) {
