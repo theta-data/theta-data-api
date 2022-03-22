@@ -85,7 +85,7 @@ export class AnalyseService {
       await this.walletConnection.startTransaction()
       await this.nftConnection.startTransaction()
 
-      await this.updateSources()
+      // await this.updateSources()
 
       let height: number = 0
       const lastfinalizedHeight = Number(

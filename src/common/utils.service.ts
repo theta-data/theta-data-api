@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
+import { Logger } from 'ethers/lib/utils'
 import { thetaTsSdk } from 'theta-ts-sdk'
 const config = require('config')
 
@@ -34,6 +35,7 @@ export interface LOG_DECODE_INTERFACE {
 }
 @Injectable()
 export class UtilsService {
+  logger = new Logger('util service')
   constructor() {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
@@ -142,12 +144,12 @@ export class UtilsService {
     var encodedParameters = abiCoder.encode(inputTypes, inputValues).slice(2)
     const data = functionSignature + encodedParameters
     const res = await thetaTsSdk.blockchain.callSmartContract(from, to, data)
-    console.log('read smart contract', res)
+    this.logger.debug('read smart contract: ' + JSON.stringify(res))
     const outputValues = /^0x/i.test(res.result.vm_return)
       ? res.result.vm_return
       : '0x' + res.result.vm_return
     const decodeValues = abiCoder.decode(outputTypes, outputValues)
-    console.log('decode', decodeValues)
+    this.logger.debug('decode: ' + JSON.stringify(decodeValues))
     return decodeValues
     // } catch (e) {
     //   console.log('error occurs:', e)
