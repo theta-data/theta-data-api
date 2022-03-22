@@ -671,7 +671,7 @@ export class AnalyseService {
       where: {
         name: ''
       },
-      take: 5000
+      take: 500
     })
     const smartContractList: { [prop: string]: SmartContractEntity } = {}
     for (const nft of nfts) {
