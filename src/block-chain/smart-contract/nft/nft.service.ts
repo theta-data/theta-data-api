@@ -518,7 +518,7 @@ export class NftService {
         if (hasBaseTokenUri) {
           nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
         }
-        await this.nftBalanceRepository.save(nft)
+        // await this.nftBalanceRepository.save(nft)
       }
     }
     return nfts
