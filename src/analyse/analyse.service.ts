@@ -249,9 +249,12 @@ export class AnalyseService {
         case THETA_TRANSACTION_TYPE_ENUM.send:
           send_transaction++
           if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-            theta_fuel_burnt_by_transfers += new BigNumber(transaction.raw.fee.tfuelwei)
-              .dividedBy('1e18')
-              .toNumber()
+            theta_fuel_burnt_by_transfers += Number(
+              new BigNumber(transaction.raw.fee.tfuelwei)
+                .dividedBy('1e18')
+                .toString()
+                .substring(0, 8)
+            )
           }
           break
 
@@ -319,15 +322,21 @@ export class AnalyseService {
           this.logger.debug('start parse nft record')
           smartContractToDeal[smartContract.contract_address] = smartContract
           if (transaction.raw.gas_limit && transaction.raw.gas_price) {
-            theta_fuel_burnt_by_smart_contract += new BigNumber(transaction.raw.gas_price)
-              .multipliedBy(transaction.receipt.GasUsed)
-              .dividedBy('1e18')
-              .toNumber()
+            theta_fuel_burnt_by_smart_contract += Number(
+              new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toString()
+                .substring(0, 8)
+            )
 
-            theta_fuel_burnt += new BigNumber(transaction.raw.gas_price)
-              .multipliedBy(transaction.receipt.GasUsed)
-              .dividedBy('1e18')
-              .toNumber()
+            theta_fuel_burnt += Number(
+              new BigNumber(transaction.raw.gas_price)
+                .multipliedBy(transaction.receipt.GasUsed)
+                .dividedBy('1e18')
+                .toString()
+                .substring(0, 8)
+            )
           }
           break
         case THETA_TRANSACTION_TYPE_ENUM.split_rule:
@@ -367,7 +376,9 @@ export class AnalyseService {
       }
 
       if (transaction.raw.fee && transaction.raw.fee.tfuelwei != '0') {
-        theta_fuel_burnt += new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toNumber()
+        theta_fuel_burnt += Number(
+          new BigNumber(transaction.raw.fee.tfuelwei).dividedBy('1e18').toString().substring(0, 8)
+        )
       }
     }
     const walletsToUpdate = Object.values(wallets)
