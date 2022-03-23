@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common'
-import BigNumber from 'bignumber.js'
+import { Injectable, Logger } from '@nestjs/common'
+// import BigNumber from 'bignumber.js'
 import { ethers } from 'ethers'
-import { Logger } from 'ethers/lib/utils'
+// import { Logger } from 'ethers/lib/utils'
 import { thetaTsSdk } from 'theta-ts-sdk'
 const config = require('config')
 
@@ -35,7 +35,7 @@ export interface LOG_DECODE_INTERFACE {
 }
 @Injectable()
 export class UtilsService {
-  logger = new Logger('util service')
+  logger = new Logger()
   constructor() {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
