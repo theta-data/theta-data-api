@@ -143,6 +143,7 @@ export class UtilsService {
     var abiCoder = new ethers.utils.AbiCoder()
     var encodedParameters = abiCoder.encode(inputTypes, inputValues).slice(2)
     const data = functionSignature + encodedParameters
+    this.logger.debug('from:' + from + '; to:' + to + '; data:' + data)
     const res = await thetaTsSdk.blockchain.callSmartContract(from, to, data)
     this.logger.debug('read smart contract: ' + JSON.stringify(res))
     const outputValues = /^0x/i.test(res.result.vm_return)
