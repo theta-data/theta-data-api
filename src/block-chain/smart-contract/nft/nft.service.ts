@@ -191,12 +191,13 @@ export class NftService {
           let name = contract.name
           let contractUri = contract.contract_uri
           if (hasTokenUri) {
-            tokenUri = await this.getTokenUri(
-              contract.contract_address,
-              abiInfo,
-              Number(log.decode.result.tokenId)
-            )
             try {
+              tokenUri = await this.getTokenUri(
+                contract.contract_address,
+                abiInfo,
+                Number(log.decode.result.tokenId)
+              )
+              // try {
               const httpRes = await fetch(tokenUri, {
                 method: 'GET',
                 headers: {
