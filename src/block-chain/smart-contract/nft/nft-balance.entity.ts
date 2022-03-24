@@ -17,6 +17,7 @@ export enum NftStatusEnum {
 @ObjectType()
 @Entity()
 @Index(['smart_contract_address'])
+@Index(['owner'])
 @Unique(['smart_contract_address', 'token_id'])
 export class NftBalanceEntity {
   @PrimaryGeneratedColumn('increment')
