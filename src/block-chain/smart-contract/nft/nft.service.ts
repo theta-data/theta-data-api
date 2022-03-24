@@ -9,6 +9,7 @@ import {
   Like,
   MoreThan,
   MoreThanOrEqual,
+  Not,
   QueryRunner,
   Repository
 } from 'typeorm'
@@ -331,7 +332,8 @@ export class NftService {
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     const condition: FindManyOptions<NftBalanceEntity> = {
       where: {
-        smart_contract_address: address
+        smart_contract_address: address,
+        owner: Not('0x0000000000000000000000000000000000000000')
       },
       take: take + 1,
       order: {
@@ -344,7 +346,8 @@ export class NftService {
       condition.where['id'] = MoreThan(id)
     }
     const totalNft = await this.nftBalanceRepository.count({
-      smart_contract_address: address
+      smart_contract_address: address,
+      owner: Not('0x0000000000000000000000000000000000000000')
     })
     let nftList = await this.nftBalanceRepository.find(condition)
     let hasNextPage = false
