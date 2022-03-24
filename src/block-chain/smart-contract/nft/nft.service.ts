@@ -519,6 +519,7 @@ export class NftService {
         if (hasBaseTokenUri) {
           nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
         }
+        this.logger.debug('remove update nft balance')
         // await this.nftBalanceRepository.save(nft)
       }
     }
