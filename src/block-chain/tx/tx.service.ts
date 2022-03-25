@@ -15,13 +15,7 @@ export class TxService {
   ) {}
 
   public async getThetaDataByDate(timezoneOffset: string) {
-    const startTimeStamp = moment()
-      .subtract(14, 'days')
-      // .subtract(
-      //   -new Date().getTimezoneOffset() - Number(timezoneOffset),
-      //   'minutes',
-      // )
-      .unix()
+    const startTimeStamp = moment().subtract(14, 'days').unix()
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
