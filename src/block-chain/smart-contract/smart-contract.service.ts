@@ -167,6 +167,14 @@ export class SmartContractService {
       var input = {
         language: 'Solidity',
         settings: {
+          // evmVersion: 'byzantium',
+          // optimizer: {
+          //   // disabled by default
+          //   enabled: true,
+          //   // Optimize for how many times you intend to run the code.
+          //   // Lower values will optimize more for initial deployment cost, higher values will optimize more for high-frequency usage.
+          //   runs: 750
+          // },
           optimizer: {
             enabled: optimizer,
             runs: optimizerRuns
@@ -174,12 +182,17 @@ export class SmartContractService {
           outputSelection: {
             '*': {
               '*': ['*']
+              // '*': ['metadata', 'evm.bytecode']
             }
           }
         },
         sources: {
           'test.sol': {
+            // mortal: {
+            // content: sourceCode
+            // }
             content: sourceCode
+            // content: ''
           }
         }
       }
@@ -224,12 +237,20 @@ export class SmartContractService {
         if (output.contracts) {
           let hexBytecode = this.utilsService.getHex(byteCode).substring(2)
           for (var contractName in output.contracts['test.sol']) {
+            // if(con)
             const byteCode = output.contracts['test.sol'][contractName].evm.bytecode.object
             const deployedBytecode =
               output.contracts['test.sol'][contractName].evm.deployedBytecode.object
+
             const processed_compiled_bytecode =
               this.utilsService.getBytecodeWithoutMetadata(deployedBytecode)
+            // const testCode = this.utilsService.getBy
             const constructor_arguments = hexBytecode.slice(byteCode.length)
+            if (contractName === 'ThetaDropMarketplace') {
+              // this.logger.debug(hexBytecode)
+              this.logger.debug(byteCode)
+              // this.logger.debug(deployedBytecode)
+            }
             if (
               hexBytecode.indexOf(processed_compiled_bytecode) > -1 &&
               processed_compiled_bytecode.length > 0
@@ -262,6 +283,8 @@ export class SmartContractService {
               // await this.nftService.parseRecordByContractAddress(address)
               // return contract
               break
+            } else {
+              this.logger.debug('contractName ' + contractName + ' bytecode not match')
             }
           }
         }

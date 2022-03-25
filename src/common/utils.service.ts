@@ -184,7 +184,7 @@ export class UtilsService {
     const offset = date.getTimezoneOffset()
     date = new Date(date.getTime() - offset * 60 * 1000)
     return (
-      `/**\n *Submitted for verification at thetatoken.org on ${
+      `/**\n *Submitted for verification at thetadata.io on ${
         date.toISOString().split('T')[0]
       }\n */\n` + sourceCode
     )
