@@ -8,18 +8,20 @@ import { SmartContractModule } from '../block-chain/smart-contract/smart-contrac
 import { StakeRewardEntity } from '../block-chain/stake/stake-reward.entity'
 import { WalletModule } from '../block-chain/wallet/wallet.module'
 import { BlockListEntity } from './block-list.entity'
+import { AnalyseLockEntity } from './analyse-lock.entity'
+import { CommonModule } from 'src/common/common.module'
+import { NftModule } from 'src/block-chain/smart-contract/nft/nft.module'
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      ThetaTxNumByHoursEntity,
-      StakeStatisticsEntity,
-      StakeRewardEntity,
-      BlockListEntity
-    ]),
+    TypeOrmModule.forFeature([ThetaTxNumByHoursEntity], 'tx'),
+    TypeOrmModule.forFeature([StakeStatisticsEntity, StakeRewardEntity], 'stake'),
+    TypeOrmModule.forFeature([BlockListEntity, AnalyseLockEntity], 'analyse'),
     CacheModule.register({}),
     StakeModule,
     SmartContractModule,
-    WalletModule
+    WalletModule,
+    CommonModule,
+    NftModule
   ],
   providers: [AnalyseService]
 })

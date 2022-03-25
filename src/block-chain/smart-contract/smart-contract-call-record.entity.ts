@@ -2,26 +2,37 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { SmartContractEntity } from './smart-contract.entity'
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
+@Index(['contract_id', 'timestamp'])
 export class SmartContractCallRecordEntity {
-  // @Field(() => Int)
-  @PrimaryGeneratedColumn()
+  @PrimaryGeneratedColumn('increment')
   id!: number
 
-  // @Field(() => SmartContractEntity)
-  @ManyToOne(() => SmartContractEntity, (contract) => contract.record, {
-    onUpdate: 'CASCADE'
+  @Column()
+  contract_id: number
+
+  @Column()
+  data: string
+
+  @Column()
+  receipt: string
+
+  @Column({
+    type: 'int',
+    default: 0
   })
-  smart_contract: SmartContractEntity
+  height: number
+
+  @Column({ default: '', unique: true })
+  transaction_hash: string
 
   @Field(() => GraphQLString, { description: 'Calling time' })
   @Column({

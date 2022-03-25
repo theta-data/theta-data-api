@@ -1,10 +1,10 @@
 {
   "ORM_CONFIG": {
-    "database": "/home/ubuntu/theta-data/database/data.sqlite",
+    "database": "../database/",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
-    "type": "sqlite",
+    "type": "better-sqlite3",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "bigNumberStrings": false,
     "logging": false,
@@ -12,13 +12,12 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
+  "START_HEIGHT":	12816368, 
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_SLEEP" : 6000,
-  "REDIS": {
-    "host": "127.0.0.1",
-    "port": 6379
-  },
+  "ANALYSE_INTERVAL" : 36000,
+  "ANALYSE_NUMBER" : 50,
+  "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60

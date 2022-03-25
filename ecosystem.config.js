@@ -3,32 +3,21 @@ module.exports = {
     {
       name: 'theta-data-api',
       script: './dist/main.js',
-      instances: 1,
+      instances: 2,
+      exec_mode: "cluster",
       autorestart: true,
       watch: false,
-      max_memory_restart: '2G',
+      max_memory_restart: '4G',
+      increment_var : 'PORT',
+      instance_var: 'INSTANCE_ID',
       env_test: {
-        NODE_ENV: 'test'
-        // TZ: 'Asia/Shanghai'
+        NODE_ENV: 'test',
+        PORT: 2999,
       },
       env_production: {
         NODE_ENV: 'production',
+        PORT: 2999,
       }
     }
-    // {
-    //   name: 'theta-data-analyse',
-    //   script: './dist/analyse.js',
-    //   instances: 1,
-    //   autorestart: true,
-    //   watch: false,
-    //   max_memory_restart: '2G',
-    //   env_test: {
-    //     NODE_ENV: 'test' // TZ: 'Asia/Shanghai'
-    //   },
-    //   env_production: {
-    //     NODE_ENV: 'production',
-    //     NODE_CONFIG_DIR: '/home/ubuntu/actions-runner/_work/config/config/theta-data-api'
-    //   }
-    // }
   ]
 }

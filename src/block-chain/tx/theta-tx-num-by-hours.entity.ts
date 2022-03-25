@@ -11,33 +11,32 @@ import { GraphQLString } from 'graphql'
 
 @ObjectType()
 @Entity()
-@Unique(['year', 'month', 'date', 'hour'])
 export class ThetaTxNumByHoursEntity {
   @PrimaryGeneratedColumn()
   id!: number
 
   @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
+  // @Column({
+  //   type: 'int'
+  // })
   year: number
 
   @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
+  // @Column({
+  //   type: 'int'
+  // })
   month: number
 
   @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
+  // @Column({
+  //   type: 'int'
+  // })
   date: number
 
   @Field(() => Int)
-  @Column({
-    type: 'int'
-  })
+  // @Column({
+  //   type: 'int'
+  // })
   hour: number
 
   @Field(() => Int)

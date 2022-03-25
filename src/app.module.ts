@@ -10,46 +10,68 @@ import { SmartContractModule } from './block-chain/smart-contract/smart-contract
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerModule } from '@nestjs/throttler'
-import { APP_GUARD } from '@nestjs/core'
-import { GqlThrottlerBehindProxyGuard } from './guard/gql-throttler-behind-proxy-guard'
 import { WalletModule } from './block-chain/wallet/wallet.module'
 import * as path from 'path'
 import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
-
-const root: string = path.resolve(__dirname, '../../')
+import { ContactModule } from './contact/contact.module'
+import { ApolloDriver } from '@nestjs/apollo'
 const config = require('config')
 
 @Module({
   imports: [
-    TypeOrmModule.forRootAsync({
-      useFactory: async () => {
-        let databaseConfig = Object.assign(config.get('ORM_CONFIG'), {
-          entities: [join(__dirname, '**', '*.entity.{ts,js}')]
-        })
-        console.log(databaseConfig)
-        if (!databaseConfig.database) {
-          databaseConfig = Object.assign(databaseConfig, {
-            database: `${root}/data/line.sqlite`
-          })
-        }
-        return databaseConfig
-      }
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'contact.sqlite',
+      name: 'contact',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'analyse.sqlite',
+      name: 'analyse',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'smart_contract.sqlite',
+      name: 'smart_contract',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'nft.sqlite',
+      name: 'nft',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'stake.sqlite',
+      name: 'stake',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'tx.sqlite',
+      name: 'tx',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'wallet.sqlite',
+      name: 'wallet',
+      entities: []
     }),
     GraphQLModule.forRoot({
+      driver: ApolloDriver,
       installSubscriptionHandlers: true,
       autoSchemaFile: 'schema.gql',
       introspection: true,
       context: ({ req, res }) => ({ req, res })
     }),
-    CacheModule.register({
-      // store: redisStore,
-      // host: config.get('REDIS')['host'],
-      // port: config.get('REDIS')['port']
-    }),
+    CacheModule.register(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'playground'),
-      // serveRoot: 'playground',
       exclude: ['/graphql*']
     }),
     ScheduleModule.forRoot(),
@@ -58,20 +80,15 @@ const config = require('config')
       limit: config.get('RATE_LIMIT')['limit']
     }),
     EventEmitterModule.forRoot(),
-
     AnalyseModule,
     TxModule,
     StakeModule,
     MarketModule,
     RpcModule,
     SmartContractModule,
-    WalletModule
+    WalletModule,
+    ContactModule
   ],
-  providers: [
-    {
-      provide: APP_GUARD,
-      useClass: GqlThrottlerBehindProxyGuard
-    }
-  ]
+  providers: []
 })
 export class AppModule {}

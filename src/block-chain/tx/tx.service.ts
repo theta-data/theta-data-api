@@ -9,23 +9,17 @@ const moment = require('moment')
 @Injectable()
 export class TxService {
   constructor(
-    @InjectRepository(ThetaTxNumByHoursEntity)
+    @InjectRepository(ThetaTxNumByHoursEntity, 'tx')
     private thetaTxNumRepository: Repository<ThetaTxNumByHoursEntity>,
-    private walletService : WalletService
-  
+    private walletService: WalletService
   ) {}
 
   public async getThetaDataByDate(timezoneOffset: string) {
-    const startTimeStamp = moment()
-    .subtract(14, 'days')
-    .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-    .unix()
+    const startTimeStamp = moment().subtract(14, 'days').unix()
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(
-          startTimeStamp
-        )
+        timestamp: MoreThan(startTimeStamp)
       }
       // take: 500
     })
@@ -63,16 +57,14 @@ export class TxService {
           smart_contract_transaction: hourData.smart_contract_transaction
           // timestamp: hourData.timestamp
         }
-        const activeWalletObj  =  activeWallets.find((wallet)=>{
-          return (wallet.snapshot_time - 3600 * 24)  === hourData.timestamp
+        const activeWalletObj = activeWallets.find((wallet) => {
+          return wallet.snapshot_time - 3600 * 24 === hourData.timestamp
         })
-        if(activeWalletObj)
-        obj[date]['active_wallet'] = activeWalletObj.active_wallets_amount
+        if (activeWalletObj) obj[date]['active_wallet'] = activeWalletObj.active_wallets_amount
       } else {
         obj[date].coin_base_transaction += hourData.coin_base_transaction
         obj[date].slash_transaction += hourData.slash_transaction
         obj[date].block_number += hourData.block_number
-        // obj[date].active_wallet += hourData.active_wallet
         obj[date].send_transaction += hourData.send_transaction
         obj[date].reserve_fund_transaction += hourData.reserve_fund_transaction
         obj[date].release_fund_transaction += hourData.release_fund_transaction
@@ -91,16 +83,14 @@ export class TxService {
   }
 
   public async getThetaByHour(timezoneOffset, hours: number = 24 * 7) {
-    const startTime =  moment()
-    .subtract(hours, 'hours')
-    .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
-    .unix()
+    const startTime = moment()
+      .subtract(hours, 'hours')
+      .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
+      .unix()
     const res = await this.thetaTxNumRepository.find({
       order: { timestamp: 'ASC' },
       where: {
-        timestamp: MoreThan(
-         startTime
-        )
+        timestamp: MoreThan(startTime)
       }
     })
     const activeWalletList = await this.walletService.getActiveWallet(startTime - 3600)
@@ -119,8 +109,8 @@ export class TxService {
       //   'minutes'
       // ).format('HH')
       // console.log(testDate)
-      for(const wallet of activeWalletList){
-        if(tx.timestamp === (wallet.snapshot_time - 3600)){
+      for (const wallet of activeWalletList) {
+        if (tx.timestamp === wallet.snapshot_time - 3600) {
           tx.active_wallet = wallet.active_wallets_amount_last_hour
         }
       }
