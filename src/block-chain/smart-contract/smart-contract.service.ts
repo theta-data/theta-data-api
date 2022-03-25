@@ -246,11 +246,11 @@ export class SmartContractService {
               this.utilsService.getBytecodeWithoutMetadata(deployedBytecode)
             // const testCode = this.utilsService.getBy
             const constructor_arguments = hexBytecode.slice(byteCode.length)
-            if (contractName === 'ThetaDropMarketplace') {
-              // this.logger.debug(hexBytecode)
-              this.logger.debug(byteCode)
-              // this.logger.debug(deployedBytecode)
-            }
+            // if (contractName === 'ThetaDropMarketplace') {
+            //   // this.logger.debug(hexBytecode)
+            //   this.logger.debug(byteCode)
+            //   // this.logger.debug(deployedBytecode)
+            // }
             if (
               hexBytecode.indexOf(processed_compiled_bytecode) > -1 &&
               processed_compiled_bytecode.length > 0
