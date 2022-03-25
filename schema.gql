@@ -529,10 +529,6 @@ enum RankByEnum {
   last_seven_days_call_times
 }
 
-type UpdateRecordType {
-  affected_rows: Int!
-}
-
 type SmartContractScType {
   address: String!
   abi: String!
@@ -620,7 +616,5 @@ type Query {
 }
 
 type Mutation {
-  verifyWithThetaExplorer(address: String!): SmartContractEntity!
-  updateRecord(address: String!): UpdateRecordType!
   newMsg(first_name: String!, last_name: String!, email: String!, content: String!): ContactEntity!
 }

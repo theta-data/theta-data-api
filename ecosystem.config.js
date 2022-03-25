@@ -13,11 +13,10 @@ module.exports = {
       env_test: {
         NODE_ENV: 'test',
         PORT: 2999,
-        max_memory_restart: '4G',
-        // TZ: 'Asia/Shanghai'
       },
       env_production: {
         NODE_ENV: 'production',
+        PORT: 2999,
       }
     }
   ]

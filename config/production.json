@@ -1,10 +1,11 @@
 {
   "ORM_CONFIG": {
-    "database": "/data/theta-data/database/data.sqlite",
+    "database": "/home/ubuntu/theta-data/database_v2",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
-    "type": "sqlite",
+    "statementCacheSize" : 500,
+    "type": "better-sqlite3",
     "entities": ["src/**/*.entity{.ts,.js}"],
     "bigNumberStrings": false,
     "logging": false,
@@ -12,22 +13,12 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "ORM_CONFIG_FORM": {
-    "database": "/home/ubuntu/theta-data/database/data.sqlite",
-    "synchronize": true,
-    "autoLoadEntities": true,
-    "name": "FORM",
-    "type": "sqlite",
-    "entities": ["src/**/*.entity{.ts,.js}"],
-    "bigNumberStrings": false,
-    "logging": false,
-    "extra": {
-      "charset": "utf8mb4_unicode_ci"
-    }
-  },
+  "START_HEIGHT":8650000,
   "THETA_NODE_HOST" : "http://ip-172-31-35-81.ap-southeast-1.compute.internal/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_INTERVAL" : 2000,
+  "ANALYSE_INTERVAL" : 3000,
+  "ANALYSE_NUMBER" : 100,
+  "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60

@@ -81,7 +81,7 @@ export class SmartContractResolver {
     )
   }
 
-  @Mutation((returns) => SmartContractEntity)
+  // @Mutation((returns) => SmartContractEntity)
   async verifyWithThetaExplorer(
     @Args({
       name: 'address'
@@ -126,7 +126,7 @@ export class SmartContractResolver {
     )
   }
 
-  @Mutation(() => UpdateRecordType)
+  // @Mutation(() => UpdateRecordType)
   async updateRecord(
     @Args({
       name: 'address'
