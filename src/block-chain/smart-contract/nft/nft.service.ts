@@ -477,8 +477,9 @@ export class NftService {
       token_id: tokenId,
       smart_contract_address: contractAddress
     })
+    this.logger.debug(JSON.stringify(nft))
     if (!nft) return undefined
-    return await this.checkSources([nft])[0]
+    return (await this.checkSources([nft]))[0]
   }
 
   async checkSources(nfts: Array<NftBalanceEntity>) {
