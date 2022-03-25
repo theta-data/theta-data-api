@@ -19,6 +19,8 @@ async function bootstrap() {
       extended: true
     })
   )
-  await app.listen(process.env.PORT)
+  console.log('listen:' + process.env.PORT)
+  if (process.env.PORT) await app.listen(process.env.PORT)
+  else await app.listen(3000)
 }
 bootstrap()

@@ -11,9 +11,11 @@ import { NftService } from './nft/nft.service'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractEntity } from './smart-contract.entity'
+import { Logger } from '@nestjs/common'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
+  logger = new Logger()
   constructor(
     private smartContractService: SmartContractService,
     private nftService: NftService,
@@ -92,10 +94,14 @@ export class SmartContractResolver {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
+          // 'User-Agent':
+          //   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36'
         }
       }
     )
     if (httpRes.status >= 400) {
+      // this.
+      this.logger.error('vist /explorer.thetatoken.org error')
       throw new Error('Bad response from server')
     }
     const res: any = await httpRes.json()

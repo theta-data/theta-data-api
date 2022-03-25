@@ -85,7 +85,7 @@ export class AnalyseService {
       await this.walletConnection.startTransaction()
       await this.nftConnection.startTransaction()
 
-      // await this.updateSources()
+      await this.updateSources()
 
       let height: number = 0
       const lastfinalizedHeight = Number(
@@ -671,7 +671,7 @@ export class AnalyseService {
       where: {
         name: ''
       },
-      take: 500
+      take: 100
     })
     const smartContractList: { [prop: string]: SmartContractEntity } = {}
     for (const nft of nfts) {
