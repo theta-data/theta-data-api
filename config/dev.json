@@ -12,11 +12,11 @@
       "charset": "utf8mb4_unicode_ci"
     }
   },
-  "START_HEIGHT":	12816368, 
+  "START_HEIGHT":	14591100, 
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
-  "ANALYSE_INTERVAL" : 36000,
-  "ANALYSE_NUMBER" : 50,
+  "ANALYSE_INTERVAL" : 10000,
+  "ANALYSE_NUMBER" : 100,
   "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,

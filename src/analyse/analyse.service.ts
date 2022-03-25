@@ -275,7 +275,7 @@ export class AnalyseService {
             }
           )
           if (
-            smartContract.call_times > 10 &&
+            // smartContract.call_times > 10 &&
             !smartContract.verified &&
             moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
           ) {
