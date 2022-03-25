@@ -18,6 +18,9 @@ export enum smartContractProtocol {
 @ObjectType()
 @Entity()
 @Index(['name', 'protocol'])
+@Index(['call_times'])
+@Index(['last_seven_days_call_times'])
+@Index(['last_24h_call_times'])
 // @Index(['name'])
 export class SmartContractEntity {
   @PrimaryGeneratedColumn()
