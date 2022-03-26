@@ -314,9 +314,14 @@ export class SmartContractService {
     })
     if (!contract) {
       contract = new SmartContractEntity()
-      if (contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078') {
-        contract.latest_record_parse_height = 13764000
-      }
+    }
+    if (
+      !contract.verified &&
+      contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078'
+    ) {
+      // if () {
+      contract.latest_record_parse_height = 13764000
+      // }
     }
     // this.logger.de
     // if (!contract) {
