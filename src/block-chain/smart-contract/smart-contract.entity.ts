@@ -129,7 +129,7 @@ export class SmartContractEntity {
   contract_uri_detail: string
 
   @Field()
-  @Column({ default: 13764000, type: 'int' }) //13764000 //14686101
+  @Column({ default: 14687288, type: 'int' }) //13764000 //14686101
   latest_record_parse_height: number
 
   // @Field()
