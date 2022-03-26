@@ -124,19 +124,25 @@ export class NftService {
 
     if (totalCount > 1000) {
       contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
-        contract_id: contract.id,
-        height: Between(
-          contract.latest_record_parse_height + 1,
-          contract.latest_record_parse_height + 1000
-        )
+        where: {
+          contract_id: contract.id,
+          height: Between(
+            contract.latest_record_parse_height + 1,
+            contract.latest_record_parse_height + 1000
+          )
+        },
+        order: { height: 'ASC' }
       })
     } else {
       contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
-        contract_id: contract.id,
-        height: MoreThan(
-          contract.latest_record_parse_height
-          // contract.latest_record_parse_height + 100
-        )
+        where: {
+          contract_id: contract.id,
+          height: MoreThan(
+            contract.latest_record_parse_height
+            // contract.latest_record_parse_height + 100
+          )
+        },
+        order: { height: 'ASC' }
       })
     }
 
