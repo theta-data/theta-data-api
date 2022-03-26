@@ -105,7 +105,17 @@ export class AnalyseService {
       if (latestBlock && latestBlock.block_number >= height) {
         height = latestBlock.block_number + 1
       }
-      if (height >= lastfinalizedHeight) throw new Error('no height to analyse')
+      if (height >= lastfinalizedHeight) {
+        await this.txConnection.commitTransaction()
+        await this.analyseConnection.commitTransaction()
+        await this.stakeConnection.commitTransaction()
+        await this.smartContractConnection.commitTransaction()
+        await this.walletConnection.commitTransaction()
+        await this.nftConnection.commitTransaction()
+        this.logger.debug('commit success')
+        this.logger.debug('no height to analyse')
+        return
+      }
       // await this.
       let endHeight = lastfinalizedHeight
       const analyseNumber = config.get('ANALYSE_NUMBER')
@@ -263,7 +273,6 @@ export class AnalyseService {
           break
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
           smart_contract_transaction++
-          // transaction.receipt.ContractAddress = '0xebc380add0a361622c604ef9024c9f5a34350916'
           await this.smartContractConnection.query(
             `INSERT INTO smart_contract_entity(contract_address,height,call_times_update_timestamp) VALUES ('${
               transaction.receipt.ContractAddress
@@ -280,10 +289,6 @@ export class AnalyseService {
             !smartContract.verified &&
             moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
           ) {
-            // if (this.counter === 2) {
-            //   smartContract.contract_address = '0xebc380add0a361622c604ef9024c9f5a34350916'
-            // }
-
             const checkInfo = await this.verifyWithThetaExplorer(smartContract.contract_address)
             if (checkInfo) {
               Object.assign(smartContract, checkInfo)
@@ -294,22 +299,6 @@ export class AnalyseService {
 
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
-          // const record = await this.smartContractConnection.manager.find(
-          //   SmartContractCallRecordEntity,
-          //   {
-          //     transaction_hash: transaction.hash
-          //   }
-          // )
-          // if (!record) {
-          //   await this.smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
-          //     timestamp: Number(block.timestamp),
-          //     data: transaction.raw.data,
-          //     receipt: JSON.stringify(transaction.receipt),
-          //     height: height,
-          //     transaction_hash: transaction.hash,
-          //     contract_id: smartContract.id
-          //   })
-          // }
           await this.smartContractConnection.manager.upsert(
             SmartContractCallRecordEntity,
             {
