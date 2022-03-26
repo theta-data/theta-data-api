@@ -12,6 +12,8 @@ import { GraphQLString } from 'graphql'
 @ObjectType()
 @Entity()
 @Index(['contract_id', 'timestamp'])
+@Index(['height'])
+@Index(['contract_id', 'height'])
 export class SmartContractCallRecordEntity {
   @PrimaryGeneratedColumn('increment')
   id!: number
