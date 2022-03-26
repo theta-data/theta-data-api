@@ -162,9 +162,8 @@ export class NftService {
     }
     if (contractRecord.length > 0) {
       contract.latest_record_parse_height = contractRecord[contractRecord.length - 1].height
+      await smartContractConnection.manager.save(contract)
     }
-
-    await smartContractConnection.manager.save(contract)
     return afftectedNum
   }
 
