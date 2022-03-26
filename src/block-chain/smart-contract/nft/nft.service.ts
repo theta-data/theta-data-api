@@ -141,7 +141,7 @@ export class NftService {
           // contract.latest_record_parse_height + 100
         )
       },
-      take: 1000,
+      take: 3000,
       order: { height: 'ASC' }
     })
     // }
