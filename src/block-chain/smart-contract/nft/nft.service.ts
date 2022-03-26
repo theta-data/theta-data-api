@@ -202,7 +202,11 @@ export class NftService {
         const tempContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
           contract_address: log.address
         })
-        if (!tempContract.verified || tempContract.protocol != smartContractProtocol.tnt721)
+        if (
+          !tempContract ||
+          !tempContract.verified ||
+          tempContract.protocol != smartContractProtocol.tnt721
+        )
           continue
         contractList[log.address] = {
           contract: tempContract,
