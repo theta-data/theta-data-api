@@ -107,7 +107,6 @@ export class NftService {
     height: number = 0
   ): Promise<number> {
     this.logger.debug('start parese record')
-
     if (!contract.verified) {
       this.logger.debug(contract.contract_address + ' not verified')
       return 0
