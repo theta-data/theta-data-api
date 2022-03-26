@@ -107,7 +107,6 @@ export class NftService {
     height: number = 0
   ): Promise<number> {
     this.logger.debug('start parese record')
-
     if (!contract.verified) {
       this.logger.debug(contract.contract_address + ' not verified')
       return 0
@@ -163,9 +162,8 @@ export class NftService {
     }
     if (contractRecord.length > 0) {
       contract.latest_record_parse_height = contractRecord[contractRecord.length - 1].height
+      await smartContractConnection.manager.save(contract)
     }
-
-    await smartContractConnection.manager.save(contract)
     return afftectedNum
   }
 
