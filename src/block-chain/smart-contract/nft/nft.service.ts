@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 // import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
 import {
+  Between,
   FindCondition,
   FindConditions,
   FindManyOptions,
@@ -68,20 +69,32 @@ export class NftService {
     let afftectedNum = 0
 
     const connection = getConnection('nft').createQueryRunner()
+    const smartContractConnection = getConnection('smart_contract').createQueryRunner()
     await connection.connect()
+    await smartContractConnection.connect()
     await connection.startTransaction()
+    await smartContractConnection.startTransaction()
+
     this.logger.debug('protocol is tnt 721')
     try {
       for (const record of contractRecord) {
-        const res = await this.updateNftRecord(connection, record, contract)
+        const res = await this.updateNftRecord(
+          connection,
+          smartContractConnection,
+          record,
+          contract
+        )
         if (res) afftectedNum++
       }
       await connection.commitTransaction()
+      await smartContractConnection.commitTransaction()
     } catch (e) {
       this.logger.debug(e)
       await connection.rollbackTransaction()
+      await smartContractConnection.rollbackTransaction()
     } finally {
       await connection.release()
+      await smartContractConnection.release()
     }
 
     return afftectedNum
@@ -98,145 +111,222 @@ export class NftService {
       this.logger.debug(contract.contract_address + ' not verified')
       return 0
     }
-    if (!this.utilsService.checkTnt721(JSON.parse(contract.abi))) {
-      this.logger.debug('protocol not nft 721')
-      return 0
-    }
-    this.logger.debug('protocol is tnt 721')
-    const nftRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
-      where: { smart_contract_address: contract.contract_address },
-      order: { height: 'DESC' }
-    })
-    this.logger.debug('nft record:' + JSON.stringify(nftRecord))
-    const condition: any = {
-      where: { contract_id: contract.id },
+    let contractRecord: Array<SmartContractCallRecordEntity> = []
+    // const totalCount = await smartContractConnection.manager.count(SmartContractCallRecordEntity, {
+    //   contract_id: contract.id,
+    //   height: MoreThan(
+    //     contract.latest_record_parse_height
+    //     // contract.latest_record_parse_height + 100
+    //   )
+    // })
+    // this.logger.debug('total count:' + totalCount)
+
+    // if (totalCount > 1000) {
+    //   contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
+    //     where: {
+    //       contract_id: contract.id,
+    //       height: Between(
+    //         contract.latest_record_parse_height + 1,
+    //         contract.latest_record_parse_height + 1000
+    //       )
+    //     },
+    //     order: { height: 'ASC' }
+    //   })
+    // } else {
+    contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
+      where: {
+        contract_id: contract.id,
+        height: MoreThanOrEqual(
+          contract.latest_record_parse_height
+          // contract.latest_record_parse_height + 100
+        )
+      },
+      take: 1000,
       order: { height: 'ASC' }
-    }
-    if (nftRecord) {
-      condition['where']['height'] = MoreThanOrEqual(nftRecord.height)
-    }
-    this.logger.debug(condition)
-    const contractRecord = await smartContractConnection.manager.find(
-      SmartContractCallRecordEntity,
-      condition
-    )
-    // if (height == 12817368) process.exit(0)
+    })
+    // }
+
+    this.logger.debug('protocol is tnt 721')
+
     let afftectedNum = 0
+
     // if(contract.)
     for (const record of contractRecord) {
-      const res = await this.updateNftRecord(nftConnection, record, contract)
+      const res = await this.updateNftRecord(
+        nftConnection,
+        smartContractConnection,
+        record,
+        contract,
+        height
+      )
       if (res) afftectedNum++
+    }
+    if (contractRecord.length > 0) {
+      contract.latest_record_parse_height = contractRecord[contractRecord.length - 1].height
+      this.logger.debug(
+        contract.contract_address +
+          ' update set latest record height:' +
+          contractRecord[contractRecord.length - 1].height
+      )
+      await smartContractConnection.manager.save(contract)
     }
     return afftectedNum
   }
 
   async updateNftRecord(
-    connection: QueryRunner,
+    nftConnection: QueryRunner,
+    smartContractConnection: QueryRunner,
     record: SmartContractCallRecordEntity,
-    contract: SmartContractEntity
+    contract: SmartContractEntity,
+    height: number = 0
   ) {
     const receipt = JSON.parse(record.receipt)
-    if (!receipt.Logs[0]) {
+    if (receipt.Logs.length == 0) {
       this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
     this.logger.debug(JSON.stringify(receipt))
-    receipt.Logs.forEach((log) => {
+    let contractList: {
+      [prop: string]: {
+        contract: SmartContractEntity
+        logs: Array<any>
+      }
+    } = {}
+    // let contractLogs: any = []
+    if (contract.protocol === smartContractProtocol.tnt721) {
+      contractList[contract.contract_address] = {
+        contract: contract,
+        logs: []
+      }
+    }
+
+    for (const log of receipt.Logs) {
       if (log.data == '') {
         log.data = '0x'
       } else {
         log.data = this.utilsService.getHex(log.data)
       }
-      // if (record.data) {
-      //   const data = this.utilsService.getHex(record.data)
-      //   // receipt.Logs[0].data = data
-      //   log.data = data
-      // }
-    })
-
-    const logInfo = this.utilsService.decodeLogs(receipt.Logs, JSON.parse(contract.abi))
-    this.logger.debug(contract.contract_address)
-    this.logger.debug(JSON.stringify(logInfo))
-    for (const log of logInfo) {
-      if (log.decode.eventName === 'Transfer') {
-        // try {
-        await connection.manager.upsert(
-          NftTransferRecordEntity,
-          {
-            from: log.decode.result.from.toLowerCase(),
-            to: log.decode.result.to.toLowerCase(),
-            token_id: Number(log.decode.result.tokenId),
-            smart_contract_address: contract.contract_address,
-            height: record.height,
-            name: contract.name,
-            timestamp: record.timestamp
-          },
-          ['smart_contract_address', 'token_id', 'timestamp']
-        )
-        const balance = await connection.manager.findOne(NftBalanceEntity, {
-          smart_contract_address: contract.contract_address,
-          token_id: Number(log.decode.result.tokenId)
+      if (contractList.hasOwnProperty(log.address)) {
+        contractList[log.address].logs.push(log)
+      } else {
+        const tempContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
+          contract_address: log.address
         })
-        if (balance) {
-          balance.owner = log.decode.result.to.toLowerCase()
-          balance.from = log.decode.result.from.toLowerCase()
-          await connection.manager.save(NftBalanceEntity, balance)
-        } else {
-          // let name = ''
-          let imgUri = ''
-          let detail = ''
-          let tokenUri = ''
-          let baseTokenUri = ''
-          const abiInfo = JSON.parse(contract.abi)
-          const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
-          let name = contract.name
-          let contractUri = contract.contract_uri
-          if (hasTokenUri) {
-            try {
-              tokenUri = await this.getTokenUri(
-                contract.contract_address,
-                abiInfo,
-                Number(log.decode.result.tokenId)
-              )
-              // try {
-              const httpRes = await fetch(tokenUri, {
-                method: 'GET',
-                headers: {
-                  'Content-Type': 'application/json'
-                }
-              })
-              if (httpRes.status >= 400) {
-                throw new Error('Bad response from server')
-              }
-              const res: any = await httpRes.json()
-              name = res.name
-              imgUri = res.image
-              detail = JSON.stringify(res)
-            } catch (e) {
-              this.logger.error(e)
-            }
-          }
-          const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
-          if (hasBaseTokenUri) {
-            baseTokenUri = await this.getBaseTokenUri(contract.contract_address, abiInfo)
-          }
-          await connection.manager.insert(NftBalanceEntity, {
-            smart_contract_address: contract.contract_address,
-            owner: log.decode.result.to.toLowerCase(),
-            from: log.decode.result.from.toLowerCase(),
-            token_id: Number(log.decode.result.tokenId),
-            name: name,
-            img_uri: imgUri,
-            detail: detail,
-            contract_uri: contractUri,
-            token_uri: tokenUri,
-            base_token_uri: baseTokenUri
-          })
+        if (
+          !tempContract ||
+          !tempContract.verified ||
+          tempContract.protocol != smartContractProtocol.tnt721
+        )
+          continue
+        contractList[log.address] = {
+          contract: tempContract,
+          logs: [log]
         }
-        return true
       }
     }
+    const contractDecodeList = Object.values(contractList)
+    // this.logger.debug(JSON.stringify(contractDecodeList))
+    for (const contract of contractDecodeList) {
+      const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
+      for (const log of logInfo) {
+        // const address = log.address
 
+        if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
+          // try {
+          const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
+            contract_address: log.address.toLowerCase()
+          })
+          if (
+            !logContract ||
+            !logContract.verified ||
+            logContract.protocol !== smartContractProtocol.tnt721
+          )
+            continue
+          const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+            token_id: Number(log.decode.result.tokenId),
+            smart_contract_address: log.address,
+            timestamp: record.timestamp
+            // from: log.decode.result.from.toLowerCase(),
+            // to: log.decode.result.to.toLowerCase()
+          })
+          if (transferRecord) continue
+          await nftConnection.manager.insert(
+            NftTransferRecordEntity,
+            {
+              from: log.decode.result.from.toLowerCase(),
+              to: log.decode.result.to.toLowerCase(),
+              token_id: Number(log.decode.result.tokenId),
+              smart_contract_address: log.address,
+              height: record.height,
+              name: contract.contract.name,
+              timestamp: record.timestamp
+            }
+            // ['smart_contract_address', 'token_id', 'timestamp']
+          )
+          const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
+            smart_contract_address: log.address,
+            token_id: Number(log.decode.result.tokenId)
+          })
+          if (balance) {
+            balance.owner = log.decode.result.to.toLowerCase()
+            balance.from = log.decode.result.from.toLowerCase()
+            await nftConnection.manager.save(NftBalanceEntity, balance)
+          } else {
+            // let name = ''
+            let imgUri = ''
+            let detail = ''
+            let tokenUri = ''
+            let baseTokenUri = ''
+            const abiInfo = JSON.parse(logContract.abi)
+            const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
+            let name = logContract.name
+            let contractUri = logContract.contract_uri
+            if (hasTokenUri) {
+              try {
+                tokenUri = await this.getTokenUri(
+                  logContract.contract_address,
+                  abiInfo,
+                  Number(log.decode.result.tokenId)
+                )
+                // try {
+                const httpRes = await fetch(tokenUri, {
+                  method: 'GET',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  }
+                })
+                if (httpRes.status >= 400) {
+                  throw new Error('Bad response from server')
+                }
+                const res: any = await httpRes.json()
+                name = res.name
+                imgUri = res.image
+                detail = JSON.stringify(res)
+              } catch (e) {
+                this.logger.error(e)
+              }
+            }
+            const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
+            if (hasBaseTokenUri) {
+              baseTokenUri = await this.getBaseTokenUri(logContract.contract_address, abiInfo)
+            }
+            await nftConnection.manager.insert(NftBalanceEntity, {
+              smart_contract_address: logContract.contract_address,
+              owner: log.decode.result.to.toLowerCase(),
+              from: log.decode.result.from.toLowerCase(),
+              token_id: Number(log.decode.result.tokenId),
+              name: name,
+              img_uri: imgUri,
+              detail: detail,
+              contract_uri: contractUri,
+              token_uri: tokenUri,
+              base_token_uri: baseTokenUri
+            })
+          }
+          return true
+        }
+      }
+    }
     return false
   }
 

@@ -516,6 +516,7 @@ type SmartContractEntity {
   verification_check_timestamp: Int!
   contract_uri: String!
   contract_uri_detail: String!
+  latest_record_parse_height: Int!
 }
 
 """Statistics on smart contract related calls"""
@@ -616,5 +617,6 @@ type Query {
 }
 
 type Mutation {
+  verifyWithThetaExplorer(address: String!): SmartContractEntity!
   newMsg(first_name: String!, last_name: String!, email: String!, content: String!): ContactEntity!
 }

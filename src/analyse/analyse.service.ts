@@ -105,7 +105,17 @@ export class AnalyseService {
       if (latestBlock && latestBlock.block_number >= height) {
         height = latestBlock.block_number + 1
       }
-      if (height >= lastfinalizedHeight) throw new Error('no height to analyse')
+      if (height >= lastfinalizedHeight) {
+        await this.txConnection.commitTransaction()
+        await this.analyseConnection.commitTransaction()
+        await this.stakeConnection.commitTransaction()
+        await this.smartContractConnection.commitTransaction()
+        await this.walletConnection.commitTransaction()
+        await this.nftConnection.commitTransaction()
+        this.logger.debug('commit success')
+        this.logger.debug('no height to analyse')
+        return
+      }
       // await this.
       let endHeight = lastfinalizedHeight
       const analyseNumber = config.get('ANALYSE_NUMBER')
@@ -275,7 +285,7 @@ export class AnalyseService {
             }
           )
           if (
-            // smartContract.call_times > 10 &&
+            smartContract.call_times > config.get('SMART_CONTRACT_VERIFY_DETECT_TIMES') &&
             !smartContract.verified &&
             moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
           ) {
@@ -286,24 +296,9 @@ export class AnalyseService {
             } else {
               smartContract.verification_check_timestamp = moment().unix()
             }
+
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
-          // const record = await this.smartContractConnection.manager.find(
-          //   SmartContractCallRecordEntity,
-          //   {
-          //     transaction_hash: transaction.hash
-          //   }
-          // )
-          // if (!record) {
-          //   await this.smartContractConnection.manager.insert(SmartContractCallRecordEntity, {
-          //     timestamp: Number(block.timestamp),
-          //     data: transaction.raw.data,
-          //     receipt: JSON.stringify(transaction.receipt),
-          //     height: height,
-          //     transaction_hash: transaction.hash,
-          //     contract_id: smartContract.id
-          //   })
-          // }
           await this.smartContractConnection.manager.upsert(
             SmartContractCallRecordEntity,
             {
@@ -671,7 +666,7 @@ export class AnalyseService {
       where: {
         name: ''
       },
-      take: 100
+      take: 20
     })
     const smartContractList: { [prop: string]: SmartContractEntity } = {}
     for (const nft of nfts) {
