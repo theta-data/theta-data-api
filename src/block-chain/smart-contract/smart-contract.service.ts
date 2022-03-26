@@ -312,13 +312,16 @@ export class SmartContractService {
     let contract = await this.smartContractRepository.findOne({
       contract_address: address
     })
-    if (!contract) contract = new SmartContractEntity()
+    if (!contract) {
+      contract = new SmartContractEntity()
+      if (contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078') {
+        contract.latest_record_parse_height = 13764000
+      }
+    }
     // this.logger.de
     // if (!contract) {
     // if(contract)
-    if (contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078') {
-      contract.latest_record_parse_height = 13764000
-    }
+
     contract.contract_address = address
     contract.abi = abi
     contract.source_code = sourceCode
