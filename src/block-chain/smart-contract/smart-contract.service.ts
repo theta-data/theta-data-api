@@ -312,11 +312,12 @@ export class SmartContractService {
     let contract = await this.smartContractRepository.findOne({
       contract_address: address
     })
+    if (contract.verified) return contract
     if (!contract) {
       contract = new SmartContractEntity()
     }
     if (
-      !contract.verified &&
+      // !contract.verified &&
       contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078'
     ) {
       // if () {
