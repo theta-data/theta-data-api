@@ -263,6 +263,7 @@ export class AnalyseService {
           break
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
           smart_contract_transaction++
+          // transaction.receipt.ContractAddress = '0xebc380add0a361622c604ef9024c9f5a34350916'
           await this.smartContractConnection.query(
             `INSERT INTO smart_contract_entity(contract_address,height,call_times_update_timestamp) VALUES ('${
               transaction.receipt.ContractAddress
@@ -275,10 +276,14 @@ export class AnalyseService {
             }
           )
           if (
-            // smartContract.call_times > 10 &&
+            smartContract.call_times > config.get('SMART_CONTRACT_VERIFY_DETECT_TIMES') &&
             !smartContract.verified &&
             moment().unix() - smartContract.verification_check_timestamp > 3600 * 24 * 30
           ) {
+            // if (this.counter === 2) {
+            //   smartContract.contract_address = '0xebc380add0a361622c604ef9024c9f5a34350916'
+            // }
+
             const checkInfo = await this.verifyWithThetaExplorer(smartContract.contract_address)
             if (checkInfo) {
               Object.assign(smartContract, checkInfo)
@@ -286,6 +291,7 @@ export class AnalyseService {
             } else {
               smartContract.verification_check_timestamp = moment().unix()
             }
+
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
           // const record = await this.smartContractConnection.manager.find(

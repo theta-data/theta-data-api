@@ -12,6 +12,7 @@ import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractEntity } from './smart-contract.entity'
 import { Logger } from '@nestjs/common'
+import { reduce } from 'rxjs'
 
 @Resolver(() => SmartContractStatisticsType)
 export class SmartContractResolver {
@@ -81,7 +82,7 @@ export class SmartContractResolver {
     )
   }
 
-  // @Mutation((returns) => SmartContractEntity)
+  @Mutation((returns) => SmartContractEntity)
   async verifyWithThetaExplorer(
     @Args({
       name: 'address'
@@ -109,20 +110,20 @@ export class SmartContractResolver {
     const optimizer = res.body.optimizer === 'disabled' ? false : true
     console.log('optimizer', optimizer)
     const optimizerRuns = res.body.optimizerRuns ? res.body.optimizerRuns : 200
-    const sourceCode = res.body.source_code
-    const version = res.body.compiler_version.match(/[\d,\.]+/g)[0]
-    const versionFullName = 'soljson-' + res.body.compiler_version + '.js'
-    const byteCode = res.body.bytecode
-
     address = this.utilsService.normalize(address.toLowerCase())
-    return await this.smartContractService.verifySmartContract(
+    this.logger.debug('start verify')
+    return await this.smartContractService.directVerifySmartContract(
       address,
-      sourceCode,
-      byteCode,
-      version,
-      versionFullName,
-      optimizer,
-      optimizerRuns
+      res.body.source_code,
+      res.body.bytecode,
+      res.body.optimizer,
+      optimizerRuns,
+      Math.floor(Number(res.body.verification_date) / 1000),
+      res.body.compiler_version,
+      res.body.name,
+      JSON.stringify(res.body.function_hash),
+      res.body.constructor_arguments,
+      JSON.stringify(res.body.abi)
     )
   }
 

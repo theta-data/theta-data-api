@@ -55,57 +55,57 @@ export class SmartContractService {
     return await this.smartContractRecordRepository.find()
   }
 
-  async updateSmartContractRecord(
-    timestamp: string,
-    contractAddress: string,
-    data: string,
-    receipt: string,
-    height: number,
-    tansactionHash: string
-  ) {
-    try {
-      await this.smartContractRepository.query(
-        `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
-      )
-    } catch (e) {
-      this.logger.debug('insert smart contract error')
-      this.logger.error(e)
-    }
+  // async updateSmartContractRecord(
+  //   timestamp: string,
+  //   contractAddress: string,
+  //   data: string,
+  //   receipt: string,
+  //   height: number,
+  //   tansactionHash: string
+  // ) {
+  //   try {
+  //     await this.smartContractRepository.query(
+  //       `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
+  //     )
+  //   } catch (e) {
+  //     this.logger.debug('insert smart contract error')
+  //     this.logger.error(e)
+  //   }
 
-    const smartContract = await this.smartContractRepository.findOne({
-      contract_address: contractAddress
-    })
-    // this.logger.debug('timestamp:' + timestamp)
-    const smartContractRecord = new SmartContractCallRecordEntity()
-    smartContractRecord.timestamp = Number(timestamp)
-    smartContractRecord.data = data
-    smartContractRecord.receipt = receipt
-    smartContractRecord.height = height
-    smartContractRecord.transaction_hash = tansactionHash
-    smartContractRecord.contract_id = smartContract.id
-    await this.smartContractRecordRepository.save(smartContractRecord)
-    let afftectedNum = 0
-    if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
-      const connection = getConnection('nft').createQueryRunner()
-      await connection.connect()
-      await connection.startTransaction()
-      try {
-        const res = await this.nftService.updateNftRecord(
-          connection,
-          smartContractRecord,
-          smartContract
-        )
-        if (res) afftectedNum++
-      } catch (e) {
-        this.logger.debug(e)
-        await connection.rollbackTransaction()
-      } finally {
-        await connection.release()
-      }
-    }
+  //   const smartContract = await this.smartContractRepository.findOne({
+  //     contract_address: contractAddress
+  //   })
+  //   // this.logger.debug('timestamp:' + timestamp)
+  //   const smartContractRecord = new SmartContractCallRecordEntity()
+  //   smartContractRecord.timestamp = Number(timestamp)
+  //   smartContractRecord.data = data
+  //   smartContractRecord.receipt = receipt
+  //   smartContractRecord.height = height
+  //   smartContractRecord.transaction_hash = tansactionHash
+  //   smartContractRecord.contract_id = smartContract.id
+  //   await this.smartContractRecordRepository.save(smartContractRecord)
+  //   let afftectedNum = 0
+  //   if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
+  //     const connection = getConnection('nft').createQueryRunner()
+  //     await connection.connect()
+  //     await connection.startTransaction()
+  //     try {
+  //       const res = await this.nftService.updateNftRecord(
+  //         connection,
+  //         smartContractRecord,
+  //         smartContract
+  //       )
+  //       if (res) afftectedNum++
+  //     } catch (e) {
+  //       this.logger.debug(e)
+  //       await connection.rollbackTransaction()
+  //     } finally {
+  //       await connection.release()
+  //     }
+  //   }
 
-    // }
-  }
+  //   // }
+  // }
 
   async getOrAddSmartContract(contractAddress: string, height: number) {
     await this.smartContractRepository.query(
@@ -294,6 +294,57 @@ export class SmartContractService {
       console.log('Error in catch:', e)
       return contract
     }
+  }
+  async directVerifySmartContract(
+    address: string,
+    // abi: string,
+    sourceCode: string,
+    byteCode: string,
+    optimizer: string,
+    optimizerRuns: number,
+    verificationDate: number,
+    compilerVersion: string,
+    name: string,
+    functionHash: string,
+    constructorArguments,
+    abi: string
+  ) {
+    let contract = await this.smartContractRepository.findOne({
+      contract_address: address
+    })
+    if (!contract) contract = new SmartContractEntity()
+    // this.logger.de
+    // if (!contract) {
+    // if(contract)
+    if (contract.contract_address == '0x7945e7e8b5ee315d19d65db3063b3d53fa1cc078') {
+      contract.latest_record_parse_height = 13764000
+    }
+    contract.contract_address = address
+    contract.abi = abi
+    contract.source_code = sourceCode
+    contract.byte_code = byteCode
+    contract.verification_date = verificationDate
+    contract.compiler_version = compilerVersion
+    contract.optimizer = optimizer
+    contract.optimizerRuns = optimizerRuns
+    contract.name = name
+    contract.function_hash = functionHash
+    contract.constructor_arguments = constructorArguments
+    contract.verified = true
+
+    if (this.utilsService.checkTnt721(JSON.parse(abi))) {
+      contract.protocol = smartContractProtocol.tnt721
+    } else if (this.utilsService.checkTnt20(JSON.parse(abi))) {
+      contract.protocol = smartContractProtocol.tnt20
+    } else {
+      contract.protocol = smartContractProtocol.unknow
+    }
+    this.logger.debug('start to save')
+    return await this.smartContractRepository.save(contract)
+    // } else {
+    //   if (contract.verified) return contract
+    // }
+    // contract =
   }
 
   async getVerifyInfo(
