@@ -516,7 +516,7 @@ type SmartContractEntity {
   verification_check_timestamp: Int!
   contract_uri: String!
   contract_uri_detail: String!
-  latest_record_parse_height: Float!
+  latest_record_parse_height: Int!
 }
 
 """Statistics on smart contract related calls"""
