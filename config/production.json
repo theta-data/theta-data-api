@@ -22,5 +22,6 @@
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60
-  }
+  },
+  "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 20
 }
