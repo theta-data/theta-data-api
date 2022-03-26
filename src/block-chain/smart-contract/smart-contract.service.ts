@@ -295,6 +295,53 @@ export class SmartContractService {
       return contract
     }
   }
+  async directVerifySmartContract(
+    address: string,
+    // abi: string,
+    sourceCode: string,
+    byteCode: string,
+    optimizer: string,
+    optimizerRuns: number,
+    verificationDate: number,
+    compilerVersion: string,
+    name: string,
+    functionHash: string,
+    constructorArguments,
+    abi: string
+  ) {
+    let contract = await this.smartContractRepository.findOne({
+      contract_address: address
+    })
+    if (!contract) contract = new SmartContractEntity()
+    // this.logger.de
+    // if (!contract) {
+    contract.contract_address = address
+    contract.abi = abi
+    contract.source_code = sourceCode
+    contract.byte_code = byteCode
+    contract.verification_date = verificationDate
+    contract.compiler_version = compilerVersion
+    contract.optimizer = optimizer
+    contract.optimizerRuns = optimizerRuns
+    contract.name = name
+    contract.function_hash = functionHash
+    contract.constructor_arguments = constructorArguments
+    contract.verified = true
+
+    if (this.utilsService.checkTnt721(JSON.parse(abi))) {
+      contract.protocol = smartContractProtocol.tnt721
+    } else if (this.utilsService.checkTnt20(JSON.parse(abi))) {
+      contract.protocol = smartContractProtocol.tnt20
+    } else {
+      contract.protocol = smartContractProtocol.unknow
+    }
+    this.logger.debug('start to save')
+    return await this.smartContractRepository.save(contract)
+    // } else {
+    //   if (contract.verified) return contract
+    // }
+    // contract =
+  }
 
   async getVerifyInfo(
     address: string,

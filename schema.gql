@@ -616,5 +616,6 @@ type Query {
 }
 
 type Mutation {
+  verifyWithThetaExplorer(address: String!): SmartContractEntity!
   newMsg(first_name: String!, last_name: String!, email: String!, content: String!): ContactEntity!
 }
