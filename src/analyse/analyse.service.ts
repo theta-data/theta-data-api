@@ -145,7 +145,9 @@ export class AnalyseService {
       await this.nftConnection.commitTransaction()
       this.logger.debug('commit success')
     } catch (e) {
-      this.logger.error(e)
+      // console.log(e)
+      console.error(e.message)
+      this.logger.error(e.message)
       this.logger.error('rollback')
       await this.txConnection.rollbackTransaction()
       await this.analyseConnection.rollbackTransaction()
