@@ -1,7 +1,7 @@
 {
   "ORM_CONFIG": {
     
-    "database": "/data/theta-data/database_v2/database_v2/",
+    "database": "/data/theta-data/database/",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
