@@ -23,5 +23,7 @@
     "ttl": 60,
     "limit": 60
   },
-  "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 10
+  "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 10,
+  "RE_SYNC_BALANCE" : false
+
 }

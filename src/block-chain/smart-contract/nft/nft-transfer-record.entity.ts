@@ -3,6 +3,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
@@ -11,6 +12,7 @@ import {
 @ObjectType()
 @Entity()
 @Unique(['smart_contract_address', 'token_id', 'timestamp'])
+// @Index(['token_id'])
 export class NftTransferRecordEntity {
   @PrimaryGeneratedColumn('uuid')
   id!: number

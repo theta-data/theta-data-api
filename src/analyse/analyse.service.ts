@@ -20,6 +20,7 @@ import { SmartContractService } from 'src/block-chain/smart-contract/smart-contr
 import fetch from 'cross-fetch'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
+import { smartContractProtocol } from 'src/contact/contact.entity'
 
 @Injectable()
 export class AnalyseService {
@@ -86,6 +87,7 @@ export class AnalyseService {
       await this.nftConnection.startTransaction()
 
       await this.updateSources()
+      await this.reAsyncAllNftBalance()
 
       let height: number = 0
       const lastfinalizedHeight = Number(
@@ -720,5 +722,28 @@ export class AnalyseService {
       }
     }
     this.logger.debug('end update sources')
+  }
+
+  async reAsyncAllNftBalance() {
+    // await this.smartContractConnection.manager.update(
+    //   SmartContractEntity,
+    //   {
+    //     protocol: smartContractProtocol.tnt721
+    //   },
+    //   { latest_record_parse_height: 8650000 }
+    // )
+    if (!config.get('RE_SYNC_BALANCE')) return false
+    this.logger.debug('start resynce balance')
+    const smartContractList = await this.smartContractConnection.manager.find(SmartContractEntity, {
+      protocol: smartContractProtocol.tnt721
+    })
+    for (const smartContract of smartContractList) {
+      await this.nftService.parseRecordByContractAddressWithConnection(
+        this.nftConnection,
+        this.smartContractConnection,
+        smartContract,
+        0
+      )
+    }
   }
 }
