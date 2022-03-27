@@ -276,16 +276,23 @@ export class NftService {
             token_id: Number(log.decode.result.tokenId)
           })
           if (balance) {
-            // balance.owner = log.decode.result.to.toLowerCase()
-            // balance.from = log.decode.result.from.toLowerCase()
+            const latesRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+              where: {
+                smart_contract_address: log.address.toLowerCase(),
+                token_id: Number(log.decode.result.tokenId)
+              },
+              order: {
+                height: 'DESC'
+              }
+            })
             await nftConnection.manager.update(
               NftBalanceEntity,
               {
                 id: balance.id
               },
               {
-                owner: log.decode.result.to.toLowerCase(),
-                from: log.decode.result.from.toLowerCase()
+                owner: latesRecord.to,
+                from: latesRecord.from
               }
             )
           } else {
@@ -636,51 +643,6 @@ export class NftService {
     }
     return nfts
   }
-
-  // async checkSourcesWithConnection(
-  //   nfts: Array<NftBalanceEntity>,
-  //   smartContract: SmartContractEntity,
-  //   nftConnection: QueryRunner
-  // ) {
-  //   this.logger.debug('nfts length: ' + nfts.length)
-  //   // const smartContractList: { [prop: string]: SmartContractEntity } = {}
-  //   for (const nft of nfts) {
-  //     if (!nft.name || !nft.img_uri) {
-  //       const contractInfo = smartContract[nft.smart_contract_address]
-  //       const abiInfo = JSON.parse(contractInfo.abi)
-  //       const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
-  //       nft.name = smartContract[nft.smart_contract_address].name
-  //       nft.contract_uri = smartContract[nft.smart_contract_address].contract_uri
-  //       if (hasTokenUri) {
-  //         const tokenUri = await this.getTokenUri(nft.smart_contract_address, abiInfo, nft.token_id)
-  //         nft.token_uri = tokenUri
-  //         try {
-  //           const httpRes = await fetch(tokenUri, {
-  //             method: 'GET',
-  //             headers: {
-  //               'Content-Type': 'application/json'
-  //             }
-  //           })
-  //           if (httpRes.status >= 400) {
-  //             throw new Error('Bad response from server')
-  //           }
-  //           const res: any = await httpRes.json()
-  //           nft.name = res.name
-  //           nft.img_uri = res.image
-  //           nft.detail = JSON.stringify(res)
-  //         } catch (e) {
-  //           this.logger.error(e)
-  //         }
-  //       }
-  //       const hasBaseTokenUri = abiInfo.find((v) => v.name == 'baseTokenURI')
-  //       if (hasBaseTokenUri) {
-  //         nft.base_token_uri = await this.getBaseTokenUri(nft.smart_contract_address, abiInfo)
-  //       }
-  //       await nftConnection.save(nft)
-  //     }
-  //   }
-  //   return nfts
-  // }
 
   async uniqueHolders(contractAddress: string) {
     const list = await this.nftBalanceRepository
