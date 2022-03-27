@@ -23,6 +23,6 @@
     "limit": 60
   },
   "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 0,
-  "RE_SYNC_BALANCE" : false
+  "RE_SYNC_BALANCE" : true
 
 }
