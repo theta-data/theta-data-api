@@ -733,6 +733,7 @@ export class AnalyseService {
     //   { latest_record_parse_height: 8650000 }
     // )
     if (!config.get('RE_SYNC_BALANCE')) return false
+    this.logger.debug('start resynce balance')
     const smartContractList = await this.smartContractConnection.manager.find(SmartContractEntity, {
       protocol: smartContractProtocol.tnt721
     })
