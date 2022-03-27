@@ -249,20 +249,20 @@ export class NftService {
             // from: log.decode.result.from.toLowerCase(),
             // to: log.decode.result.to.toLowerCase()
           })
-          if (transferRecord) continue
-          await nftConnection.manager.insert(
-            NftTransferRecordEntity,
-            {
-              from: log.decode.result.from.toLowerCase(),
-              to: log.decode.result.to.toLowerCase(),
-              token_id: Number(log.decode.result.tokenId),
-              smart_contract_address: log.address,
-              height: record.height,
-              name: contract.contract.name,
-              timestamp: record.timestamp
-            }
-            // ['smart_contract_address', 'token_id', 'timestamp']
-          )
+          if (!transferRecord)
+            await nftConnection.manager.insert(
+              NftTransferRecordEntity,
+              {
+                from: log.decode.result.from.toLowerCase(),
+                to: log.decode.result.to.toLowerCase(),
+                token_id: Number(log.decode.result.tokenId),
+                smart_contract_address: log.address,
+                height: record.height,
+                name: contract.contract.name,
+                timestamp: record.timestamp
+              }
+              // ['smart_contract_address', 'token_id', 'timestamp']
+            )
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
             smart_contract_address: log.address,
             token_id: Number(log.decode.result.tokenId)
@@ -270,7 +270,7 @@ export class NftService {
           if (balance) {
             balance.owner = log.decode.result.to.toLowerCase()
             balance.from = log.decode.result.from.toLowerCase()
-            await nftConnection.manager.save(NftBalanceEntity, balance)
+            await nftConnection.manager.save(balance)
           } else {
             // let name = ''
             let imgUri = ''
