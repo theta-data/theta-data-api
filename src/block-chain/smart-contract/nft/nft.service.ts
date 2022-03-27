@@ -233,6 +233,7 @@ export class NftService {
 
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           // try {
+          this.logger.debug(log)
           const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
             contract_address: log.address.toLowerCase()
           })
