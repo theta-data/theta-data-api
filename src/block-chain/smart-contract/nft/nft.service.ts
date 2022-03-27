@@ -252,7 +252,7 @@ export class NftService {
             continue
           const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
             token_id: Number(log.decode.result.tokenId),
-            smart_contract_address: log.address,
+            smart_contract_address: log.address.toLowerCase(),
             timestamp: record.timestamp
             // from: log.decode.result.from.toLowerCase(),
             // to: log.decode.result.to.toLowerCase()
@@ -264,7 +264,7 @@ export class NftService {
                 from: log.decode.result.from.toLowerCase(),
                 to: log.decode.result.to.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId),
-                smart_contract_address: log.address,
+                smart_contract_address: log.address.toLowerCase(),
                 height: record.height,
                 name: contract.contract.name,
                 timestamp: record.timestamp
@@ -272,13 +272,22 @@ export class NftService {
               // ['smart_contract_address', 'token_id', 'timestamp']
             )
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
-            smart_contract_address: log.address,
+            smart_contract_address: log.address.toLowerCase(),
             token_id: Number(log.decode.result.tokenId)
           })
           if (balance) {
-            balance.owner = log.decode.result.to.toLowerCase()
-            balance.from = log.decode.result.from.toLowerCase()
-            await nftConnection.manager.save(balance)
+            // balance.owner = log.decode.result.to.toLowerCase()
+            // balance.from = log.decode.result.from.toLowerCase()
+            await nftConnection.manager.update(
+              NftBalanceEntity,
+              {
+                id: balance.id
+              },
+              {
+                owner: log.decode.result.to.toLowerCase(),
+                from: log.decode.result.from.toLowerCase()
+              }
+            )
           } else {
             // let name = ''
             let imgUri = ''
