@@ -12,6 +12,7 @@ import { SmartContractService } from 'src/block-chain/smart-contract/smart-contr
 import fetch from 'cross-fetch'
 const config = require('config')
 const moment = require('moment')
+const fs = require('fs')
 @Injectable()
 export class SmartContractAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -42,15 +43,21 @@ export class SmartContractAnalyseService {
       if (config.get('START_HEIGHT')) {
         height = config.get('START_HEIGHT')
       }
-      const latestBlock = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
-        order: {
-          height: 'DESC'
-        }
-      })
+      const fs = require('fs')
 
-      if (latestBlock && latestBlock.height >= height) {
-        height = latestBlock.height + 1
+      try {
+        if (!fs.existsSync('height.record')) {
+          fs.writeFileSync('height.record', '0')
+        } else {
+          const data = fs.readFileSync('height.record', 'utf8')
+          if (data && Number(data) > height) {
+            height = Number(data) + 1
+          }
+        }
+      } catch (err) {
+        console.error(err)
       }
+
       if (height >= lastfinalizedHeight) {
         await this.smartContractConnection.commitTransaction()
         this.logger.debug('commit success')
@@ -140,6 +147,12 @@ export class SmartContractAnalyseService {
     this.logger.debug(height + ' end update analyse')
     this.counter--
     this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
+    try {
+      const data = fs.writeFileSync('height.record', height.toString())
+      console.log(data)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   async verifyWithThetaExplorer(address: string) {
