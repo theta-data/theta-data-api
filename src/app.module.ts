@@ -11,8 +11,7 @@ import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
 import { ThrottlerModule } from '@nestjs/throttler'
 import { WalletModule } from './block-chain/wallet/wallet.module'
-import * as path from 'path'
-import { AnalyseModule } from './analyse/analyse.module'
+// import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ContactModule } from './contact/contact.module'
 import { ApolloDriver } from '@nestjs/apollo'
@@ -80,7 +79,6 @@ const config = require('config')
       limit: config.get('RATE_LIMIT')['limit']
     }),
     EventEmitterModule.forRoot(),
-    AnalyseModule,
     TxModule,
     StakeModule,
     MarketModule,
