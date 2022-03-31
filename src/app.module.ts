@@ -33,13 +33,13 @@ const config = require('config')
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'smart_contract.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'smart_contract/smart_contract.sqlite',
       name: 'smart_contract',
       entities: []
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'nft.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'nft/nft.sqlite',
       name: 'nft',
       entities: []
     }),

@@ -1,5 +1,5 @@
 {
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile":"analyse/analyse-smart-contract"
+  "entryFile":"analyse/analyse-nft"
 }

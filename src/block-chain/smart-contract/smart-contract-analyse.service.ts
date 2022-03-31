@@ -10,9 +10,11 @@ import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contra
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import fetch from 'cross-fetch'
+import { mkdir, mkdirSync } from 'fs'
 const config = require('config')
 const moment = require('moment')
 const fs = require('fs')
+const path = require('path')
 @Injectable()
 export class SmartContractAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -20,6 +22,12 @@ export class SmartContractAnalyseService {
   private counter = 0
   private startTimestamp = 0
   private smartContractConnection: QueryRunner
+  private heightConfigFile =
+    // path.resolve(
+    config.get('ORM_CONFIG')['database'] + 'smart_contract/record.height'
+  // )
+  // .replace('..', __dirname)
+
   constructor(
     private loggerService: LoggerService,
     private utilsService: UtilsService,
@@ -43,19 +51,17 @@ export class SmartContractAnalyseService {
       if (config.get('START_HEIGHT')) {
         height = config.get('START_HEIGHT')
       }
-      const fs = require('fs')
-
-      try {
-        if (!fs.existsSync('height.record')) {
-          fs.writeFileSync('height.record', '0')
-        } else {
-          const data = fs.readFileSync('height.record', 'utf8')
-          if (data && Number(data) > height) {
-            height = Number(data) + 1
-          }
+      // console.log(path.resolve(this.heightConfigFile))
+      if (!fs.existsSync(this.heightConfigFile)) {
+        this.logger.debug('read height')
+        // mkdirSync(this.heightConfigFile)
+        this.logger.debug('finish mkdir')
+        fs.writeFileSync(this.heightConfigFile, '0')
+      } else {
+        const data = fs.readFileSync(this.heightConfigFile, 'utf8')
+        if (data && Number(data) > height) {
+          height = Number(data) + 1
         }
-      } catch (err) {
-        console.error(err)
       }
 
       if (height >= lastfinalizedHeight) {
@@ -147,12 +153,9 @@ export class SmartContractAnalyseService {
     this.logger.debug(height + ' end update analyse')
     this.counter--
     this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
-    try {
-      const data = fs.writeFileSync('height.record', height.toString())
-      console.log(data)
-    } catch (err) {
-      console.error(err)
-    }
+
+    const data = fs.writeFileSync(this.heightConfigFile, height.toString())
+    console.log(data)
   }
 
   async verifyWithThetaExplorer(address: string) {
