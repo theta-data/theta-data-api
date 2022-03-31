@@ -1,4 +1,4 @@
-import { Args, Info, Parent, Query, ResolveField, ResolveProperty, Resolver } from '@nestjs/graphql'
+import { Args, Info, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Logger } from '@nestjs/common'
@@ -6,7 +6,7 @@ import { StakeRewardModel } from './stake.model'
 import { fieldsList, fieldsMap } from 'graphql-fields-list'
 import { GraphQLString } from 'graphql'
 import { MarketService } from '../../market/market.service'
-import { WalletService } from '../wallet/wallet.service'
+import { WalletService } from '../wallet/wallets.service'
 
 @Resolver(() => StakeStatisticsEntity)
 export class StakeResolver {

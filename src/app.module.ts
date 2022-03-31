@@ -57,7 +57,7 @@ const config = require('config')
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'wallet.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'tx/wallet.sqlite',
       name: 'wallet',
       entities: []
     }),
