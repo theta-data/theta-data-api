@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
-import { WalletService } from '../wallet/wallet.service'
+import { WalletService } from '../wallet/wallets.service'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 import { ThetaTxNumByDateModel } from './theta-tx.model'
 const moment = require('moment')

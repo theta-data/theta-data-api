@@ -16,13 +16,14 @@
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 1000,
-  "ANALYSE_NUMBER" : 100,
+  "ANALYSE_NUMBER" : 10,
   "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60
   },
   "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 0,
-  "RE_SYNC_BALANCE" : false
+  "RE_SYNC_BALANCE" : false,
+  "STAKE_ANALYSE_START_HEIGHT" : 14590900
 
 }
