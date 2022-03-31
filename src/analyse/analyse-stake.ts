@@ -9,6 +9,7 @@ async function bootstrap() {
   while (1) {
     console.log('do while')
     await service.analyseData()
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   }
 }
 bootstrap()

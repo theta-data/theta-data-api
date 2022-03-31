@@ -1,3 +1,4 @@
+import { SerializeOptions } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from 'src/app.module'
 import { NftAnalyseService } from 'src/block-chain/smart-contract/nft/nft-analyse.service'
@@ -9,6 +10,8 @@ async function bootstrap() {
   while (1) {
     console.log('do while')
     await service.analyseData()
+    await new Promise((resolve) => setTimeout(resolve, 1000))
+    // await sleep
   }
 }
 bootstrap()
