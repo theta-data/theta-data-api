@@ -88,6 +88,7 @@ export class NftAnalyseService {
           order: { height: 'ASC' }
         }
       )
+      // if (contractRecordList.length == 0) return
       for (const record of contractRecordList) {
         if (!smartContractList.hasOwnProperty(record.contract_id)) {
           smartContractList[record.contract_id] =
@@ -109,10 +110,12 @@ export class NftAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
-      this.utilsService.updateRecordHeight(
-        this.heightConfigFile,
-        Number(contractRecordList[contractRecordList.length - 1].height)
-      )
+      if (contractRecordList.length > 0) {
+        this.utilsService.updateRecordHeight(
+          this.heightConfigFile,
+          Number(contractRecordList[contractRecordList.length - 1].height)
+        )
+      }
       this.logger.debug('commit success')
     } catch (e) {
       // console.log(e)
