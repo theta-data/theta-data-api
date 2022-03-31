@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from 'src/app.module'
 import { StakeAnalyseService } from 'src/block-chain/stake/stake-analyse.service'
 import { StakeModule } from 'src/block-chain/stake/stake.module'
-import sleep from 'await-sleep'
 
 async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule)
@@ -10,7 +9,7 @@ async function bootstrap() {
   while (1) {
     console.log('do while')
     await service.analyseData()
-    await sleep(1000)
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   }
 }
 bootstrap()
