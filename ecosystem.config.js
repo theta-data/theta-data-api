@@ -21,7 +21,7 @@ module.exports = {
     },
     {
       name: 'analyse-wallets',
-      script: './dist/analyse/analyse-wallets',
+      script: './dist/analyse/analyse-wallets.js',
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
@@ -36,7 +36,7 @@ module.exports = {
     },
     {
       name: 'analyse-nft',
-      script: './dist/analyse/analyse-nft',
+      script: './dist/analyse/analyse-nft.js',
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
@@ -51,7 +51,7 @@ module.exports = {
     },
     {
       name: 'analyse-smart-contract',
-      script: './dist/analyse/analyse-smart-contract',
+      script: './dist/analyse/analyse-smart-contract.js',
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
@@ -66,7 +66,7 @@ module.exports = {
     },
     {
       name: 'analyse-stake',
-      script: './dist/analyse/analyse-stake',
+      script: './dist/analyse/analyse-stake.js',
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
@@ -81,7 +81,7 @@ module.exports = {
     },
     {
       name: 'analyse-tx',
-      script: './dist/analyse/analyse-tx',
+      script: './dist/analyse/analyse-tx.js',
       instances: 1,
       exec_mode: "cluster",
       autorestart: true,
