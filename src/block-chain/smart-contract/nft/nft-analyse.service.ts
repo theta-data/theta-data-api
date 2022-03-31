@@ -6,6 +6,7 @@ import {
   smartContractProtocol
 } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
+import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
 const moment = require('moment')
 const fs = require('fs')
@@ -20,7 +21,7 @@ export class NftAnalyseService {
   private nftConnection: QueryRunner
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft/record.height'
 
-  constructor(private nftService: NftService) {}
+  constructor(private nftService: NftService, private utilsService: UtilsService) {}
 
   //   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
@@ -103,11 +104,15 @@ export class NftAnalyseService {
           smartContractList[record.contract_id]
         )
       }
-      const data = fs.writeFileSync(this.heightConfigFile, height.toString())
-      console.log(data)
+      // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
+      // console.log(data)
       this.logger.debug('start update calltimes by period')
       await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
+      this.utilsService.updateRecordHeight(
+        this.heightConfigFile,
+        Number(contractRecordList[contractRecordList.length - 1].height)
+      )
       this.logger.debug('commit success')
     } catch (e) {
       // console.log(e)

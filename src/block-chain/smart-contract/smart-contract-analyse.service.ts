@@ -90,6 +90,10 @@ export class SmartContractAnalyseService {
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
       await this.smartContractConnection.commitTransaction()
+      this.utilsService.updateRecordHeight(
+        this.heightConfigFile,
+        Number(blockList.result[blockList.result.length - 1].height)
+      )
     } catch (e) {
       // console.log(e)
       console.error(e.message)
@@ -153,9 +157,8 @@ export class SmartContractAnalyseService {
     this.logger.debug(height + ' end update analyse')
     this.counter--
     this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
-
-    const data = fs.writeFileSync(this.heightConfigFile, height.toString())
-    console.log(data)
+    // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
+    // console.log(data)
   }
 
   async verifyWithThetaExplorer(address: string) {

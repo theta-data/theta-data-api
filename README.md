@@ -25,11 +25,11 @@ you can then open your web browser and navigate to http://localhost:3000 (host a
 
 ![avatar](https://github.com/larryro/image/blob/main/playground_20211101112605.png?raw=true)
 
-## Test
+<!-- ## Test
 
 ```bash
 $ npm run test
-```
+``` -->
 
 ## Build
 

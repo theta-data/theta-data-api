@@ -13,6 +13,7 @@
     }
   },
   "START_HEIGHT":	14590900,
+  "STAKE_ANALYSE_START_HEIGHT" : 14590900,
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 1000,
