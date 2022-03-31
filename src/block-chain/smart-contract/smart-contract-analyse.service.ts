@@ -31,6 +31,7 @@ export class SmartContractAnalyseService {
   constructor(
     private loggerService: LoggerService,
     private utilsService: UtilsService,
+    private smartContractList: Array<string> = [],
     private smartContractService: SmartContractService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
@@ -84,12 +85,19 @@ export class SmartContractAnalyseService {
       this.logger.debug('block list length:' + blockList.result.length)
       this.counter = blockList.result.length
       this.logger.debug('init counter', this.counter)
+      this.smartContractList = []
       for (let i = 0; i < blockList.result.length; i++) {
         const block = blockList.result[i]
         this.logger.debug(block.height + ' start hanldle')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
+
+      await this.clearCallTimeByPeriod()
+      for (const contract of this.smartContractList) {
+        await this.updateCallTimesByPeriod(contract)
+      }
       await this.smartContractConnection.commitTransaction()
+
       this.utilsService.updateRecordHeight(
         this.heightConfigFile,
         Number(blockList.result[blockList.result.length - 1].height)
@@ -118,6 +126,9 @@ export class SmartContractAnalyseService {
               transaction.receipt.ContractAddress
             }',${height},${moment().unix()})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1,call_times_update_timestamp=${moment().unix()};`
           )
+          if (this.smartContractList.indexOf(transaction.receipt.ContractAddress) == -1) {
+            this.smartContractList.push(transaction.receipt.ContractAddress)
+          }
           const smartContract = await this.smartContractConnection.manager.findOne(
             SmartContractEntity,
             {
@@ -197,6 +208,49 @@ export class SmartContractAnalyseService {
       versionFullName,
       optimizer,
       optimizerRuns
+    )
+  }
+
+  async updateCallTimesByPeriod(contractAddress: string) {
+    this.logger.debug('start update call times by period')
+    // if (config.get('IGNORE')) return false
+    const contract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
+      contract_address: contractAddress
+    })
+
+    contract.last_24h_call_times = await this.smartContractConnection.manager.count(
+      SmartContractCallRecordEntity,
+      {
+        timestamp: MoreThan(moment().subtract(24, 'hours').unix()),
+        contract_id: contract.id
+      }
+    )
+    contract.last_seven_days_call_times = await this.smartContractConnection.manager.count(
+      SmartContractCallRecordEntity,
+      {
+        timestamp: MoreThan(moment().subtract(7, 'days').unix()),
+        contract_id: contract.id
+      }
+    )
+    await this.smartContractConnection.manager.save(contract)
+    this.logger.debug('end update call times by period')
+  }
+
+  async clearCallTimeByPeriod() {
+    // if (config.get('IGNORE')) return false
+    await this.smartContractConnection.manager.update(
+      SmartContractEntity,
+      {
+        call_times_update_timestamp: LessThan(moment().subtract(24, 'hours').unix())
+      },
+      { last_24h_call_times: 0 }
+    )
+    await this.smartContractConnection.manager.update(
+      SmartContractEntity,
+      {
+        call_times_update_timestamp: LessThan(moment().subtract(7, 'days').unix())
+      },
+      { last_seven_days_call_times: 0 }
     )
   }
 }
