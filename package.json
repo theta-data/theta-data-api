@@ -18,6 +18,7 @@
     "analyse-smart-contract": "cross-env NODE_ENV=dev nest start -c nest-cli.smart-contract-analyse.json",
     "analyse-nft": "cross-env NODE_ENV=dev nest start -c nest-cli.nft-analyse.json",
     "analyse-stake": "cross-env NODE_ENV=dev nest start -c nest-cli.stake-analyse.json",
+    "analyse-tx": "cross-env NODE_ENV=dev nest start -c nest-cli.tx-analyse.json",
     "start": "cross-env NODE_ENV=dev nest start",
     "start:dev": "cross-env NODE_ENV=dev nest start --watch",
     "start:debug": "cross-env NODE_ENV=dev nest start --debug --watch",

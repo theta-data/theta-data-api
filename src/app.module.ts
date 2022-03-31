@@ -51,7 +51,7 @@ const config = require('config')
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'tx.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'tx/tx.sqlite',
       name: 'tx',
       entities: []
     }),

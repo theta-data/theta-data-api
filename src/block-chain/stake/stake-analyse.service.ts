@@ -144,14 +144,7 @@ export class StakeAnalyseService {
               transacitonToBeUpserted.length = 0
             }
           }
-          await this.stakeConnection.manager.insert(
-            StakeRewardEntity,
-            transacitonToBeUpserted
-            //   [
-            //   'wallet_address',
-            //   'reward_height'
-            // ]
-          )
+          await this.stakeConnection.manager.insert(StakeRewardEntity, transacitonToBeUpserted)
 
           this.logger.debug(height + ' end upsert stake reward')
           // }
