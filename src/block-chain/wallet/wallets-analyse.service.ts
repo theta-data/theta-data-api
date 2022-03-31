@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { MoreThan, QueryRunner } from 'typeorm'
+import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { LoggerService } from 'src/common/logger.service'
@@ -25,6 +25,8 @@ export class WalletsAnalyseService {
 
   public async analyseData() {
     try {
+      this.walletConnection = getConnection('wallet').createQueryRunner()
+
       await this.walletConnection.connect()
       await this.walletConnection.startTransaction()
 
