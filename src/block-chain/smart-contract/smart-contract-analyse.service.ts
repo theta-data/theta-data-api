@@ -27,11 +27,10 @@ export class SmartContractAnalyseService {
     config.get('ORM_CONFIG')['database'] + 'smart_contract/record.height'
   // )
   // .replace('..', __dirname)
-
+  private smartContractList: Array<string> = []
   constructor(
     private loggerService: LoggerService,
     private utilsService: UtilsService,
-    private smartContractList: Array<string> = [],
     private smartContractService: SmartContractService
   ) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
