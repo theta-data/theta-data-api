@@ -172,18 +172,21 @@ export class StakeAnalyseService {
       if (Number(block.height) % 100 !== 1) {
         return
       }
-      const [vaTotalNodeNum, vaEffectiveNodeNum, vaTotalThetaWei, vaEffectiveThetaWei] =
-        await this.updateValidator(block)
-
-      const [guTotalNodeNum, guEffectiveNodeNum, guTotalThetaWei, guEffectiveThetaWei] =
-        await this.updateGuardian(block)
-
+      const vaRes = await this.updateValidator(block)
+      if (!vaRes) return
+      const [vaTotalNodeNum, vaEffectiveNodeNum, vaTotalThetaWei, vaEffectiveThetaWei] = vaRes
+      const gnRes = await this.updateGuardian(block)
+      if (!gnRes) return
+      const [guTotalNodeNum, guEffectiveNodeNum, guTotalThetaWei, guEffectiveThetaWei] = gnRes
+      // await this.updateGuardian(block)
+      const eenpRes = await this.updateEenp(block)
+      if (!eenpRes) return
       const [eenpTotalNodeNum, eenpEffectiveNodeNum, eenpTotalTfWei, eenpEffectiveTfWei]: [
         number,
         number,
         BigNumber,
         BigNumber
-      ] = await this.updateEenp(block)
+      ] = eenpRes
       let res = await this.stakeConnection.manager.findOne(StakeStatisticsEntity, {
         block_height: Number(block.height)
       })
@@ -235,14 +238,16 @@ export class StakeAnalyseService {
 
   async updateValidator(
     block: THETA_BLOCK_INTERFACE
-  ): Promise<[number, number, BigNumber, BigNumber]> {
+  ): Promise<[number, number, BigNumber, BigNumber] | false> {
     let totalNodeNum = 0,
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
     const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.height)
     if (!validatorList.result || !validatorList.result.BlockHashVcpPairs) {
-      throw new Error('no validator BlockHashVcpPairs')
+      this.logger.error('no validator BlockHashVcpPairs')
+      return false
+      // throw new Error('no validator BlockHashVcpPairs')
     }
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
       totalNodeNum++
@@ -262,13 +267,18 @@ export class StakeAnalyseService {
 
   async updateGuardian(
     block: THETA_BLOCK_INTERFACE
-  ): Promise<[number, number, BigNumber, BigNumber]> {
+  ): Promise<[number, number, BigNumber, BigNumber] | false> {
     let totalNodeNum = 0,
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
 
     const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.height)
+    if (!gcpList.result || !gcpList.result.BlockHashGcpPairs) {
+      this.logger.error('no guardian BlockHashVcpPairs')
+      return false
+      // throw new Error('no validator BlockHashVcpPairs')
+    }
     for (const guardian of gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians) {
       totalNodeNum++
       guardian.Stakes.forEach((stake) => {
@@ -289,12 +299,20 @@ export class StakeAnalyseService {
     return [totalNodeNum, effectiveNodeNum, totalThetaWei, effectiveThetaWei]
   }
 
-  async updateEenp(block: THETA_BLOCK_INTERFACE): Promise<[number, number, BigNumber, BigNumber]> {
+  async updateEenp(
+    block: THETA_BLOCK_INTERFACE
+  ): Promise<[number, number, BigNumber, BigNumber] | false> {
     let totalNodeNum = 0,
       effectiveNodeNum = 0,
       totalTfuelWei = new BigNumber(0),
       effectiveTfuelWei = new BigNumber(0)
     const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.height)
+    if (!eenpList.result || !eenpList.result.BlockHashEenpPairs) {
+      this.logger.error('no guardian BlockHashVcpPairs')
+      return false
+      // return false
+      // throw new Error('no validator BlockHashVcpPairs')
+    }
     eenpList.result.BlockHashEenpPairs[0].EENs.forEach((eenp) => {
       totalNodeNum++
       let isEffectiveNode = false
