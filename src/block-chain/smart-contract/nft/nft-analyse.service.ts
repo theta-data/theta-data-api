@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Between, getConnection, QueryRunner } from 'typeorm'
+import { Between, getConnection, MoreThanOrEqual, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import {
   SmartContractEntity,
@@ -76,18 +76,20 @@ export class NftAnalyseService {
       } else {
         endHeight = lastfinalizedHeight
       }
-      this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
+      // this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
       this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
         {
           where: {
-            height: Between(height, endHeight)
+            height: MoreThanOrEqual(height)
           },
+          take: config.get('ANALYSE_NUMBER'),
           order: { height: 'ASC' }
         }
       )
+      // this.l
       // if (contractRecordList.length == 0) return
       for (const record of contractRecordList) {
         if (!smartContractList.hasOwnProperty(record.contract_id)) {
@@ -110,6 +112,9 @@ export class NftAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
+      this.logger.debug(
+        'end height:' + Number(contractRecordList[contractRecordList.length - 1].height)
+      )
       if (contractRecordList.length > 0) {
         this.utilsService.updateRecordHeight(
           this.heightConfigFile,
