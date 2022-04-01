@@ -43,7 +43,7 @@ export class WalletsAnalyseService {
       height = recordHeight > height ? recordHeight : height
       if (height >= lastfinalizedHeight) {
         await this.walletConnection.commitTransaction()
-        this.logger.debug('commit success')
+        this.logger.debug(height + ': commit success')
         this.logger.debug('no height to analyse')
         return
       }
