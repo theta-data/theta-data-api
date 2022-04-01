@@ -70,8 +70,17 @@ export class StakeAnalyseService {
       this.logger.debug('block list length:' + blockList.result.length)
       this.counter = blockList.result.length
       this.logger.debug('init counter', this.counter)
+      const lastAnalyseHeight = await this.stakeConnection.manager.findOne(StakeRewardEntity, {
+        order: {
+          reward_height: 'DESC'
+        }
+      })
       for (let i = 0; i < blockList.result.length; i++) {
         const block = blockList.result[i]
+        if (lastAnalyseHeight && lastAnalyseHeight.reward_height >= Number(block.height)) {
+          this.counter--
+          continue
+        }
         this.logger.debug(block.height + ' start hanldle')
         await this.handleOrderCreatedEvent(block, lastfinalizedHeight)
       }
@@ -104,16 +113,16 @@ export class StakeAnalyseService {
       moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
     ).unix()
 
-    if (
-      Number(block.height) % 100 === 1 &&
-      latestFinalizedBlockHeight - Number(block.height) < 5000
-    ) {
-      this.logger.debug('update checkpoint')
-      await this.updateCheckPoint(block)
-      // await this.clearCallTimeByPeriod()
-    } else {
-      this.logger.debug(height + ' no need to calculate checkpoint block')
-    }
+    // if (
+    //   Number(block.height) % 100 === 1 &&
+    //   latestFinalizedBlockHeight - Number(block.height) < 5000
+    // ) {
+    //   this.logger.debug('update checkpoint')
+    await this.updateCheckPoint(block)
+    // await this.clearCallTimeByPeriod()
+    // } else {
+    //   this.logger.debug(height + ' no need to calculate checkpoint block')
+    // }
 
     const wallets = {}
     const smartContractToDeal: { [index: string]: SmartContractEntity } = {}
