@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Between, getConnection, QueryRunner } from 'typeorm'
+import { Between, getConnection, MoreThanOrEqual, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import {
   SmartContractEntity,
@@ -83,8 +83,9 @@ export class NftAnalyseService {
         SmartContractCallRecordEntity,
         {
           where: {
-            height: Between(height, endHeight)
+            height: MoreThanOrEqual(height)
           },
+          take: config.get('ANALYSE_NUMBER'),
           order: { height: 'ASC' }
         }
       )
