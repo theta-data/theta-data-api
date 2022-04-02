@@ -149,6 +149,7 @@ export class SmartContractAnalyseService {
 
             await this.smartContractConnection.manager.save(SmartContractEntity, smartContract)
           }
+          if (config.get('CONFLICT_TRANSACTIONS').indexOf(transaction.hash) !== -1) break
           await this.smartContractConnection.manager.insert(
             SmartContractCallRecordEntity,
             {

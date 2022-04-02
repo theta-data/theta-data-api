@@ -1,10 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-// import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
+
 import {
-  Between,
-  FindCondition,
-  FindConditions,
   FindManyOptions,
   getConnection,
   Like,
@@ -16,14 +13,10 @@ import {
 } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
-import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
+import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
-import { orderBy } from 'lodash'
-import { TokenType } from 'src/block-chain/rpc/rpc.model'
-// import { Logger } from 'ethers/lib/utils'
-// import { add } from 'lodash'
 
 @Injectable()
 export class NftService {
@@ -296,7 +289,6 @@ export class NftService {
                 from: latesRecord.from
               }
             )
-
           } else {
             // let name = ''
             let imgUri = ''
