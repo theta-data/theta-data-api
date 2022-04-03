@@ -32,7 +32,7 @@ export class NftAnalyseService {
       await this.smartContractConnection.connect()
       await this.nftConnection.connect()
 
-      await this.smartContractConnection.startTransaction()
+      // await this.smartContractConnection.startTransaction()
       await this.nftConnection.startTransaction()
 
       let height: number = 0,
@@ -62,7 +62,7 @@ export class NftAnalyseService {
         }
       }
       if (height >= lastfinalizedHeight) {
-        await this.smartContractConnection.commitTransaction()
+        // await this.smartContractConnection.commitTransaction()
         await this.nftConnection.commitTransaction()
         this.logger.debug('commit success')
         this.logger.debug('no height to analyse')
@@ -120,7 +120,7 @@ export class NftAnalyseService {
       // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
       // console.log(data)
       this.logger.debug('start update calltimes by period')
-      await this.smartContractConnection.commitTransaction()
+      // await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
       this.logger.debug(
         'end height:' + Number(contractRecordList[contractRecordList.length - 1].height)
@@ -138,11 +138,11 @@ export class NftAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
 
-      await this.smartContractConnection.rollbackTransaction()
+      // await this.smartContractConnection.rollbackTransaction()
       await this.nftConnection.rollbackTransaction()
       // process.exit(0)
     } finally {
-      await this.smartContractConnection.release()
+      // await this.smartContractConnection.release()
       await this.nftConnection.release()
       this.logger.debug('release success')
     }
