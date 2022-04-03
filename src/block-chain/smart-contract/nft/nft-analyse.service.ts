@@ -91,6 +91,7 @@ export class NftAnalyseService {
       )
       // this.l
       // if (contractRecordList.length == 0) return
+      const promiseArr = []
       for (const record of contractRecordList) {
         if (!smartContractList.hasOwnProperty(record.contract_id)) {
           smartContractList[record.contract_id] =
@@ -100,12 +101,21 @@ export class NftAnalyseService {
         }
         if (smartContractList[record.contract_id].protocol !== smartContractProtocol.tnt721)
           continue
-        await this.nftService.updateNftRecord(
-          this.nftConnection,
-          this.smartContractConnection,
-          record,
-          smartContractList[record.contract_id]
+        promiseArr.push(
+          this.nftService.updateNftRecord(
+            this.nftConnection,
+            this.smartContractConnection,
+            record,
+            smartContractList[record.contract_id]
+          )
         )
+        await Promise.all(promiseArr)
+        // await this.nftService.updateNftRecord(
+        //   this.nftConnection,
+        //   this.smartContractConnection,
+        //   record,
+        //   smartContractList[record.contract_id]
+        // )
       }
       // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
       // console.log(data)
