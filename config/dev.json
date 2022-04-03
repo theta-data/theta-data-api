@@ -16,7 +16,7 @@
   "THETA_NODE_HOST" : "https://theta-bridge-rpc.thetatoken.org/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 1000,
-  "ANALYSE_NUMBER" : 10,
+  "ANALYSE_NUMBER" : 1000,
   "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
