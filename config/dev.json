@@ -20,7 +20,7 @@
   "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
-    "limit": 60
+    "limit": 10
   },
   "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 0,
   "RE_SYNC_BALANCE" : false,

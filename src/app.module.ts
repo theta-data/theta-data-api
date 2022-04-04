@@ -9,12 +9,14 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
-import { ThrottlerModule } from '@nestjs/throttler'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { WalletModule } from './block-chain/wallet/wallet.module'
 // import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ContactModule } from './contact/contact.module'
 import { ApolloDriver } from '@nestjs/apollo'
+import { APP_GUARD } from '@nestjs/core'
+import { GqlThrottlerGuard } from './guard'
 const config = require('config')
 
 @Module({
@@ -87,6 +89,11 @@ const config = require('config')
     WalletModule,
     ContactModule
   ],
-  providers: []
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard
+    }
+  ]
 })
 export class AppModule {}
