@@ -50,10 +50,9 @@ export class StakeAnalyseService {
       const recordHeight = this.utilsService.getRecordHeight(this.heightConfigFile)
       height = recordHeight > height ? recordHeight : height
       if (height >= lastfinalizedHeight) {
-        await this.stakeConnection.commitTransaction()
         this.logger.debug('commit success')
         this.logger.debug('no height to analyse')
-        return
+        return await this.stakeConnection.commitTransaction()
       }
       // await this.
       let endHeight = lastfinalizedHeight
@@ -87,10 +86,12 @@ export class StakeAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.stakeConnection.commitTransaction()
       this.logger.debug('commit success')
-      this.utilsService.updateRecordHeight(
-        this.heightConfigFile,
-        Number(blockList.result[blockList.result.length - 1].height)
-      )
+      if (blockList.result.length > 0) {
+        this.utilsService.updateRecordHeight(
+          this.heightConfigFile,
+          Number(blockList.result[blockList.result.length - 1].height)
+        )
+      }
     } catch (e) {
       // console.log(e)
       console.error(e.message)
