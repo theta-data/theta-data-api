@@ -257,7 +257,6 @@ export class NftService {
                 from: log.decode.result.from.toLowerCase(),
                 to: log.decode.result.to.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId),
-
                 smart_contract_address: log.address.toLowerCase(),
                 height: record.height,
                 name: contract.contract.name,
