@@ -72,7 +72,7 @@ export class NftAnalyseService {
       // await this.
       // let endHeight = lastfinalizedHeight
       if (lastfinalizedHeight - height > config.get('ANALYSE_NUMBER')) {
-        endHeight = height + config.get('ANALYSE_NUMBER')
+        endHeight = height + config.get('NFT.ANALYSE_NUMBER')
       } else {
         endHeight = lastfinalizedHeight
       }
