@@ -26,6 +26,7 @@ export class NftAnalyseService {
   //   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     try {
+      this.logger.debug('start analyse nft data')
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
 
@@ -144,6 +145,7 @@ export class NftAnalyseService {
     } finally {
       // await this.smartContractConnection.release()
       await this.nftConnection.release()
+      this.logger.debug('end analyse nft data')
       this.logger.debug('release success')
     }
   }
