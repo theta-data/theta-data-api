@@ -70,14 +70,6 @@ export class NftAnalyseService {
         return
       }
 
-      // await this.
-      // let endHeight = lastfinalizedHeight
-      if (lastfinalizedHeight - height > config.get('ANALYSE_NUMBER')) {
-        endHeight = height + config.get('NFT.ANALYSE_NUMBER')
-      } else {
-        endHeight = lastfinalizedHeight
-      }
-      // this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
       this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
@@ -86,7 +78,7 @@ export class NftAnalyseService {
           where: {
             height: MoreThanOrEqual(height)
           },
-          take: config.get('ANALYSE_NUMBER'),
+          take: config.get('NFT.ANALYSE_NUMBER'),
           order: { height: 'ASC' }
         }
       )
