@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Between, getConnection, MoreThanOrEqual, QueryRunner } from 'typeorm'
+import { Between, getConnection, MoreThan, MoreThanOrEqual, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import {
   SmartContractEntity,
@@ -36,39 +36,40 @@ export class NftAnalyseService {
       // await this.smartContractConnection.startTransaction()
       await this.nftConnection.startTransaction()
 
-      let height: number = 0,
-        endHeight = 0,
-        lastfinalizedHeight = 0
+      // let height: number = 0,
+      //   endHeight = 0,
+      // lastfinalizedHeight = 0,
+      let startId: number = 0
 
-      const smartContractEntity = await this.smartContractConnection.manager.findOne(
-        SmartContractCallRecordEntity,
-        {
-          order: {
-            height: 'DESC'
-          }
-        }
-      )
-      if (smartContractEntity) lastfinalizedHeight = smartContractEntity.height
+      // const smartContractEntity = await this.smartContractConnection.manager.findOne(
+      //   SmartContractCallRecordEntity,
+      //   {
+      //     order: {
+      //       height: 'DESC'
+      //     }
+      //   }
+      // )
+      // if (smartContractEntity) lastfinalizedHeight = smartContractEntity.height
 
-      if (config.get('START_HEIGHT')) {
-        height = config.get('START_HEIGHT')
-      }
+      // if (config.get('START_HEIGHT')) {
+      //   height = config.get('START_HEIGHT')
+      // }
       // try {
       if (!fs.existsSync(this.heightConfigFile)) {
         fs.writeFileSync(this.heightConfigFile, '0')
       } else {
         const data = fs.readFileSync(this.heightConfigFile, 'utf8')
-        if (data && Number(data) > height) {
-          height = Number(data) + 1
+        if (data) {
+          startId = Number(data) + 1
         }
       }
-      if (height >= lastfinalizedHeight) {
-        // await this.smartContractConnection.commitTransaction()
-        await this.nftConnection.commitTransaction()
-        this.logger.debug('commit success')
-        this.logger.debug('no height to analyse')
-        return
-      }
+      // if (height >= lastfinalizedHeight) {
+      //   // await this.smartContractConnection.commitTransaction()
+      //   await this.nftConnection.commitTransaction()
+      //   this.logger.debug('commit success')
+      //   this.logger.debug('no height to analyse')
+      //   return
+      // }
 
       this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
@@ -76,10 +77,10 @@ export class NftAnalyseService {
         SmartContractCallRecordEntity,
         {
           where: {
-            height: MoreThanOrEqual(height)
+            id: MoreThan(startId)
           },
           take: config.get('NFT.ANALYSE_NUMBER'),
-          order: { height: 'ASC' }
+          order: { id: 'ASC' }
         }
       )
       // this.l
@@ -115,13 +116,13 @@ export class NftAnalyseService {
       this.logger.debug('start update calltimes by period')
       // await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
-      this.logger.debug(
-        'end height:' + Number(contractRecordList[contractRecordList.length - 1].height)
-      )
       if (contractRecordList.length > 0) {
+        this.logger.debug(
+          'end height:' + Number(contractRecordList[contractRecordList.length - 1].height)
+        )
         this.utilsService.updateRecordHeight(
           this.heightConfigFile,
-          Number(contractRecordList[contractRecordList.length - 1].height)
+          contractRecordList[contractRecordList.length - 1].id
         )
       }
       this.logger.debug('commit success')
