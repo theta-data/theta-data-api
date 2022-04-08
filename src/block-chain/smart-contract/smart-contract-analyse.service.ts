@@ -96,11 +96,12 @@ export class SmartContractAnalyseService {
         await this.updateCallTimesByPeriod(contract)
       }
       await this.smartContractConnection.commitTransaction()
-
-      this.utilsService.updateRecordHeight(
-        this.heightConfigFile,
-        Number(blockList.result[blockList.result.length - 1].height)
-      )
+      if (blockList.result.length > 1) {
+        this.utilsService.updateRecordHeight(
+          this.heightConfigFile,
+          Number(blockList.result[blockList.result.length - 1].height)
+        )
+      }
     } catch (e) {
       // console.log(e)
       console.error(e.message)
