@@ -8,7 +8,6 @@ import {
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
-const moment = require('moment')
 const fs = require('fs')
 @Injectable()
 export class NftAnalyseService {
@@ -47,7 +46,7 @@ export class NftAnalyseService {
       //   return
       // }
 
-      this.startTimestamp = moment().unix()
+      // this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
