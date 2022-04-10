@@ -5,10 +5,7 @@ import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 
 @ObjectType()
-export class NftType {
-  // @Field(() => [NftBalanceEntity])
-  // balance: [NftBalanceEntity]
-}
+export class NftType {}
 
 @ObjectType()
 export class NftMetaType {

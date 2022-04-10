@@ -105,27 +105,6 @@ export class NftService {
       return 0
     }
     let contractRecord: Array<SmartContractCallRecordEntity> = []
-    // const totalCount = await smartContractConnection.manager.count(SmartContractCallRecordEntity, {
-    //   contract_id: contract.id,
-    //   height: MoreThan(
-    //     contract.latest_record_parse_height
-    //     // contract.latest_record_parse_height + 100
-    //   )
-    // })
-    // this.logger.debug('total count:' + totalCount)
-
-    // if (totalCount > 1000) {
-    //   contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
-    //     where: {
-    //       contract_id: contract.id,
-    //       height: Between(
-    //         contract.latest_record_parse_height + 1,
-    //         contract.latest_record_parse_height + 1000
-    //       )
-    //     },
-    //     order: { height: 'ASC' }
-    //   })
-    // } else {
     contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
       where: {
         contract_id: contract.id,

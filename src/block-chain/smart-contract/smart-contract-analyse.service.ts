@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common'
 import { getConnection, LessThan, MoreThan, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { thetaTsSdk } from 'theta-ts-sdk'
-import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { LoggerService } from 'src/common/logger.service'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
@@ -10,11 +9,9 @@ import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contra
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import fetch from 'cross-fetch'
-import { mkdir, mkdirSync } from 'fs'
 const config = require('config')
 const moment = require('moment')
 const fs = require('fs')
-const path = require('path')
 @Injectable()
 export class SmartContractAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -22,11 +19,7 @@ export class SmartContractAnalyseService {
   private counter = 0
   private startTimestamp = 0
   private smartContractConnection: QueryRunner
-  private heightConfigFile =
-    // path.resolve(
-    config.get('ORM_CONFIG')['database'] + 'smart_contract/record.height'
-  // )
-  // .replace('..', __dirname)
+  private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'smart_contract/record.height'
   private smartContractList: Array<string> = []
   constructor(
     private loggerService: LoggerService,
@@ -103,7 +96,6 @@ export class SmartContractAnalyseService {
         )
       }
     } catch (e) {
-      // console.log(e)
       console.error(e.message)
       this.logger.error(e.message)
       this.logger.error('rollback')
@@ -169,8 +161,6 @@ export class SmartContractAnalyseService {
     this.logger.debug(height + ' end update analyse')
     this.counter--
     this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
-    // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
-    // console.log(data)
   }
 
   async verifyWithThetaExplorer(address: string) {
