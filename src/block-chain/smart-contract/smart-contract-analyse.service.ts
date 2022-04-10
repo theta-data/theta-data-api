@@ -26,8 +26,8 @@ export class SmartContractAnalyseService {
     private utilsService: UtilsService,
     private smartContractService: SmartContractService
   ) {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
-    this.logger.debug(config.get('THETA_NODE_HOST'))
+    thetaTsSdk.blockchain.setUrl(config.get('SMART_CONTRACT.THETA_NODE_HOST'))
+    this.logger.debug(config.get('SMART_CONTRACT.THETA_NODE_HOST'))
   }
 
   public async analyseData() {
@@ -41,8 +41,8 @@ export class SmartContractAnalyseService {
       )
       height = lastfinalizedHeight - 1000
 
-      if (config.get('START_HEIGHT')) {
-        height = config.get('START_HEIGHT')
+      if (config.get('SMART_CONTRACT.START_HEIGHT')) {
+        height = config.get('SMART_CONTRACT.START_HEIGHT')
       }
       // console.log(path.resolve(this.heightConfigFile))
       if (!fs.existsSync(this.heightConfigFile)) {
@@ -64,7 +64,7 @@ export class SmartContractAnalyseService {
         return
       }
       let endHeight = lastfinalizedHeight
-      const analyseNumber = config.get('ANALYSE_NUMBER')
+      const analyseNumber = config.get('SMART_CONTRACT.ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
         endHeight = height + analyseNumber
       }
