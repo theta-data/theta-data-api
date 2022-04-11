@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { Between, getConnection, MoreThan, MoreThanOrEqual, QueryRunner } from 'typeorm'
+import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import {
   SmartContractEntity,
@@ -8,14 +8,11 @@ import {
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
-const moment = require('moment')
 const fs = require('fs')
 @Injectable()
 export class NftAnalyseService {
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
-  private counter = 0
-  private startTimestamp = 0
 
   private smartContractConnection: QueryRunner
   private nftConnection: QueryRunner
@@ -23,7 +20,6 @@ export class NftAnalyseService {
 
   constructor(private nftService: NftService, private utilsService: UtilsService) {}
 
-  //   @Interval(config.get('ANALYSE_INTERVAL'))
   public async analyseData() {
     try {
       this.logger.debug('start analyse nft data')
@@ -32,29 +28,8 @@ export class NftAnalyseService {
 
       await this.smartContractConnection.connect()
       await this.nftConnection.connect()
-
-      // await this.smartContractConnection.startTransaction()
       await this.nftConnection.startTransaction()
-
-      // let height: number = 0,
-      //   endHeight = 0,
-      // lastfinalizedHeight = 0,
       let startId: number = 0
-
-      // const smartContractEntity = await this.smartContractConnection.manager.findOne(
-      //   SmartContractCallRecordEntity,
-      //   {
-      //     order: {
-      //       height: 'DESC'
-      //     }
-      //   }
-      // )
-      // if (smartContractEntity) lastfinalizedHeight = smartContractEntity.height
-
-      // if (config.get('START_HEIGHT')) {
-      //   height = config.get('START_HEIGHT')
-      // }
-      // try {
       if (!fs.existsSync(this.heightConfigFile)) {
         fs.writeFileSync(this.heightConfigFile, '0')
       } else {
@@ -71,7 +46,7 @@ export class NftAnalyseService {
       //   return
       // }
 
-      this.startTimestamp = moment().unix()
+      // this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
