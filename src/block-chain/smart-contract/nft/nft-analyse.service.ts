@@ -68,8 +68,8 @@ export class NftAnalyseService {
               id: record.contract_id
             })
         }
-        if (smartContractList[record.contract_id].protocol !== smartContractProtocol.tnt721)
-          continue
+        // if (smartContractList[record.contract_id].protocol !== smartContractProtocol.tnt721)
+        //   continue
         promiseArr.push(
           this.nftService.updateNftRecord(
             this.nftConnection,
