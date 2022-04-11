@@ -9,13 +9,14 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
-import { ThrottlerModule } from '@nestjs/throttler'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 import { WalletModule } from './block-chain/wallet/wallet.module'
-import * as path from 'path'
-import { AnalyseModule } from './analyse/analyse.module'
+// import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ContactModule } from './contact/contact.module'
 import { ApolloDriver } from '@nestjs/apollo'
+import { APP_GUARD } from '@nestjs/core'
+import { GqlThrottlerGuard } from './guard'
 const config = require('config')
 
 @Module({
@@ -34,31 +35,31 @@ const config = require('config')
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'smart_contract.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'smart_contract/smart_contract.sqlite',
       name: 'smart_contract',
       entities: []
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'nft.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'nft/nft.sqlite',
       name: 'nft',
       entities: []
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'stake.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'stake/stake.sqlite',
       name: 'stake',
       entities: []
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'tx.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'tx/tx.sqlite',
       name: 'tx',
       entities: []
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'wallet.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'wallet/wallet.sqlite',
       name: 'wallet',
       entities: []
     }),
@@ -80,7 +81,6 @@ const config = require('config')
       limit: config.get('RATE_LIMIT')['limit']
     }),
     EventEmitterModule.forRoot(),
-    AnalyseModule,
     TxModule,
     StakeModule,
     MarketModule,
@@ -89,6 +89,11 @@ const config = require('config')
     WalletModule,
     ContactModule
   ],
-  providers: []
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: GqlThrottlerGuard
+    }
+  ]
 })
 export class AppModule {}

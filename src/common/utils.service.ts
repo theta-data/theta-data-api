@@ -189,4 +189,23 @@ export class UtilsService {
       }\n */\n` + sourceCode
     )
   }
+
+  getRecordHeight(path: string) {
+    const fs = require('fs')
+    if (!fs.existsSync(path)) {
+      this.logger.debug('read height')
+      // mkdirSync(this.heightConfigFile)
+      this.logger.debug('finish mkdir')
+      fs.writeFileSync(path, '0')
+      return 0
+    } else {
+      const data = fs.readFileSync(path, 'utf8')
+      return Number(data) + 1
+    }
+  }
+
+  updateRecordHeight(path: string, height: number) {
+    const fs = require('fs')
+    fs.writeFileSync(path, height.toString())
+  }
 }

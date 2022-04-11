@@ -8,6 +8,8 @@ import { StakeRewardEntity } from './stake-reward.entity'
 import { WalletModule } from '../wallet/wallet.module'
 import { WalletEntity } from '../wallet/wallet.entity'
 import { MarketModule } from '../../market/market.module'
+import { StakeAnalyseService } from './stake-analyse.service'
+import { CommonModule } from 'src/common/common.module'
 
 @Module({
   imports: [
@@ -16,9 +18,10 @@ import { MarketModule } from '../../market/market.module'
     TypeOrmModule.forFeature([StakeEntity, StakeStatisticsEntity, StakeRewardEntity], 'stake'),
     TypeOrmModule.forFeature([WalletEntity], 'wallet'),
 
-    CacheModule.register()
+    CacheModule.register(),
+    CommonModule
   ],
-  providers: [StakeService, StakeResolver],
+  providers: [StakeService, StakeResolver, StakeAnalyseService],
   exports: [StakeService]
 })
 export class StakeModule {}
