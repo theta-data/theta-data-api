@@ -12,7 +12,6 @@ import {
 @ObjectType()
 @Entity()
 @Unique(['smart_contract_address', 'token_id', 'timestamp'])
-@Index(['smart_contract_address'])
 // @Index(['token_id'])
 export class NftTransferRecordEntity {
   @PrimaryGeneratedColumn('uuid')
