@@ -1,7 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-
+// import { checkTnt721, decodeLogs, readSmartContract } from 'src/helper/utils'
 import {
+  Between,
+  FindCondition,
+  FindConditions,
   FindManyOptions,
   getConnection,
   Like,
@@ -13,10 +16,14 @@ import {
 } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
 import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
-import { NftBalanceEntity } from './nft-balance.entity'
+import { NftBalanceEntity, NftStatusEnum } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import { orderBy } from 'lodash'
+import { TokenType } from 'src/block-chain/rpc/rpc.model'
+// import { Logger } from 'ethers/lib/utils'
+// import { add } from 'lodash'
 
 @Injectable()
 export class NftService {
@@ -105,6 +112,27 @@ export class NftService {
       return 0
     }
     let contractRecord: Array<SmartContractCallRecordEntity> = []
+    // const totalCount = await smartContractConnection.manager.count(SmartContractCallRecordEntity, {
+    //   contract_id: contract.id,
+    //   height: MoreThan(
+    //     contract.latest_record_parse_height
+    //     // contract.latest_record_parse_height + 100
+    //   )
+    // })
+    // this.logger.debug('total count:' + totalCount)
+
+    // if (totalCount > 1000) {
+    //   contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
+    //     where: {
+    //       contract_id: contract.id,
+    //       height: Between(
+    //         contract.latest_record_parse_height + 1,
+    //         contract.latest_record_parse_height + 1000
+    //       )
+    //     },
+    //     order: { height: 'ASC' }
+    //   })
+    // } else {
     contractRecord = await smartContractConnection.manager.find(SmartContractCallRecordEntity, {
       where: {
         contract_id: contract.id,
@@ -236,6 +264,7 @@ export class NftService {
                 from: log.decode.result.from.toLowerCase(),
                 to: log.decode.result.to.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId),
+
                 smart_contract_address: log.address.toLowerCase(),
                 height: record.height,
                 name: contract.contract.name,
@@ -267,6 +296,7 @@ export class NftService {
                 from: latesRecord.from
               }
             )
+
           } else {
             // let name = ''
             let imgUri = ''
