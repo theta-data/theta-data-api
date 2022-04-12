@@ -45,6 +45,7 @@ export class SmartContractAnalyseService {
         height = config.get('SMART_CONTRACT.START_HEIGHT')
       }
       // console.log(path.resolve(this.heightConfigFile))
+      console.log(this.heightConfigFile)
       if (!fs.existsSync(this.heightConfigFile)) {
         this.logger.debug('read height')
         // mkdirSync(this.heightConfigFile)
