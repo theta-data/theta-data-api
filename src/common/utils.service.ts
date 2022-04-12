@@ -205,6 +205,7 @@ export class UtilsService {
   }
 
   updateRecordHeight(path: string, height: number) {
+    // console.log('')
     const fs = require('fs')
     fs.writeFileSync(path, height.toString())
   }
