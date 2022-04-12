@@ -606,14 +606,15 @@ type ContactEntity {
 }
 
 type Query {
+  TransactionsStatistics: ThetaTransactionStatisticsType!
+  Wallet: WalletModel!
+
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity
-  Wallet: WalletModel!
   MarketInformation: MarketInformationType!
+  ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
-  TransactionsStatistics: ThetaTransactionStatisticsType!
-  ThetaRpc: ThetaRpcModel!
 }
 
 type Mutation {

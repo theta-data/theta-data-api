@@ -1,6 +1,6 @@
 {
   "ORM_CONFIG": {
-    "database": "/home/ubuntu/theta-data/database/",
+    "database": "/home/ubuntu/theta-data/database_v3/",
     "synchronize": true,
     "autoLoadEntities": true,
     "name": "THETA_DATA",
@@ -17,14 +17,13 @@
   "THETA_NODE_HOST" : "http://ip-172-31-35-81.ap-southeast-1.compute.internal/rpc",
   "LOG_PATH": "/home/ubuntu/theta-data/logs/",
   "ANALYSE_INTERVAL" : 3000,
-  "ANALYSE_NUMBER" : 100,
+  "ANALYSE_NUMBER" : 1000,
   "IGNORE" : false,
   "RATE_LIMIT": {
     "ttl": 60,
     "limit": 60
   },
   "SMART_CONTRACT_VERIFY_DETECT_TIMES" : 10,
-
   "RE_SYNC_BALANCE" : false,
   "STAKE_ANALYSE_START_HEIGHT" : 14590900,
   "CONFLICT_TRANSACTIONS" : ["0x4a9c74bf71ac6a3591672d67e975887ef8374ba34b45342305e656666d9cdcf1","0x82236267393c31c17bf4e79fb14f9fc0396c05821ebd357e6b420a43933d64db"],
