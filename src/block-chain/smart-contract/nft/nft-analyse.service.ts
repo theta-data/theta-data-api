@@ -95,6 +95,7 @@ export class NftAnalyseService {
         this.logger.debug(
           'end height:' + Number(contractRecordList[contractRecordList.length - 1].height)
         )
+
         this.utilsService.updateRecordHeight(
           this.heightConfigFile,
           contractRecordList[contractRecordList.length - 1].id
