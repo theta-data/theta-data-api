@@ -7,6 +7,7 @@ import { SmartContractCallRecordEntity } from '../smart-contract-call-record.ent
 import { SmartContractEntity } from '../smart-contract.entity'
 import { NftResolver } from './nft.resolver'
 import { CommonModule } from 'src/common/common.module'
+import { NftAnalyseService } from './nft-analyse.service'
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { CommonModule } from 'src/common/common.module'
     ),
     CommonModule
   ],
-  providers: [NftService, NftResolver],
+  providers: [NftService, NftResolver, NftAnalyseService],
   exports: [NftService]
 })
 export class NftModule {}

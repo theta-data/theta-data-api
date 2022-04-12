@@ -6,6 +6,8 @@ import { SmartContractService } from './smart-contract.service'
 import { SmartContractResolver } from './smart-contract.resolver'
 import { NftModule } from './nft/nft.module'
 import { CommonModule } from 'src/common/common.module'
+import { SmartContractAnalyseService } from './smart-contract-analyse.service'
+// import { AnalyseService } from 'src/analyse/analyse.service'
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { CommonModule } from 'src/common/common.module'
     NftModule,
     CommonModule
   ],
-  providers: [SmartContractService, SmartContractResolver],
+  providers: [SmartContractService, SmartContractResolver, SmartContractAnalyseService],
   exports: [SmartContractService]
 })
 export class SmartContractModule {}
