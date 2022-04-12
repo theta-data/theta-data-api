@@ -2,7 +2,7 @@ import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { WalletModel } from './wallet.model'
 import { assertWrappingType, GraphQLString } from 'graphql'
 import { BalanceModel } from './wallet-balance.model'
-import { WalletService } from './wallets.service'
+import { WalletService } from './wallet.service'
 
 @Resolver(() => WalletModel)
 export class WalletResolver {

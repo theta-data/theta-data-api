@@ -11,6 +11,7 @@ export class RpcResolver {
   constructor(private rpcService: RpcService) {
     thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
+  private logger = new Logger()
 
   @Query(() => ThetaRpcModel)
   async ThetaRpc(@Context() context) {
