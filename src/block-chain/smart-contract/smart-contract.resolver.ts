@@ -39,7 +39,7 @@ export class SmartContractResolver {
 
   @ResolveField()
   async Search(
-    @Args('type', { type: () => SmartContractProtocolEnum, nullable: true })
+    @Args('protocol', { type: () => SmartContractProtocolEnum, nullable: true })
     protocol: SmartContractProtocolEnum,
     @Args('name', { type: () => GraphQLString, nullable: true })
     name: string,
