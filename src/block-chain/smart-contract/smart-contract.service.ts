@@ -1,7 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SmartContractEntity, SmartContractProtocolEnum } from './smart-contract.entity'
-import { FindManyOptions, getConnection, Like, MoreThan, Repository } from 'typeorm'
+import {
+  FindCondition,
+  FindManyOptions,
+  FindOneOptions,
+  getConnection,
+  Like,
+  MoreThan,
+  Repository
+} from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { RankByEnum } from './smart-contract.model'
 import { NftService } from './nft/nft.service'
@@ -68,9 +76,10 @@ export class SmartContractService {
         condition.order = { call_times: 'DESC' }
     }
     if (type) {
-      condition.where['protocol'] = SmartContractProtocolEnum
+      condition.where['protocol'] = type
     }
     if (name) condition.where['name'] = Like('%' + name + '%')
+    console.log(condition)
     return await this.smartContractRepository.find(condition)
   }
 
