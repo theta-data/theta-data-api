@@ -12,7 +12,7 @@ import {
   Repository
 } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
-import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
+import { SmartContractEntity, SmartContractProtocolEnum } from '../smart-contract.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
@@ -165,7 +165,7 @@ export class NftService {
       }
     } = {}
     // let contractLogs: any = []
-    if (contract.protocol === smartContractProtocol.tnt721) {
+    if (contract.protocol === SmartContractProtocolEnum.tnt721) {
       contractList[contract.contract_address] = {
         contract: contract,
         logs: []
@@ -187,7 +187,7 @@ export class NftService {
         if (
           !tempContract ||
           !tempContract.verified ||
-          tempContract.protocol != smartContractProtocol.tnt721
+          tempContract.protocol != SmartContractProtocolEnum.tnt721
         )
           continue
         contractList[log.address] = {
@@ -219,7 +219,7 @@ export class NftService {
           if (
             !logContract ||
             !logContract.verified ||
-            logContract.protocol !== smartContractProtocol.tnt721
+            logContract.protocol !== SmartContractProtocolEnum.tnt721
           )
             continue
           const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
@@ -653,7 +653,7 @@ export class NftService {
   ): Promise<[boolean, number, Array<SmartContractEntity>]> {
     const condition: FindManyOptions<SmartContractEntity> = {
       where: {
-        protocol: smartContractProtocol.tnt721,
+        protocol: SmartContractProtocolEnum.tnt721,
         name: Like('%' + name + '%')
       },
       take: take + 1,
@@ -668,7 +668,7 @@ export class NftService {
       condition.where['id'] = MoreThan(id)
     }
     const totalNft = await this.smartContractRepository.count({
-      protocol: smartContractProtocol.tnt721,
+      protocol: SmartContractProtocolEnum.tnt721,
       name: Like('%' + name + '%')
     })
     let nftList = await this.smartContractRepository.find(condition)

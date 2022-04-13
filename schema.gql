@@ -522,12 +522,19 @@ type SmartContractEntity {
 """Statistics on smart contract related calls"""
 type SmartContractStatisticsType {
   CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+  Search(type: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
 }
 
 enum RankByEnum {
   call_times
   last_24h_call_times
   last_seven_days_call_times
+}
+
+enum SmartContractProtocolEnum {
+  unknow
+  tnt721
+  tnt20
 }
 
 type SmartContractScType {

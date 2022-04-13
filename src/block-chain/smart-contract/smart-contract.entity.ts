@@ -6,14 +6,17 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm'
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { GraphQLBoolean } from 'graphql'
 
-export enum smartContractProtocol {
+export enum SmartContractProtocolEnum {
   unknow = 1,
   tnt721,
   tnt20
 }
+registerEnumType(SmartContractProtocolEnum, {
+  name: 'SmartContractProtocolEnum'
+})
 
 @ObjectType()
 @Entity()
@@ -38,8 +41,8 @@ export class SmartContractEntity {
   verified: boolean
 
   @Field(() => Int)
-  @Column({ type: 'int', default: smartContractProtocol.unknow })
-  protocol: smartContractProtocol
+  @Column({ type: 'int', default: SmartContractProtocolEnum.unknow })
+  protocol: SmartContractProtocolEnum
 
   @Field({ nullable: true })
   @Column({ default: null })
