@@ -56,7 +56,7 @@ export class SmartContractService {
   }
 
   async searchSmartContract(
-    type: SmartContractProtocolEnum | null,
+    protocol: SmartContractProtocolEnum | null,
     name: string | null,
     rankBy: RankByEnum,
     max: number = 500
@@ -75,8 +75,8 @@ export class SmartContractService {
       default:
         condition.order = { call_times: 'DESC' }
     }
-    if (type) {
-      condition.where['protocol'] = type
+    if (protocol) {
+      condition.where['protocol'] = protocol
     }
     if (name) condition.where['name'] = Like('%' + name + '%')
     console.log(condition)

@@ -40,13 +40,13 @@ export class SmartContractResolver {
   @ResolveField()
   async Search(
     @Args('type', { type: () => SmartContractProtocolEnum, nullable: true })
-    type: SmartContractProtocolEnum,
+    protocol: SmartContractProtocolEnum,
     @Args('name', { type: () => GraphQLString, nullable: true })
     name: string,
     @Args('rank_by', { type: () => RankByEnum, nullable: true }) rank_by: RankByEnum,
     @Args('take', { type: () => GraphQLInt, nullable: false, defaultValue: 500 }) take: number
   ) {
-    return await this.smartContractService.searchSmartContract(type, name, rank_by, take)
+    return await this.smartContractService.searchSmartContract(protocol, name, rank_by, take)
   }
 
   // @Mutation((returns) => SmartContractVerifyType)
