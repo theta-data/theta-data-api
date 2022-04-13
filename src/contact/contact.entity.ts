@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
 import { Field, ObjectType } from '@nestjs/graphql'
 
-export enum smartContractProtocol {
+export enum SmartContractProtocolEnum {
   unknow = 1,
   tnt721,
   tnt20
