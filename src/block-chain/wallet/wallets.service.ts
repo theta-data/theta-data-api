@@ -26,7 +26,7 @@ export class WalletService {
 
     private marketInfo: MarketService
   ) {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
 
   public async getBalanceByAddress(address: string) {
