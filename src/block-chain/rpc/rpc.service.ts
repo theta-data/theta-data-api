@@ -4,7 +4,7 @@ const config = require('config')
 @Injectable()
 export class RpcService {
   constructor() {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
   public async getVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result
