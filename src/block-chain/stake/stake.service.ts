@@ -18,7 +18,7 @@ export class StakeService {
     @InjectRepository(StakeRewardEntity, 'stake')
     private stakeRewardRepository: Repository<StakeRewardEntity>
   ) {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
 
   async getNodeList(nodeType: STAKE_NODE_TYPE_ENUM | undefined) {

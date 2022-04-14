@@ -37,7 +37,7 @@ export interface LOG_DECODE_INTERFACE {
 export class UtilsService {
   logger = new Logger()
   constructor() {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
 
   decodeLogs(logs, abi): Array<LOG_DECODE_INTERFACE> {

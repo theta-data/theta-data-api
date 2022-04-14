@@ -26,7 +26,7 @@ export class SmartContractAnalyseService {
     private utilsService: UtilsService,
     private smartContractService: SmartContractService
   ) {
-    thetaTsSdk.blockchain.setUrl(config.get('SMART_CONTRACT.THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('SMART_CONTRACT.THETA_NODE_HOST'))
     this.logger.debug(config.get('SMART_CONTRACT.THETA_NODE_HOST'))
   }
 
