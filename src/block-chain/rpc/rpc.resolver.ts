@@ -9,7 +9,7 @@ const config = require('config')
 @Resolver((of) => ThetaRpcModel)
 export class RpcResolver {
   constructor(private rpcService: RpcService) {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
 
   @Query(() => ThetaRpcModel)
