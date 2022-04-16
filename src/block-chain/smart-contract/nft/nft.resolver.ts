@@ -53,7 +53,7 @@ export class NftResolver {
     let endCursor = ''
     if (res.length > 0) {
       // this.console.log();
-      console.log(res[res.length - 1].create_date)
+      console.log(res[res.length - 1].create_date.toISOString())
       endCursor = Buffer.from(res[res.length - 1].update_date).toString('base64')
     }
     return {
