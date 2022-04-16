@@ -70,5 +70,5 @@ export class NftBalanceEntity {
   create_date!: Date
 
   @UpdateDateColumn()
-  update_date!: string
+  update_date!: Date
 }
