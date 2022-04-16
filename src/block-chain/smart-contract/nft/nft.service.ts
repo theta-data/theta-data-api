@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import {
   FindManyOptions,
   getConnection,
+  LessThan,
   Like,
   MoreThan,
   MoreThanOrEqual,
@@ -389,13 +390,14 @@ export class NftService {
       },
       take: take + 1,
       order: {
-        id: 'ASC'
+        // id: 'ASC',
+        update_date: 'DESC'
       }
     }
     if (after) {
-      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
-      this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      const updateDate = Buffer.from(after, 'base64').toString('ascii')
+      this.logger.debug('decode from base64:' + updateDate)
+      condition.where['update_date'] = LessThan(updateDate)
     }
 
     const totalNft = await this.nftBalanceRepository.count({
