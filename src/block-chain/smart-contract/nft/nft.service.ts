@@ -397,7 +397,7 @@ export class NftService {
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
-      condition.where['update_date'] = LessThan(id)
+      condition.where['id'] = LessThan(id)
     }
 
     const totalNft = await this.nftBalanceRepository.count({
