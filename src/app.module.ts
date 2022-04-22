@@ -1,4 +1,4 @@
-import { CacheModule, Module } from '@nestjs/common'
+import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
 import { TxModule } from './block-chain/tx/tx.module'
@@ -17,6 +17,8 @@ import { ContactModule } from './contact/contact.module'
 import { ApolloDriver } from '@nestjs/apollo'
 import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerGuard } from './guard'
+import { LoggerModule } from './logger/logger.module'
+import { LoggerMiddleware } from './logger/logger.middleware'
 const config = require('config')
 
 @Module({
@@ -63,6 +65,12 @@ const config = require('config')
       name: 'wallet',
       entities: []
     }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'logger/wallet.sqlite',
+      name: 'logger',
+      entities: []
+    }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
@@ -87,7 +95,8 @@ const config = require('config')
     RpcModule,
     SmartContractModule,
     WalletModule,
-    ContactModule
+    ContactModule,
+    LoggerModule
   ],
   providers: [
     {
@@ -96,4 +105,8 @@ const config = require('config')
     }
   ]
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LoggerMiddleware).forRoutes('*')
+  }
+}
