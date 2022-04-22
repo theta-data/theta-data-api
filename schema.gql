@@ -612,6 +612,13 @@ type ContactEntity {
   content: String!
 }
 
+type LoggerEntity {
+  query: String!
+  hash: String!
+  call_times: Float!
+  update_date: Float!
+}
+
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
@@ -622,6 +629,12 @@ type Query {
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
+  Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
+}
+
+enum LoggerRankByEnum {
+  call_times
+  update_time
 }
 
 type Mutation {
