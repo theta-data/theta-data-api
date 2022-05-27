@@ -18,6 +18,7 @@ import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import BigNumber from 'bignumber.js'
 
 @Injectable()
 export class NftService {
@@ -187,8 +188,9 @@ export class NftService {
         })
         if (
           !tempContract ||
-          !tempContract.verified ||
-          tempContract.protocol != SmartContractProtocolEnum.tnt721
+          !tempContract.verified
+          //  ||
+          // tempContract.protocol != SmartContractProtocolEnum.tnt721
         )
           continue
         contractList[log.address] = {
@@ -203,6 +205,15 @@ export class NftService {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
         // const address = log.address
+        // if (
+        //   log.decode.eventName === 'NFTTraded'
+        //   // &&
+        //   // log.decode.result.nftTokenID &&
+        //   // log.decode.result.nftTokenAddress
+        // ) {
+        //   this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+        //   process.exit()
+        // }
 
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           // try {
@@ -249,7 +260,7 @@ export class NftService {
             token_id: Number(log.decode.result.tokenId)
           })
           if (balance) {
-            const latesRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+            const latestRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
               where: {
                 smart_contract_address: log.address.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId)
@@ -264,8 +275,8 @@ export class NftService {
                 id: balance.id
               },
               {
-                owner: latesRecord.to,
-                from: latesRecord.from
+                owner: latestRecord.to,
+                from: latestRecord.from
               }
             )
           } else {
@@ -320,7 +331,33 @@ export class NftService {
               base_token_uri: baseTokenUri
             })
           }
-          return true
+          // return true
+        }
+
+        if (
+          log.decode.eventName === 'NFTTraded' &&
+          log.decode.result.nftTokenID &&
+          log.decode.result.nftTokenAddress
+        ) {
+          // this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+          // process.exit()
+          await nftConnection.manager.update(
+            NftTransferRecordEntity,
+            {
+              token_id: Number(log.decode.result.nftTokenID),
+              smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+              timestamp: record.timestamp
+            },
+            {
+              payment_token_amount: Number(
+                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+              ),
+              tdrop_mined: Number(
+                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+              )
+            }
+          )
+          // }
         }
       }
     }
