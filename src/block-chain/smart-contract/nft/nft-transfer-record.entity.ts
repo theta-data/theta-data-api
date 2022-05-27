@@ -39,6 +39,14 @@ export class NftTransferRecordEntity {
   token_id: number
 
   @Field(() => Int)
+  @Column({ type: 'float', default: 0 })
+  payment_token_amount: number
+
+  @Field(() => Int)
+  @Column({ type: 'float', default: 0 })
+  tdrop_mined: number
+
+  @Field(() => Int)
   @Column({
     type: 'int',
     default: 0

@@ -569,6 +569,8 @@ type NftTransferRecordEntity {
   name: String!
   to: String!
   token_id: Int!
+  payment_token_amount: Int!
+  tdrop_mined: Int!
   height: Int!
   timestamp: Int!
 }
