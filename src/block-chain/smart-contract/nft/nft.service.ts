@@ -204,17 +204,6 @@ export class NftService {
     for (const contract of contractDecodeList) {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
-        // const address = log.address
-        // if (
-        //   log.decode.eventName === 'NFTTraded'
-        //   // &&
-        //   // log.decode.result.nftTokenID &&
-        //   // log.decode.result.nftTokenAddress
-        // ) {
-        //   this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
-        //   process.exit()
-        // }
-
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           // try {
           this.logger.debug(
