@@ -91,6 +91,7 @@ export class NftResolver {
     }
   }
 
+  //test
   @ResolveField(() => PaginatedNftTransferRecord)
   async NftTransfers(
     @Args('wallet_address') walletAddress: string,
