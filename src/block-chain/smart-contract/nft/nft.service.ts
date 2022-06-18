@@ -534,7 +534,7 @@ export class NftService {
       }
     }
     if (after) {
-      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
     }
