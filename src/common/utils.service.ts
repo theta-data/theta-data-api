@@ -16,9 +16,13 @@ export interface LOG_DECODE_INTERFACE {
       '2': string //"2977",
       from: string //"0xD79Af707db0c2Be0a80D040a87f3d35b08043920",
       to: string //"0xDEa859B1FFF4FdE81a3DCeCcf6a47bE4f878Cc2d",
-      tokenId: string //"2977"
+      tokenId?: string //"2977"
+      nftTokenID?: string //"1968"
+      nftTokenAddress?: string //"0xB8153C0e8Ed32943e60630Bfd8CCDFB1E32e43D4"
+      paymentTokenAmount?: string //"1264837509977270451409",
+      tdropMined?: string //"244999837273506757285"
     }
-    eventName: 'Transfer' | 'Approval' | 'ApprovalForAll'
+    eventName: 'Transfer' | 'Approval' | 'ApprovalForAll' | 'NFTTraded'
     event: {
       anonymous: boolean //false,
       inputs: [
@@ -37,7 +41,7 @@ export interface LOG_DECODE_INTERFACE {
 export class UtilsService {
   logger = new Logger()
   constructor() {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
 
   decodeLogs(logs, abi): Array<LOG_DECODE_INTERFACE> {

@@ -27,7 +27,7 @@ export class StakeAnalyseService {
     // private loggerService: LoggerService,
     private utilsService: UtilsService
   ) {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     this.logger.debug(config.get('THETA_NODE_HOST'))
   }
 

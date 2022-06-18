@@ -6,11 +6,11 @@ import {
   SmartContractVerifyType,
   UpdateRecordType
 } from './smart-contract.model'
-import { GraphQLInt } from 'graphql'
+import { GraphQLInt, GraphQLString } from 'graphql'
 import { NftService } from './nft/nft.service'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
-import { SmartContractEntity } from './smart-contract.entity'
+import { SmartContractEntity, SmartContractProtocolEnum } from './smart-contract.entity'
 import { Logger } from '@nestjs/common'
 import { reduce } from 'rxjs'
 
@@ -35,6 +35,18 @@ export class SmartContractResolver {
     @Args('take', { type: () => GraphQLInt, nullable: false, defaultValue: 500 }) take: number
   ) {
     return await this.smartContractService.getSmartContract(rank_by, take)
+  }
+
+  @ResolveField()
+  async Search(
+    @Args('protocol', { type: () => SmartContractProtocolEnum, nullable: true })
+    protocol: SmartContractProtocolEnum,
+    @Args('name', { type: () => GraphQLString, nullable: true })
+    name: string,
+    @Args('rank_by', { type: () => RankByEnum, nullable: true }) rank_by: RankByEnum,
+    @Args('take', { type: () => GraphQLInt, nullable: false, defaultValue: 500 }) take: number
+  ) {
+    return await this.smartContractService.searchSmartContract(protocol, name, rank_by, take)
   }
 
   // @Mutation((returns) => SmartContractVerifyType)

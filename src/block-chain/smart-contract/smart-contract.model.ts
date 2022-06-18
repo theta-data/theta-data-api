@@ -6,6 +6,9 @@ import { SmartContractEntity } from './smart-contract.entity'
 export class SmartContractStatisticsType {
   @Field(() => [SmartContractEntity])
   CallRank: Array<SmartContractEntity>
+
+  @Field(() => [SmartContractEntity])
+  Search: Array<SmartContractEntity>
 }
 
 @ObjectType()

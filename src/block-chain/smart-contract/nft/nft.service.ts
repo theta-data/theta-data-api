@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import {
   FindManyOptions,
   getConnection,
+  LessThan,
   Like,
   MoreThan,
   MoreThanOrEqual,
@@ -12,11 +13,12 @@ import {
   Repository
 } from 'typeorm'
 import { SmartContractCallRecordEntity } from '../smart-contract-call-record.entity'
-import { SmartContractEntity, smartContractProtocol } from '../smart-contract.entity'
+import { SmartContractEntity, SmartContractProtocolEnum } from '../smart-contract.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import BigNumber from 'bignumber.js'
 
 @Injectable()
 export class NftService {
@@ -165,7 +167,7 @@ export class NftService {
       }
     } = {}
     // let contractLogs: any = []
-    if (contract.protocol === smartContractProtocol.tnt721) {
+    if (contract.protocol === SmartContractProtocolEnum.tnt721) {
       contractList[contract.contract_address] = {
         contract: contract,
         logs: []
@@ -186,8 +188,9 @@ export class NftService {
         })
         if (
           !tempContract ||
-          !tempContract.verified ||
-          tempContract.protocol != smartContractProtocol.tnt721
+          !tempContract.verified
+          //  ||
+          // tempContract.protocol != SmartContractProtocolEnum.tnt721
         )
           continue
         contractList[log.address] = {
@@ -202,6 +205,15 @@ export class NftService {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
         // const address = log.address
+        // if (
+        //   log.decode.eventName === 'NFTTraded'
+        //   // &&
+        //   // log.decode.result.nftTokenID &&
+        //   // log.decode.result.nftTokenAddress
+        // ) {
+        //   this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+        //   process.exit()
+        // }
 
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           // try {
@@ -219,7 +231,7 @@ export class NftService {
           if (
             !logContract ||
             !logContract.verified ||
-            logContract.protocol !== smartContractProtocol.tnt721
+            logContract.protocol !== SmartContractProtocolEnum.tnt721
           )
             continue
           const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
@@ -248,7 +260,7 @@ export class NftService {
             token_id: Number(log.decode.result.tokenId)
           })
           if (balance) {
-            const latesRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+            const latestRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
               where: {
                 smart_contract_address: log.address.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId)
@@ -263,8 +275,8 @@ export class NftService {
                 id: balance.id
               },
               {
-                owner: latesRecord.to,
-                from: latesRecord.from
+                owner: latestRecord.to,
+                from: latestRecord.from
               }
             )
           } else {
@@ -319,7 +331,33 @@ export class NftService {
               base_token_uri: baseTokenUri
             })
           }
-          return true
+          // return true
+        }
+
+        if (
+          log.decode.eventName === 'NFTTraded' &&
+          log.decode.result.nftTokenID &&
+          log.decode.result.nftTokenAddress
+        ) {
+          // this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+          // process.exit()
+          await nftConnection.manager.update(
+            NftTransferRecordEntity,
+            {
+              token_id: Number(log.decode.result.nftTokenID),
+              smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+              timestamp: record.timestamp
+            },
+            {
+              payment_token_amount: Number(
+                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+              ),
+              tdrop_mined: Number(
+                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+              )
+            }
+          )
+          // }
         }
       }
     }
@@ -389,13 +427,14 @@ export class NftService {
       },
       take: take + 1,
       order: {
-        id: 'ASC'
+        // id: 'ASC',
+        id: 'DESC'
       }
     }
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      condition.where['id'] = LessThan(id)
     }
 
     const totalNft = await this.nftBalanceRepository.count({
@@ -457,7 +496,7 @@ export class NftService {
       }
     }
     if (after) {
-      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
     }
@@ -653,7 +692,7 @@ export class NftService {
   ): Promise<[boolean, number, Array<SmartContractEntity>]> {
     const condition: FindManyOptions<SmartContractEntity> = {
       where: {
-        protocol: smartContractProtocol.tnt721,
+        protocol: SmartContractProtocolEnum.tnt721,
         name: Like('%' + name + '%')
       },
       take: take + 1,
@@ -668,7 +707,7 @@ export class NftService {
       condition.where['id'] = MoreThan(id)
     }
     const totalNft = await this.smartContractRepository.count({
-      protocol: smartContractProtocol.tnt721,
+      protocol: SmartContractProtocolEnum.tnt721,
       name: Like('%' + name + '%')
     })
     let nftList = await this.smartContractRepository.find(condition)

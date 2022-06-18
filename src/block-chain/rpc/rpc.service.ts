@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
 const config = require('config')
+
 @Injectable()
 export class RpcService {
   constructor() {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('RPC_NODE_HOST'))
   }
   public async getVersion() {
     return (await thetaTsSdk.blockchain.getVersion()).result

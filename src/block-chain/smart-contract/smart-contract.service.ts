@@ -1,7 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { SmartContractEntity, smartContractProtocol } from './smart-contract.entity'
-import { getConnection, MoreThan, Repository } from 'typeorm'
+import { SmartContractEntity, SmartContractProtocolEnum } from './smart-contract.entity'
+import {
+  FindCondition,
+  FindManyOptions,
+  FindOneOptions,
+  getConnection,
+  Like,
+  MoreThan,
+  Repository
+} from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { RankByEnum } from './smart-contract.model'
 import { NftService } from './nft/nft.service'
@@ -47,6 +55,34 @@ export class SmartContractService {
     }
   }
 
+  async searchSmartContract(
+    protocol: SmartContractProtocolEnum | null,
+    name: string | null,
+    rankBy: RankByEnum,
+    max: number = 500
+  ) {
+    const condition: FindManyOptions<SmartContractEntity> = {
+      where: {},
+      take: max
+    }
+    switch (rankBy) {
+      case RankByEnum.last_seven_days_call_times:
+        condition.order = { last_seven_days_call_times: 'DESC' }
+        break
+      case RankByEnum.last_24h_call_times:
+        condition.order = { last_24h_call_times: 'DESC' }
+        break
+      default:
+        condition.order = { call_times: 'DESC' }
+    }
+    if (protocol) {
+      condition.where['protocol'] = protocol
+    }
+    if (name) condition.where['name'] = Like('%' + name + '%')
+    console.log(condition)
+    return await this.smartContractRepository.find(condition)
+  }
+
   async getSmartContractNum() {
     return await this.smartContractRepository.count()
   }
@@ -85,7 +121,7 @@ export class SmartContractService {
   //   smartContractRecord.contract_id = smartContract.id
   //   await this.smartContractRecordRepository.save(smartContractRecord)
   //   let afftectedNum = 0
-  //   if (smartContract.verified && smartContract.protocol === smartContractProtocol.tnt721) {
+  //   if (smartContract.verified && smartContract.protocol === SmartContractProtocolEnum.tnt721) {
   //     const connection = getConnection('nft').createQueryRunner()
   //     await connection.connect()
   //     await connection.startTransaction()
@@ -260,11 +296,11 @@ export class SmartContractService {
               contract.verified = true
               contract.byte_code = byteCode
               if (this.utilsService.checkTnt721(abi)) {
-                contract.protocol = smartContractProtocol.tnt721
+                contract.protocol = SmartContractProtocolEnum.tnt721
               } else if (this.utilsService.checkTnt20(abi)) {
-                contract.protocol = smartContractProtocol.tnt20
+                contract.protocol = SmartContractProtocolEnum.tnt20
               } else {
-                contract.protocol = smartContractProtocol.unknow
+                contract.protocol = SmartContractProtocolEnum.unknow
               }
               // contract.contract_address
               contract.abi = JSON.stringify(abi)
@@ -342,11 +378,11 @@ export class SmartContractService {
     contract.verified = true
 
     if (this.utilsService.checkTnt721(JSON.parse(abi))) {
-      contract.protocol = smartContractProtocol.tnt721
+      contract.protocol = SmartContractProtocolEnum.tnt721
     } else if (this.utilsService.checkTnt20(JSON.parse(abi))) {
-      contract.protocol = smartContractProtocol.tnt20
+      contract.protocol = SmartContractProtocolEnum.tnt20
     } else {
-      contract.protocol = smartContractProtocol.unknow
+      contract.protocol = SmartContractProtocolEnum.unknow
     }
     this.logger.debug('start to save')
     return await this.smartContractRepository.save(contract)
@@ -453,7 +489,7 @@ export class SmartContractService {
             contract.verified = true
             contract.byte_code = byteCode
             if (this.utilsService.checkTnt721(abi)) {
-              contract.protocol = smartContractProtocol.tnt721
+              contract.protocol = SmartContractProtocolEnum.tnt721
               this.logger.debug('read 721  contract uri,address:' + address)
               const contractUri = abi.find((v) => v.name == 'contractURI')
               if (contractUri) {
@@ -506,10 +542,10 @@ export class SmartContractService {
                 }
               }
             } else if (this.utilsService.checkTnt20(abi)) {
-              contract.protocol = smartContractProtocol.tnt20
+              contract.protocol = SmartContractProtocolEnum.tnt20
               contract.name = contractName
             } else {
-              contract.protocol = smartContractProtocol.unknow
+              contract.protocol = SmartContractProtocolEnum.unknow
               contract.name = contractName
             }
             // contract.contract_address

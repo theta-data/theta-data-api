@@ -3,7 +3,7 @@ import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import {
   SmartContractEntity,
-  smartContractProtocol
+  SmartContractProtocolEnum
 } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
@@ -68,7 +68,7 @@ export class NftAnalyseService {
               id: record.contract_id
             })
         }
-        // if (smartContractList[record.contract_id].protocol !== smartContractProtocol.tnt721)
+        // if (smartContractList[record.contract_id].protocol !== SmartContractProtocolEnum.tnt721)
         //   continue
         promiseArr.push(
           this.nftService.updateNftRecord(

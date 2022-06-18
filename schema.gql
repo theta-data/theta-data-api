@@ -522,12 +522,19 @@ type SmartContractEntity {
 """Statistics on smart contract related calls"""
 type SmartContractStatisticsType {
   CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+  Search(protocol: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
 }
 
 enum RankByEnum {
   call_times
   last_24h_call_times
   last_seven_days_call_times
+}
+
+enum SmartContractProtocolEnum {
+  unknow
+  tnt721
+  tnt20
 }
 
 type SmartContractScType {
@@ -562,6 +569,8 @@ type NftTransferRecordEntity {
   name: String!
   to: String!
   token_id: Int!
+  payment_token_amount: Int!
+  tdrop_mined: Int!
   height: Int!
   timestamp: Int!
 }
@@ -605,6 +614,13 @@ type ContactEntity {
   content: String!
 }
 
+type LoggerEntity {
+  query: String!
+  hash: String!
+  call_times: Float!
+  update_date: Float!
+}
+
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
@@ -615,6 +631,12 @@ type Query {
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
+  Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
+}
+
+enum LoggerRankByEnum {
+  call_times
+  update_time
 }
 
 type Mutation {

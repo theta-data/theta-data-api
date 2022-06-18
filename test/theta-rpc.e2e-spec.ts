@@ -11,7 +11,7 @@ describe('Theta RPC', () => {
   let app: INestApplication
   let latestBlockHeight = 0
   beforeAll(async () => {
-    thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
+    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule]
     }).compile()
