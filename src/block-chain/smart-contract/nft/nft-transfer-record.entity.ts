@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLFloat } from 'graphql'
 import {
   Column,
   CreateDateColumn,
@@ -38,11 +39,11 @@ export class NftTransferRecordEntity {
   @Column({ type: 'int' })
   token_id: number
 
-  @Field(() => Int)
+  @Field(() => GraphQLFloat)
   @Column({ type: 'float', default: 0 })
   payment_token_amount: number
 
-  @Field(() => Int)
+  @Field(() => GraphQLFloat)
   @Column({ type: 'float', default: 0 })
   tdrop_mined: number
 
