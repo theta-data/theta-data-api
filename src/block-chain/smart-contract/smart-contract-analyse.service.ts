@@ -57,6 +57,18 @@ export class SmartContractAnalyseService {
         }
       }
 
+      const latestRecordHeight = (
+        await this.smartContractConnection.manager.findOne(SmartContractCallRecordEntity, {
+          order: {
+            height: 'DESC'
+          }
+        })
+      ).height
+
+      if (latestRecordHeight >= height) {
+        height = latestRecordHeight + 1
+      }
+
       if (height >= lastfinalizedHeight) {
         await this.smartContractConnection.commitTransaction()
         this.logger.debug('commit success')
