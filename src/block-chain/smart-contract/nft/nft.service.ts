@@ -19,6 +19,7 @@ import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import BigNumber from 'bignumber.js'
+// console.log(new BigNumber("0").dividedBy('1e18').toFixed())
 
 @Injectable()
 export class NftService {
@@ -205,7 +206,6 @@ export class NftService {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
-          // try {
           this.logger.debug(
             JSON.stringify({
               from: log.decode.result.from.toLowerCase(),
@@ -339,10 +339,10 @@ export class NftService {
             },
             {
               payment_token_amount: Number(
-                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed(8)
               ),
               tdrop_mined: Number(
-                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed(8)
               )
             }
           )
