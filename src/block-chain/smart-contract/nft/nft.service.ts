@@ -525,7 +525,8 @@ export class NftService {
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      condition.where[0].id = MoreThan(id)
+      condition.where[1].id = MoreThan(id)
     }
     const totalRecord = await this.nftTransferRecordRepository.count({
       where: [
