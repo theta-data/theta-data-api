@@ -19,8 +19,8 @@ import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import BigNumber from 'bignumber.js'
-import { exit } from 'process'
-import { JsonRpcBatchProvider } from '@ethersproject/providers'
+// import { exit } from 'process'
+// import { JsonRpcBatchProvider } from '@ethersproject/providers'
 // console.log(new BigNumber("0").dividedBy('1e18').toFixed())
 
 @Injectable()
