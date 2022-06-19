@@ -21,6 +21,8 @@ export interface LOG_DECODE_INTERFACE {
       nftTokenAddress?: string //"0xB8153C0e8Ed32943e60630Bfd8CCDFB1E32e43D4"
       paymentTokenAmount?: string //"1264837509977270451409",
       tdropMined?: string //"244999837273506757285"
+      seller?: string //"0x9DD37001080B93856aD1B438dCbd0CAB54264b61"
+      buyer?: string //"0xD79Af707db0c2Be0a80D040a87f3d35b08043920"
     }
     eventName: 'Transfer' | 'Approval' | 'ApprovalForAll' | 'NFTTraded'
     event: {

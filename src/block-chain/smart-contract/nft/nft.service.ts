@@ -162,7 +162,7 @@ export class NftService {
       this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
-    this.logger.debug(JSON.stringify(receipt))
+    // this.logger.debug(JSON.stringify(receipt))
     let contractList: {
       [prop: string]: {
         contract: SmartContractEntity
@@ -232,7 +232,19 @@ export class NftService {
             // from: log.decode.result.from.toLowerCase(),
             // to: log.decode.result.to.toLowerCase()
           })
-          if (!transferRecord)
+          if (!transferRecord) {
+            this.logger.debug(
+              'insert nft transfer record:' +
+                JSON.stringify({
+                  from: log.decode.result.from.toLowerCase(),
+                  to: log.decode.result.to.toLowerCase(),
+                  token_id: Number(log.decode.result.tokenId),
+                  smart_contract_address: log.address.toLowerCase(),
+                  height: record.height,
+                  name: contract.contract.name,
+                  timestamp: record.timestamp
+                })
+            )
             await nftConnection.manager.insert(
               NftTransferRecordEntity,
               {
@@ -246,6 +258,8 @@ export class NftService {
               }
               // ['smart_contract_address', 'token_id', 'timestamp']
             )
+          }
+
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
             smart_contract_address: log.address.toLowerCase(),
             token_id: Number(log.decode.result.tokenId)
@@ -330,16 +344,16 @@ export class NftService {
           log.decode.result.nftTokenID &&
           log.decode.result.nftTokenAddress
         ) {
+          const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
+            contract_address: log.decode.result.nftTokenAddress.toLowerCase()
+          })
+          if (
+            !logContract ||
+            !logContract.verified ||
+            logContract.protocol !== SmartContractProtocolEnum.tnt721
+          )
+            continue
           this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
-          // process.exit()
-          // const updateCondition = {
-          //   payment_token_amount: Number(
-          //     new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
-          //   ),
-          //   tdrop_mined: Number(
-          //     new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
-          //   )
-          // }
           const searchCondition = {
             token_id: Number(log.decode.result.nftTokenID),
             smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
@@ -359,21 +373,25 @@ export class NftService {
             tradeRecord.tdrop_mined = Number(
               new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
             )
-            const res = await nftConnection.manager.save(
-              NftTransferRecordEntity,
-              tradeRecord
-              // searchCondition,
-              // updateCondition
-            )
+            const res = await nftConnection.manager.save(NftTransferRecordEntity, tradeRecord)
             this.logger.debug('nft traded updated: ' + JSON.stringify(res))
-            // await nftConnection.commitTransaction()
-            // this.logger.debug('commit nft')
-            // await smartContractConnection.commitTransaction()
-            // await nftConnection.release()
-            // await smartContractConnection.release()
-            // process.exit()
           } else {
             this.logger.debug('no nft trade record:' + JSON.stringify(log.decode))
+            await nftConnection.manager.insert(NftTransferRecordEntity, {
+              from: log.decode.result.seller.toLowerCase(),
+              to: log.decode.result.buyer.toLowerCase(),
+              token_id: Number(log.decode.result.nftTokenID),
+              smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+              height: record.height,
+              name: contract.contract.name,
+              timestamp: record.timestamp,
+              payment_token_amount: Number(
+                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+              ),
+              tdrop_mined: Number(
+                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+              )
+            })
             // process.exit()
           }
 
