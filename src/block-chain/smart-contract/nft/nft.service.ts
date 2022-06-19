@@ -375,7 +375,7 @@ export class NftService {
               token_id: Number(log.decode.result.nftTokenID),
               smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
               height: record.height,
-              name: contract.contract.name,
+              name: logContract.name,
               timestamp: record.timestamp,
               payment_token_amount: Number(
                 new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
