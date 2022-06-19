@@ -203,7 +203,6 @@ export class NftService {
       }
     }
     const contractDecodeList = Object.values(contractList)
-    // this.logger.debug(JSON.stringify(contractDecodeList))
     for (const contract of contractDecodeList) {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
@@ -229,8 +228,6 @@ export class NftService {
             token_id: Number(log.decode.result.tokenId),
             smart_contract_address: log.address.toLowerCase(),
             timestamp: record.timestamp
-            // from: log.decode.result.from.toLowerCase(),
-            // to: log.decode.result.to.toLowerCase()
           })
           if (!transferRecord) {
             this.logger.debug(
@@ -245,19 +242,15 @@ export class NftService {
                   timestamp: record.timestamp
                 })
             )
-            await nftConnection.manager.insert(
-              NftTransferRecordEntity,
-              {
-                from: log.decode.result.from.toLowerCase(),
-                to: log.decode.result.to.toLowerCase(),
-                token_id: Number(log.decode.result.tokenId),
-                smart_contract_address: log.address.toLowerCase(),
-                height: record.height,
-                name: contract.contract.name,
-                timestamp: record.timestamp
-              }
-              // ['smart_contract_address', 'token_id', 'timestamp']
-            )
+            await nftConnection.manager.insert(NftTransferRecordEntity, {
+              from: log.decode.result.from.toLowerCase(),
+              to: log.decode.result.to.toLowerCase(),
+              token_id: Number(log.decode.result.tokenId),
+              smart_contract_address: log.address.toLowerCase(),
+              height: record.height,
+              name: contract.contract.name,
+              timestamp: record.timestamp
+            })
           }
 
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
@@ -285,7 +278,6 @@ export class NftService {
               }
             )
           } else {
-            // let name = ''
             let imgUri = ''
             let detail = ''
             let tokenUri = ''
