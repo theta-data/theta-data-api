@@ -38,13 +38,6 @@ export class NftAnalyseService {
           startId = Number(data) + 1
         }
       }
-      // if (height >= lastfinalizedHeight) {
-      //   // await this.smartContractConnection.commitTransaction()
-      //   await this.nftConnection.commitTransaction()
-      //   this.logger.debug('commit success')
-      //   this.logger.debug('no height to analyse')
-      //   return
-      // }
 
       // this.startTimestamp = moment().unix()
       let smartContractList: { [key: string]: SmartContractEntity } = {}
@@ -58,8 +51,7 @@ export class NftAnalyseService {
           order: { id: 'ASC' }
         }
       )
-      // this.l
-      // if (contractRecordList.length == 0) return
+
       const promiseArr = []
       for (const record of contractRecordList) {
         if (!smartContractList.hasOwnProperty(record.contract_id)) {
@@ -68,7 +60,6 @@ export class NftAnalyseService {
               id: record.contract_id
             })
         }
-        // if (smartContractList[record.contract_id].protocol !== SmartContractProtocolEnum.tnt721)
         //   continue
         promiseArr.push(
           this.nftService.updateNftRecord(

@@ -19,6 +19,9 @@ import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import BigNumber from 'bignumber.js'
+// import { exit } from 'process'
+// import { JsonRpcBatchProvider } from '@ethersproject/providers'
+// console.log(new BigNumber("0").dividedBy('1e18').toFixed())
 
 @Injectable()
 export class NftService {
@@ -205,7 +208,6 @@ export class NftService {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       for (const log of logInfo) {
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
-          // try {
           this.logger.debug(
             JSON.stringify({
               from: log.decode.result.from.toLowerCase(),
@@ -328,24 +330,57 @@ export class NftService {
           log.decode.result.nftTokenID &&
           log.decode.result.nftTokenAddress
         ) {
-          // this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+          this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
           // process.exit()
-          await nftConnection.manager.update(
+          // const updateCondition = {
+          //   payment_token_amount: Number(
+          //     new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+          //   ),
+          //   tdrop_mined: Number(
+          //     new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+          //   )
+          // }
+          const searchCondition = {
+            token_id: Number(log.decode.result.nftTokenID),
+            smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+            timestamp: record.timestamp
+          }
+          this.logger.debug('search condition: ' + JSON.stringify(searchCondition))
+
+          const tradeRecord = await nftConnection.manager.findOne<NftTransferRecordEntity>(
             NftTransferRecordEntity,
-            {
-              token_id: Number(log.decode.result.nftTokenID),
-              smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
-              timestamp: record.timestamp
-            },
-            {
-              payment_token_amount: Number(
-                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
-              ),
-              tdrop_mined: Number(
-                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
-              )
-            }
+            searchCondition
           )
+          if (tradeRecord) {
+            this.logger.debug('get nft trade record:' + JSON.stringify(tradeRecord))
+            tradeRecord.payment_token_amount = Number(
+              new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+            )
+            tradeRecord.tdrop_mined = Number(
+              new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
+            )
+            const res = await nftConnection.manager.save(
+              NftTransferRecordEntity,
+              tradeRecord
+              // searchCondition,
+              // updateCondition
+            )
+            this.logger.debug('nft traded updated: ' + JSON.stringify(res))
+            // await nftConnection.commitTransaction()
+            // this.logger.debug('commit nft')
+            // await smartContractConnection.commitTransaction()
+            // await nftConnection.release()
+            // await smartContractConnection.release()
+            // process.exit()
+          } else {
+            this.logger.debug('no nft trade record:' + JSON.stringify(log.decode))
+            // process.exit()
+          }
+
+          // this.logger.debug('update condition: ' + JSON.stringify(updateCondition))
+
+          // return true
+          // process.exit()
           // }
         }
       }
