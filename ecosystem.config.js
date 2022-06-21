@@ -93,6 +93,21 @@ module.exports = {
       env_production: {
         NODE_ENV: 'production',
       }
+    },
+    {
+      name: 'analyse-nft-statistics',
+      script: './dist/analyse/analyse-nft-statistics.js',
+      instances: 1,
+      exec_mode: "cluster",
+      autorestart: true,
+      watch: false,
+      max_memory_restart: '2G',
+      env_test: {
+        NODE_ENV: 'test',
+      },
+      env_production: {
+        NODE_ENV: 'production',
+      }
     }
   ]
 }

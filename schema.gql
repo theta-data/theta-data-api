@@ -569,8 +569,8 @@ type NftTransferRecordEntity {
   name: String!
   to: String!
   token_id: Int!
-  payment_token_amount: Int!
-  tdrop_mined: Int!
+  payment_token_amount: Float!
+  tdrop_mined: Float!
   height: Int!
   timestamp: Int!
 }
@@ -621,6 +621,29 @@ type LoggerEntity {
   update_date: Float!
 }
 
+type NftStatisticsEntity {
+  smart_contract_address: String!
+  name: String!
+  contract_uri: String!
+  contract_uri_detail: String!
+  last_24_h_transactions: Int!
+  last_24_h_volume: Int!
+  last_24_h_users: Int!
+  last_7_days_transactions: Int!
+  last_7_days_volume: Int!
+  last_7_days_users: Int!
+  last_30_days_transactions: Int!
+  last_30_days_volume: Int!
+  last_30_days_users: Int!
+}
+
+type PaginatedNftStatistics {
+  nodes: [NftStatisticsEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  endCursor: String!
+}
+
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
@@ -632,6 +655,7 @@ type Query {
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
+  NftStatistics(order_by: String!, take: Int = 10, after: String): PaginatedNftStatistics!
 }
 
 enum LoggerRankByEnum {
