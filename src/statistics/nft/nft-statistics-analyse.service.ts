@@ -18,7 +18,7 @@ export class NftStatisticsAnalyseService {
   private smartContractConnection: QueryRunner
   private nftConnection: QueryRunner
   private nftStatisticsConnection: QueryRunner
-  private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft/record.height'
+  private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft-statistics/record.height'
 
   constructor(private utilsService: UtilsService) {}
 
