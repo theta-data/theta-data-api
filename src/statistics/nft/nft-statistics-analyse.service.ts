@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { InjectRepository } from '@nestjs/typeorm'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
-import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
@@ -11,6 +9,7 @@ import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
+
 @Injectable()
 export class NftStatisticsAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -59,6 +58,10 @@ export class NftStatisticsAnalyseService {
           nftList.push(record.smart_contract_address)
         }
       }
+      for (const nft of nftList) {
+        promiseArr.push(this.nftStatistics(nft))
+      }
+      await Promise.all(promiseArr)
       this.logger.debug('start update calltimes by period')
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
@@ -142,7 +145,6 @@ export class NftStatisticsAnalyseService {
       nftStatistics.last_24_h_transactions = transactionCount24H
       nftStatistics.last_7_days_transactions = transactionCount7D
       nftStatistics.last_30_days_transactions = transactionCount30D
-
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
       nft.last_24_h_transactions = transactionCount24H
