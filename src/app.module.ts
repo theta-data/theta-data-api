@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerGuard } from './guard'
 import { LoggerModule } from './logger/logger.module'
 import { LoggerMiddleware } from './logger/logger.middleware'
+import { NftStatisticsModule } from './statistics/nft/nft-statistics.module'
 const config = require('config')
 
 @Module({
@@ -102,7 +103,8 @@ const config = require('config')
     SmartContractModule,
     WalletModule,
     ContactModule,
-    LoggerModule
+    LoggerModule,
+    NftStatisticsModule
   ],
   providers: [
     {
