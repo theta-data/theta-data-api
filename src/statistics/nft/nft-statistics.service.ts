@@ -24,7 +24,7 @@ export class NftStatisticsService {
       take: take + 1,
       order: {
         // id: 'ASC',
-        id: 'DESC'
+        // id: 'DESC'
       }
     }
     switch (orderBy) {
