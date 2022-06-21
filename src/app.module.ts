@@ -71,6 +71,12 @@ const config = require('config')
       name: 'logger',
       entities: []
     }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'nft-statistics/nft-statistics.sqlite',
+      name: 'nft-statistics',
+      entities: []
+    }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
