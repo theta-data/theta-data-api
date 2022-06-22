@@ -30,7 +30,6 @@ export class NftTradeStatisticsEntity {
 
   @Column({
     type: 'int',
-    // unique: true,
     comment: '对应精确到小时的数据'
   })
   timestamp: number

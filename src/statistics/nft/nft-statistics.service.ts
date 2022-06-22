@@ -18,14 +18,9 @@ export class NftStatisticsService {
     after: string | undefined
   ): Promise<[boolean, number, Array<NftStatisticsEntity>]> {
     const condition: FindManyOptions<NftStatisticsEntity> = {
-      where: {
-        //   owner: address
-      },
+      where: {},
       take: take + 1,
-      order: {
-        // id: 'ASC',
-        // id: 'DESC'
-      }
+      order: {}
     }
     switch (orderBy) {
       case '24h':
