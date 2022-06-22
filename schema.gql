@@ -665,9 +665,15 @@ enum LoggerRankByEnum {
 
 """NftStatisticsOrderByType"""
 enum NftStatisticsOrderByType {
-  last_24_hours
-  last_7_days
-  last_30_days
+  last_24_hours_users
+  last_7_days_users
+  last_30_days_users
+  last_24_h_transactions
+  last_7_days_transactions
+  last_30_days_transactions
+  last_24_h_volume
+  last_7_days_volume
+  last_30_days_volume
 }
 
 type Mutation {
