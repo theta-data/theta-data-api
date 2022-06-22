@@ -22,16 +22,44 @@ export class NftStatisticsResolver {
     let endCursor = ''
     if (res.length > 0) {
       switch (orderBy) {
-        case NftStatisticsOrderByType.last_24_hours:
+        case NftStatisticsOrderByType.last_24_hours_users:
           endCursor = Buffer.from(res[res.length - 1].last_24_h_users.toString()).toString('base64')
           break
-        case NftStatisticsOrderByType.last_7_days:
+        case NftStatisticsOrderByType.last_7_days_users:
           endCursor = Buffer.from(res[res.length - 1].last_7_days_users.toString()).toString(
             'base64'
           )
           break
-        case NftStatisticsOrderByType.last_30_days:
+        case NftStatisticsOrderByType.last_30_days_users:
           endCursor = Buffer.from(res[res.length - 1].last_30_days_users.toString()).toString(
+            'base64'
+          )
+          break
+        case NftStatisticsOrderByType.last_24_h_transactions:
+          endCursor = Buffer.from(res[res.length - 1].last_24_h_transactions.toString()).toString()
+          break
+        case NftStatisticsOrderByType.last_7_days_transactions:
+          endCursor = Buffer.from(
+            res[res.length - 1].last_7_days_transactions.toString()
+          ).toString()
+          break
+        case NftStatisticsOrderByType.last_30_days_transactions:
+          endCursor = Buffer.from(
+            res[res.length - 1].last_30_days_transactions.toString()
+          ).toString()
+          break
+        case NftStatisticsOrderByType.last_24_h_volume:
+          endCursor = Buffer.from(res[res.length - 1].last_24_h_volume.toString()).toString(
+            'base64'
+          )
+          break
+        case NftStatisticsOrderByType.last_7_days_volume:
+          endCursor = Buffer.from(res[res.length - 1].last_7_days_volume.toString()).toString(
+            'base64'
+          )
+          break
+        case NftStatisticsOrderByType.last_30_days_volume:
+          endCursor = Buffer.from(res[res.length - 1].last_30_days_volume.toString()).toString(
             'base64'
           )
           break
