@@ -655,12 +655,19 @@ type Query {
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
-  NftStatistics(order_by: String!, take: Int = 10, after: String): PaginatedNftStatistics!
+  NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, after: String): PaginatedNftStatistics!
 }
 
 enum LoggerRankByEnum {
   call_times
   update_time
+}
+
+"""NftStatisticsOrderByType"""
+enum NftStatisticsOrderByType {
+  last_24_hours
+  last_7_days
+  last_30_days
 }
 
 type Mutation {
