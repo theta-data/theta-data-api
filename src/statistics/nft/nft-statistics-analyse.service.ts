@@ -139,9 +139,9 @@ export class NftStatisticsAnalyseService {
       nftStatistics.last_24_h_users = users24H.length
       nftStatistics.last_7_days_users = users7D.length
       nftStatistics.last_30_days_users = users30D.length
-      nftStatistics.last_24_h_volume = volume24H
-      nftStatistics.last_7_days_volume = volume7D
-      nftStatistics.last_30_days_volume = volume30D
+      nftStatistics.last_24_h_volume = Math.floor(volume24H)
+      nftStatistics.last_7_days_volume = Math.floor(volume7D)
+      nftStatistics.last_30_days_volume = Math.floor(volume30D)
       nftStatistics.last_24_h_transactions = transactionCount24H
       nftStatistics.last_7_days_transactions = transactionCount7D
       nftStatistics.last_30_days_transactions = transactionCount30D
