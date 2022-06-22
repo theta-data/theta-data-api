@@ -332,12 +332,30 @@ export class NftService {
         }
 
         if (
-          log.decode.eventName === 'NFTTraded' &&
-          log.decode.result.nftTokenID &&
-          log.decode.result.nftTokenAddress
+          (log.decode.eventName === 'NFTTraded' &&
+            log.decode.result.nftTokenID &&
+            log.decode.result.nftTokenAddress) ||
+          (log.decode.eventName === 'MarketItemSale' &&
+            log.decode.result.isSold == 'true' &&
+            log.decode.result.tokenId)
         ) {
+          const nftTokenId = log.decode.result.nftTokenID
+            ? Number(log.decode.result.nftTokenID)
+            : Number(log.decode.result.tokenId)
+          const nftContractAddress = log.decode.result.nftTokenAddress
+            ? log.decode.result.nftTokenAddress.toLowerCase()
+            : log.decode.result.nftContract.toLowerCase()
+          const paymentTokenAmount = log.decode.result.paymentTokenAmount
+            ? log.decode.result.paymentTokenAmount
+            : log.decode.result.price
+          const tdropMined = log.decode.result.tdropMined ? Number(log.decode.result.tdropMined) : 0
+          const buyer = log.decode.result.to.toLowerCase()
+            ? log.decode.result.to.toLowerCase()
+            : log.decode.result.owner.toLowerCase()
+          const seller = log.decode.result.seller.toLowerCase()
+
           const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
-            contract_address: log.decode.result.nftTokenAddress.toLowerCase()
+            contract_address: nftContractAddress
           })
           if (
             !logContract ||
@@ -347,8 +365,8 @@ export class NftService {
             continue
           this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
           const searchCondition = {
-            token_id: Number(log.decode.result.nftTokenID),
-            smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+            token_id: nftTokenId,
+            smart_contract_address: nftContractAddress,
             timestamp: record.timestamp
           }
           this.logger.debug('search condition: ' + JSON.stringify(searchCondition))
@@ -360,38 +378,27 @@ export class NftService {
           if (tradeRecord) {
             this.logger.debug('get nft trade record:' + JSON.stringify(tradeRecord))
             tradeRecord.payment_token_amount = Number(
-              new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+              new BigNumber(paymentTokenAmount).dividedBy('1e18').toFixed()
             )
-            tradeRecord.tdrop_mined = Number(
-              new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
-            )
+            tradeRecord.tdrop_mined = Number(new BigNumber(tdropMined).dividedBy('1e18').toFixed())
             const res = await nftConnection.manager.save(NftTransferRecordEntity, tradeRecord)
             this.logger.debug('nft traded updated: ' + JSON.stringify(res))
           } else {
             this.logger.debug('no nft trade record:' + JSON.stringify(log.decode))
             await nftConnection.manager.insert(NftTransferRecordEntity, {
-              from: log.decode.result.seller.toLowerCase(),
-              to: log.decode.result.buyer.toLowerCase(),
-              token_id: Number(log.decode.result.nftTokenID),
-              smart_contract_address: log.decode.result.nftTokenAddress.toLowerCase(),
+              from: seller,
+              to: buyer,
+              token_id: nftTokenId,
+              smart_contract_address: nftContractAddress,
               height: record.height,
               name: logContract.name,
               timestamp: record.timestamp,
               payment_token_amount: Number(
-                new BigNumber(log.decode.result.paymentTokenAmount).dividedBy('1e18').toFixed()
+                new BigNumber(paymentTokenAmount).dividedBy('1e18').toFixed()
               ),
-              tdrop_mined: Number(
-                new BigNumber(log.decode.result.tdropMined).dividedBy('1e18').toFixed()
-              )
+              tdrop_mined: Number(new BigNumber(tdropMined).dividedBy('1e18').toFixed())
             })
-            // process.exit()
           }
-
-          // this.logger.debug('update condition: ' + JSON.stringify(updateCondition))
-
-          // return true
-          // process.exit()
-          // }
         }
       }
     }

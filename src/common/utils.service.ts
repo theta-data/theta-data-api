@@ -20,11 +20,16 @@ export interface LOG_DECODE_INTERFACE {
       nftTokenID?: string //"1968"
       nftTokenAddress?: string //"0xB8153C0e8Ed32943e60630Bfd8CCDFB1E32e43D4"
       paymentTokenAmount?: string //"1264837509977270451409",
+      price?: string //"1000000000000000000",
       tdropMined?: string //"244999837273506757285"
       seller?: string //"0x9DD37001080B93856aD1B438dCbd0CAB54264b61"
       buyer?: string //"0xD79Af707db0c2Be0a80D040a87f3d35b08043920"
+      isSold?: string //"true"
+      nftContract?: string //"0xB8153C0e8Ed32943e60630Bfd8CCDFB1E32e43D4"
+      owner?: string //"0xD79Af707db0c2Be0a80D040a87f3d35b08043920"
+      // tokenId ?: string //"2977"
     }
-    eventName: 'Transfer' | 'Approval' | 'ApprovalForAll' | 'NFTTraded'
+    eventName: 'Transfer' | 'Approval' | 'ApprovalForAll' | 'NFTTraded' | 'MarketItemSale'
     event: {
       anonymous: boolean //false,
       inputs: [

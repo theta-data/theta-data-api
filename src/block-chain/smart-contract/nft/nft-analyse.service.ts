@@ -70,15 +70,8 @@ export class NftAnalyseService {
           )
         )
         await Promise.all(promiseArr)
-        // await this.nftService.updateNftRecord(
-        //   this.nftConnection,
-        //   this.smartContractConnection,
-        //   record,
-        //   smartContractList[record.contract_id]
-        // )
       }
-      // const data = fs.writeFileSync(this.heightConfigFile, height.toString())
-      // console.log(data)
+
       this.logger.debug('start update calltimes by period')
       // await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
