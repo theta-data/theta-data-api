@@ -212,7 +212,8 @@ export class NftService {
               from: log.decode.result.from.toLowerCase(),
               to: log.decode.result.to.toLowerCase(),
               token_id: Number(log.decode.result.tokenId),
-              smart_contract_address: log.address
+              smart_contract_address: log.address,
+              transaction_hash: record.transaction_hash
             })
           )
           const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
@@ -337,7 +338,8 @@ export class NftService {
             log.decode.result.nftTokenAddress) ||
           (log.decode.eventName === 'MarketItemSale' &&
             log.decode.result.isSold == 'true' &&
-            log.decode.result.tokenId)
+            log.decode.result.tokenId &&
+            log.decode.result.nftContract)
         ) {
           const nftTokenId = log.decode.result.nftTokenID
             ? Number(log.decode.result.nftTokenID)
