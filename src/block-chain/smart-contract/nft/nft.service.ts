@@ -345,8 +345,8 @@ export class NftService {
             ? log.decode.result.paymentTokenAmount
             : log.decode.result.price
           const tdropMined = log.decode.result.tdropMined ? Number(log.decode.result.tdropMined) : 0
-          const buyer = log.decode.result.to
-            ? log.decode.result.to.toLowerCase()
+          const buyer = log.decode.result.buyer
+            ? log.decode.result.buyer.toLowerCase()
             : log.decode.result.owner.toLowerCase()
           const seller = log.decode.result.seller.toLowerCase()
 
