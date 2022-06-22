@@ -1,7 +1,18 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
+import { registerEnumType } from '@nestjs/graphql'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindManyOptions, LessThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
+
+export enum NftStatisticsOrderByType {
+  last_24_hours,
+  last_7_days,
+  last_30_days
+}
+registerEnumType(NftStatisticsOrderByType, {
+  name: 'NftStatisticsOrderByType',
+  description: 'NftStatisticsOrderByType'
+})
 
 @Injectable()
 export class NftStatisticsService {
@@ -13,28 +24,23 @@ export class NftStatisticsService {
   ) {}
 
   async getNft(
-    orderBy: '24h' | '7days' | '30days' = '24h',
+    orderBy: NftStatisticsOrderByType = NftStatisticsOrderByType.last_24_hours,
     take: number = 20,
     after: string | undefined
   ): Promise<[boolean, number, Array<NftStatisticsEntity>]> {
     const condition: FindManyOptions<NftStatisticsEntity> = {
-      where: {
-        //   owner: address
-      },
+      where: {},
       take: take + 1,
-      order: {
-        // id: 'ASC',
-        // id: 'DESC'
-      }
+      order: {}
     }
     switch (orderBy) {
-      case '24h':
+      case NftStatisticsOrderByType.last_24_hours:
         condition.order.last_24_h_users = 'DESC'
         break
-      case '7days':
+      case NftStatisticsOrderByType.last_7_days:
         condition.order.last_7_days_users = 'DESC'
         break
-      case '30days':
+      case NftStatisticsOrderByType.last_30_days:
         condition.order.last_30_days_users = 'DESC'
         break
       default:
@@ -46,13 +52,13 @@ export class NftStatisticsService {
       const num = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + num)
       switch (orderBy) {
-        case '24h':
+        case NftStatisticsOrderByType.last_24_hours:
           condition.where['last_24_h_users'] = LessThan(num)
           break
-        case '7days':
+        case NftStatisticsOrderByType.last_7_days:
           condition.where['last_7_days_users'] = LessThan(num)
           break
-        case '30days':
+        case NftStatisticsOrderByType.last_30_days:
           condition.where['last_30_days_users'] = LessThan(num)
           break
         default:
