@@ -19,9 +19,6 @@ import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import BigNumber from 'bignumber.js'
-// import { exit } from 'process'
-// import { JsonRpcBatchProvider } from '@ethersproject/providers'
-// console.log(new BigNumber("0").dividedBy('1e18').toFixed())
 
 @Injectable()
 export class NftService {
@@ -190,13 +187,7 @@ export class NftService {
         const tempContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
           contract_address: log.address
         })
-        if (
-          !tempContract ||
-          !tempContract.verified
-          //  ||
-          // tempContract.protocol != SmartContractProtocolEnum.tnt721
-        )
-          continue
+        if (!tempContract || !tempContract.verified) continue
         contractList[log.address] = {
           contract: tempContract,
           logs: [log]
@@ -342,6 +333,8 @@ export class NftService {
             log.decode.result.tokenId &&
             log.decode.result.nftContract)
         ) {
+          this.logger.debug('parse nft trade:' + record.transaction_hash)
+          this.logger.debug(JSON.stringify(log.decode.result))
           const nftTokenId = log.decode.result.nftTokenID
             ? Number(log.decode.result.nftTokenID)
             : Number(log.decode.result.tokenId)
