@@ -145,10 +145,14 @@ export class NftStatisticsAnalyseService {
         if (firstTokencontractUri) {
           nftStatistics.contract_uri = firstTokencontractUri.contract_uri
           nftStatistics.contract_uri_detail = firstTokencontractUri.detail
+          const contractDetail = JSON.parse(firstTokencontractUri.detail)
+          nftStatistics.img_uri = contractDetail.image
         }
       } else {
         nftStatistics.contract_uri = smartContract.contract_uri
         nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
+        const contractDetail = JSON.parse(smartContract.contract_uri_detail)
+        nftStatistics.img_uri = contractDetail.image
       }
       nftStatistics.name = smartContract.name
       nftStatistics.smart_contract_address = smartContractAddress

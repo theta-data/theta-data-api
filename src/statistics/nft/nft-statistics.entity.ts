@@ -26,6 +26,10 @@ export class NftStatisticsEntity {
 
   @Field()
   @Column()
+  img_uri: string
+
+  @Field()
+  @Column()
   contract_uri: string
 
   @Field()

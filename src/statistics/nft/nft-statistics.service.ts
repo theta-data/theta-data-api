@@ -117,4 +117,15 @@ export class NftStatisticsService {
     }
     return [hasNextPage, totalNft, nftList]
   }
+
+  async updateNftImg(contractAddress: string, imgUri: string) {
+    const nftStatistics = await this.nftStatisticsRepository.findOne({
+      where: { smart_contract_address: contractAddress }
+    })
+    if (nftStatistics) {
+      nftStatistics.img_uri = imgUri
+      return await this.nftStatisticsRepository.save(nftStatistics)
+    }
+    return {}
+  }
 }
