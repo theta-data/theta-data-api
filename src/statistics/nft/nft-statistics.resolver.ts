@@ -1,5 +1,6 @@
-import { Resolver, Query, Args } from '@nestjs/graphql'
-import { GraphQLInt } from 'graphql'
+import { Resolver, Query, Args, Mutation } from '@nestjs/graphql'
+import { GraphQLInt, GraphQLString } from 'graphql'
+import { NftStatisticsEntity } from './nft-statistics.entity'
 import { PaginatedNftStatistics } from './nft-statistics.model'
 import { NftStatisticsOrderByType, NftStatisticsService } from './nft-statistics.service'
 
@@ -74,5 +75,13 @@ export class NftStatisticsResolver {
       nodes: res,
       totalCount: totalNumber
     }
+  }
+
+  @Mutation(() => NftStatisticsEntity)
+  async updateNftImg(
+    @Args('contract_address', { type: () => GraphQLString }) contractAddress: string,
+    @Args('img_uri', { type: () => GraphQLString }) imgUri: string
+  ) {
+    return await this.nftStatisticsService.updateNftImg(contractAddress, imgUri)
   }
 }
