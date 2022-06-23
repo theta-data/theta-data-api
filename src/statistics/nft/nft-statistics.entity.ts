@@ -24,7 +24,7 @@ export class NftStatisticsEntity {
   @Column()
   name: string
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ default: '', nullable: true })
   img_uri: string
 
