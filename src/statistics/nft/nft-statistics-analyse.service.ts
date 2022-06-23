@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
+import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
@@ -132,8 +133,20 @@ export class NftStatisticsAnalyseService {
       if (!smartContract || smartContract.protocol !== SmartContractProtocolEnum.tnt721) return
 
       const nftStatistics = new NftStatisticsEntity()
-      nftStatistics.contract_uri = smartContract.contract_uri
-      nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
+      if (!smartContract.contract_uri) {
+        const firstTokencontractUri = await this.nftConnection.manager.findOne(NftBalanceEntity, {
+          order: {
+            token_id: 'ASC'
+          }
+        })
+        if (firstTokencontractUri) {
+          nftStatistics.contract_uri = firstTokencontractUri.contract_uri
+          nftStatistics.contract_uri_detail = firstTokencontractUri.detail
+        }
+      } else {
+        nftStatistics.contract_uri = smartContract.contract_uri
+        nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
+      }
       nftStatistics.name = smartContract.name
       nftStatistics.smart_contract_address = smartContractAddress
       nftStatistics.last_24_h_users = users24H.length
