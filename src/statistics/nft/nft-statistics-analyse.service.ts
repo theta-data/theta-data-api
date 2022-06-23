@@ -135,6 +135,9 @@ export class NftStatisticsAnalyseService {
       const nftStatistics = new NftStatisticsEntity()
       if (!smartContract.contract_uri) {
         const firstTokencontractUri = await this.nftConnection.manager.findOne(NftBalanceEntity, {
+          where: {
+            smart_contract_address: smartContractAddress
+          },
           order: {
             token_id: 'ASC'
           }
