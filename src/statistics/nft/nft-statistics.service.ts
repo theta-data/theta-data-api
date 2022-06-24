@@ -1,8 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
 import { registerEnumType } from '@nestjs/graphql'
 import { InjectRepository } from '@nestjs/typeorm'
+import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { FindManyOptions, LessThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
+import { NftDetailType } from './nft-statistics.model'
 
 export enum NftStatisticsOrderByType {
   last_24_hours_users,
@@ -19,14 +21,16 @@ registerEnumType(NftStatisticsOrderByType, {
   name: 'NftStatisticsOrderByType',
   description: 'NftStatisticsOrderByType'
 })
-
+const moment = require('moment')
 @Injectable()
 export class NftStatisticsService {
   logger = new Logger()
 
   constructor(
     @InjectRepository(NftStatisticsEntity, 'nft-statistics')
-    private nftStatisticsRepository: Repository<NftStatisticsEntity>
+    private nftStatisticsRepository: Repository<NftStatisticsEntity>,
+    @InjectRepository(NftTransferRecordEntity, 'nft')
+    private nftTransferRecordRepository: Repository<NftTransferRecordEntity>
   ) {}
 
   async getNft(
@@ -127,5 +131,59 @@ export class NftStatisticsService {
       return await this.nftStatisticsRepository.save(nftStatistics)
     }
     return {}
+  }
+
+  async nftDetail(contractAddress): Promise<NftDetailType> {
+    const nftDetail = await this.nftStatisticsRepository.findOne({
+      where: { smart_contract_address: contractAddress }
+    })
+    if (!nftDetail) {
+      return {
+        name: '',
+        externel_url: '',
+        by_date: []
+      }
+    }
+
+    const nftStatistics = await this.nftTransferRecordRepository.find({
+      where: { smart_contract_address: contractAddress },
+      order: { timestamp: 'ASC' }
+    })
+    if (nftStatistics) {
+      const statisticsObj: {
+        [index: string]: {
+          volume: number
+          users: number
+          transactions: number
+          date: string
+        }
+      } = {}
+      for (const record of nftStatistics) {
+        const date = moment(record.timestamp).format('YYYY-MM-DD')
+        if (statisticsObj[date]) {
+          statisticsObj[date].volume += record.payment_token_amount
+          statisticsObj[date].users += 1
+          statisticsObj[date].transactions += 1
+        } else {
+          statisticsObj[date] = {
+            volume: record.payment_token_amount,
+            users: 1,
+            transactions: 1,
+            date: date
+          }
+        }
+      }
+      return {
+        name: nftDetail.name,
+        externel_url: nftDetail.contract_uri_detail,
+        by_date: Object.values(statisticsObj)
+      }
+      // return nftStatistics
+    }
+    return {
+      name: nftDetail.name,
+      externel_url: nftDetail.contract_uri_detail,
+      by_date: []
+    }
   }
 }

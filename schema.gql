@@ -624,6 +624,7 @@ type LoggerEntity {
 type NftStatisticsEntity {
   smart_contract_address: String!
   name: String!
+  img_uri: String
   contract_uri: String!
   contract_uri_detail: String!
   last_24_h_transactions: Int!
@@ -644,6 +645,19 @@ type PaginatedNftStatistics {
   endCursor: String!
 }
 
+type NftDetailType {
+  externel_url: String
+  name: String
+  by_date: [NftDetailByDate!]!
+}
+
+type NftDetailByDate {
+  date: String!
+  volume: Float!
+  transactions: Int!
+  users: Int!
+}
+
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
@@ -656,6 +670,7 @@ type Query {
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
   NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, after: String): PaginatedNftStatistics!
+  NftDetail(contract_address: String!): NftDetailType!
 }
 
 enum LoggerRankByEnum {
@@ -679,4 +694,5 @@ enum NftStatisticsOrderByType {
 type Mutation {
   verifyWithThetaExplorer(address: String!): SmartContractEntity!
   newMsg(first_name: String!, last_name: String!, email: String!, content: String!): ContactEntity!
+  updateNftImg(contract_address: String!, img_uri: String!): NftStatisticsEntity!
 }
