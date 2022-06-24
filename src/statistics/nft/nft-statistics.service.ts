@@ -159,7 +159,7 @@ export class NftStatisticsService {
         }
       } = {}
       for (const record of nftStatistics) {
-        const date = moment(record.timestamp).format('YYYY-MM-DD')
+        const date = moment(record.timestamp * 1000).format('YYYY-MM-DD')
         if (statisticsObj[date]) {
           statisticsObj[date].volume += record.payment_token_amount
           statisticsObj[date].users += 1
