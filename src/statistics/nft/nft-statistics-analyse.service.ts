@@ -1,10 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
-import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
+import { MarketService } from 'src/market/market.service'
 import { getConnection, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')
@@ -13,6 +13,10 @@ const moment = require('moment')
 
 @Injectable()
 export class NftStatisticsAnalyseService {
+  // constructor(private marketService){
+
+  // }
+
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
 
@@ -21,7 +25,7 @@ export class NftStatisticsAnalyseService {
   private nftStatisticsConnection: QueryRunner
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft-statistics/record.height'
 
-  constructor(private utilsService: UtilsService) {}
+  constructor(private utilsService: UtilsService, private marketService: MarketService) {}
 
   public async analyseData() {
     try {
@@ -102,23 +106,38 @@ export class NftStatisticsAnalyseService {
       transactionCount7D = 0,
       transactionCount30D = 0
 
+    const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
+
     for (const record of recordList) {
       if (record.timestamp >= moment().subtract(24, 'hours').unix()) {
         !users24H.includes(record.from) && users24H.push(record.from)
         !users24H.includes(record.to) && users24H.push(record.to)
-        volume24H += record.payment_token_amount
+        if (record.tdrop_mined == 0) {
+          volume24H += record.payment_token_amount
+        } else {
+          volume24H += record.payment_token_amount * tfuelPrice.price
+        }
+
         transactionCount24H += 1
       }
       if (record.timestamp >= moment().subtract(7, 'days').unix()) {
         !users7D.includes(record.from) && users7D.push(record.from)
         !users7D.includes(record.to) && users7D.push(record.to)
-        volume7D += record.payment_token_amount
+        if (record.tdrop_mined == 0) {
+          volume7D += record.payment_token_amount
+        } else {
+          volume7D += record.payment_token_amount * tfuelPrice.price
+        }
         transactionCount7D += 1
       }
       if (record.timestamp >= moment().subtract(30, 'days').unix()) {
         !users30D.includes(record.from) && users30D.push(record.from)
         !users30D.includes(record.to) && users30D.push(record.to)
-        volume30D += record.payment_token_amount
+        if (record.tdrop_mined == 0) {
+          volume30D += record.payment_token_amount
+        } else {
+          volume30D += record.payment_token_amount * tfuelPrice.price
+        }
         transactionCount30D += 1
       }
     }
