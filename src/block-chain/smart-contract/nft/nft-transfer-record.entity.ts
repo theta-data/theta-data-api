@@ -16,7 +16,6 @@ import {
 @Index(['smart_contract_address'])
 @Index(['from'])
 @Index(['to'])
-// @Index(['token_id'])
 export class NftTransferRecordEntity {
   @PrimaryGeneratedColumn()
   id!: number
