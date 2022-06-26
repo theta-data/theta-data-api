@@ -35,12 +35,12 @@ export class NftAnalyseService {
       } else {
         const data = fs.readFileSync(this.heightConfigFile, 'utf8')
         if (data) {
-          startId = Number(data) + 1
+          startId = Number(data)
         }
       }
 
       // this.startTimestamp = moment().unix()
-      let smartContractList: { [key: string]: SmartContractEntity } = {}
+      // let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
         {
@@ -54,20 +54,8 @@ export class NftAnalyseService {
 
       const promiseArr = []
       for (const record of contractRecordList) {
-        if (!smartContractList.hasOwnProperty(record.contract_id)) {
-          smartContractList[record.contract_id] =
-            await this.smartContractConnection.manager.findOne(SmartContractEntity, {
-              id: record.contract_id
-            })
-        }
-        //   continue
         promiseArr.push(
-          this.nftService.updateNftRecord(
-            this.nftConnection,
-            this.smartContractConnection,
-            record,
-            smartContractList[record.contract_id]
-          )
+          this.nftService.updateNftRecord(this.nftConnection, this.smartContractConnection, record)
         )
         await Promise.all(promiseArr)
       }

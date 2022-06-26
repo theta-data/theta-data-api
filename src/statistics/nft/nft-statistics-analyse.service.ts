@@ -40,7 +40,7 @@ export class NftStatisticsAnalyseService {
       } else {
         const data = fs.readFileSync(this.heightConfigFile, 'utf8')
         if (data) {
-          startId = Number(data) + 1
+          startId = Number(data)
         }
       }
 
