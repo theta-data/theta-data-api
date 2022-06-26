@@ -8,7 +8,6 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule)
   const service = app.select(SmartContractModule).get(SmartContractAnalyseService, { strict: true })
   while (1) {
-    console.log('do while')
     await service.analyseData()
     await new Promise((resolve) =>
       setTimeout(resolve, config.get('SMART_CONTRACT.ANALYSE_INTERVAL'))

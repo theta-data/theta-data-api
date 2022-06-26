@@ -13,7 +13,6 @@ async function bootstrap() {
     await new Promise((resolve) =>
       setTimeout(resolve, config.get('NFT_STATISTICS.ANALYSE_INTERVAL'))
     )
-    // await sleep
   }
 }
 bootstrap()

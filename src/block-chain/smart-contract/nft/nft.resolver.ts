@@ -174,11 +174,4 @@ export class NftResolver {
   ) {
     return await this.nftService.getNftByTokenId(tokenId, contractAddress.toLowerCase())
   }
-
-  // @ResolveField(() => NftMetaType)
-  // async Meta(@Args('smart_contract_address') contractAddress: string): Promise<NftMetaType> {
-  //   // const uniqueHolder = await this.nftService.uniqueHolders(contractAddress.toLowerCase())
-  //   const [totalAmount, uniqueHolder] = await this.nftService.totalAmount(contractAddress)
-  //   return { unique_holder: uniqueHolder, total: totalAmount }
-  // }
 }
