@@ -35,12 +35,12 @@ export class NftAnalyseService {
       } else {
         const data = fs.readFileSync(this.heightConfigFile, 'utf8')
         if (data) {
-          startId = Number(data) + 1
+          startId = Number(data)
         }
       }
 
       // this.startTimestamp = moment().unix()
-      let smartContractList: { [key: string]: SmartContractEntity } = {}
+      // let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
         {

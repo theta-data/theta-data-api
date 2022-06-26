@@ -156,7 +156,6 @@ export class NftService {
       this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
-
     const contractList: {
       [prop: string]: {
         contract: SmartContractEntity
@@ -185,7 +184,10 @@ export class NftService {
     }
     const contractDecodeList = Object.values(contractList)
     for (const contract of contractDecodeList) {
+      // if(contract.contract)
+
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
+      // this.logger.debug(JSON.stringify(logInfo))
       for (const log of logInfo) {
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           this.logger.debug(
@@ -230,7 +232,7 @@ export class NftService {
               token_id: Number(log.decode.result.tokenId),
               smart_contract_address: log.address.toLowerCase(),
               height: record.height,
-              name: contract.contract.name,
+              name: logContract.name,
               timestamp: record.timestamp
             })
           }
