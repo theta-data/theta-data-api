@@ -13,10 +13,6 @@ const moment = require('moment')
 
 @Injectable()
 export class NftStatisticsAnalyseService {
-  // constructor(private marketService){
-
-  // }
-
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
 
@@ -92,10 +88,16 @@ export class NftStatisticsAnalyseService {
   }
 
   async nftStatistics(smartContractAddress: string) {
+    const smartContract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
+      contract_address: smartContractAddress
+    })
+    if (!smartContract || smartContract.protocol !== SmartContractProtocolEnum.tnt721) return
+
     const recordList = await this.nftConnection.manager.find(NftTransferRecordEntity, {
       smart_contract_address: smartContractAddress,
       timestamp: MoreThan(moment().subtract(30, 'days').unix())
     })
+
     const users24H: Array<string> = []
     const users7D: Array<string> = []
     const users30D: Array<string> = []
@@ -133,7 +135,7 @@ export class NftStatisticsAnalyseService {
       if (record.timestamp >= moment().subtract(30, 'days').unix()) {
         !users30D.includes(record.from) && users30D.push(record.from)
         !users30D.includes(record.to) && users30D.push(record.to)
-        if (record.tdrop_mined == 0) {
+        if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume30D += record.payment_token_amount
         } else {
           volume30D += record.payment_token_amount * tfuelPrice.price
@@ -145,12 +147,6 @@ export class NftStatisticsAnalyseService {
       smart_contract_address: smartContractAddress
     })
     if (!nft) {
-      const smartContract = await this.smartContractConnection.manager.findOne(
-        SmartContractEntity,
-        { contract_address: smartContractAddress }
-      )
-      if (!smartContract || smartContract.protocol !== SmartContractProtocolEnum.tnt721) return
-
       const nftStatistics = new NftStatisticsEntity()
       if (!smartContract.contract_uri) {
         const firstTokencontractUri = await this.nftConnection.manager.findOne(NftBalanceEntity, {
