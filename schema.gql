@@ -590,6 +590,7 @@ type PaginatedNftBalance {
   nodes: [NftBalanceEntity!]
   totalCount: Int!
   hasNextPage: Boolean!
+  skip: Int!
   endCursor: String!
 }
 
@@ -597,6 +598,7 @@ type PaginatedSmartContract {
   nodes: [SmartContractEntity!]
   totalCount: Int!
   hasNextPage: Boolean!
+  skip: Int!
   endCursor: String!
 }
 
@@ -604,6 +606,7 @@ type PaginatedNftTransferRecord {
   nodes: [NftTransferRecordEntity!]
   totalCount: Int!
   hasNextPage: Boolean!
+  skip: Int!
   endCursor: String!
 }
 
@@ -642,6 +645,7 @@ type PaginatedNftStatistics {
   nodes: [NftStatisticsEntity!]
   totalCount: Int!
   hasNextPage: Boolean!
+  skip: Int!
   endCursor: String!
 }
 
@@ -669,7 +673,7 @@ type Query {
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
-  NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, after: String): PaginatedNftStatistics!
+  NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftStatistics!
   NftDetail(contract_address: String!): NftDetailType!
 }
 
@@ -680,7 +684,7 @@ enum LoggerRankByEnum {
 
 """NftStatisticsOrderByType"""
 enum NftStatisticsOrderByType {
-  last_24_hours_users
+  last_24_h_users
   last_7_days_users
   last_30_days_users
   last_24_h_transactions

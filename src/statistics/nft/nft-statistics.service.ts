@@ -7,7 +7,7 @@ import { NftStatisticsEntity } from './nft-statistics.entity'
 import { NftDetailType } from './nft-statistics.model'
 
 export enum NftStatisticsOrderByType {
-  last_24_hours_users,
+  last_24_h_users,
   last_7_days_users,
   last_30_days_users,
   last_24_h_transactions,
@@ -34,7 +34,7 @@ export class NftStatisticsService {
   ) {}
 
   async getNft(
-    orderBy: NftStatisticsOrderByType = NftStatisticsOrderByType.last_24_hours_users,
+    orderBy: NftStatisticsOrderByType = NftStatisticsOrderByType.last_24_h_users,
     take: number = 20,
     after: string | undefined,
     skip = 0
@@ -46,7 +46,7 @@ export class NftStatisticsService {
       order: {}
     }
     switch (orderBy) {
-      case NftStatisticsOrderByType.last_24_hours_users:
+      case NftStatisticsOrderByType.last_24_h_users:
         condition.order.last_24_h_users = 'DESC'
         break
       case NftStatisticsOrderByType.last_7_days_users:
@@ -82,7 +82,7 @@ export class NftStatisticsService {
       const num = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + num)
       switch (orderBy) {
-        case NftStatisticsOrderByType.last_24_hours_users:
+        case NftStatisticsOrderByType.last_24_h_users:
           condition.where['last_24_h_users'] = LessThan(num)
           break
         case NftStatisticsOrderByType.last_7_days_users:

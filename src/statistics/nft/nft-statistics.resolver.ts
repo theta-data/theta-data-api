@@ -25,7 +25,7 @@ export class NftStatisticsResolver {
     let endCursor = ''
     if (res.length > 0) {
       switch (orderBy) {
-        case NftStatisticsOrderByType.last_24_hours_users:
+        case NftStatisticsOrderByType.last_24_h_users:
           endCursor = Buffer.from(res[res.length - 1].last_24_h_users.toString()).toString('base64')
           break
         case NftStatisticsOrderByType.last_7_days_users:
