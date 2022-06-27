@@ -36,11 +36,13 @@ export class NftStatisticsService {
   async getNft(
     orderBy: NftStatisticsOrderByType = NftStatisticsOrderByType.last_24_hours_users,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip = 0
   ): Promise<[boolean, number, Array<NftStatisticsEntity>]> {
     const condition: FindManyOptions<NftStatisticsEntity> = {
       where: {},
       take: take + 1,
+      skip: skip,
       order: {}
     }
     switch (orderBy) {

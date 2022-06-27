@@ -13,12 +13,14 @@ export class NftStatisticsResolver {
     @Args('order_by', { type: () => NftStatisticsOrderByType })
     orderBy: NftStatisticsOrderByType,
     @Args('take', { type: () => GraphQLInt, defaultValue: 10 }) take: number,
+    @Args('skip', { type: () => GraphQLInt, defaultValue: 0 }) skip: number,
     @Args('after', { nullable: true }) after: string
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftStatisticsService.getNft(
       orderBy,
       take,
-      after
+      after,
+      skip
     )
     let endCursor = ''
     if (res.length > 0) {
