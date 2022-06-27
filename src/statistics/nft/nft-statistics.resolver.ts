@@ -75,6 +75,7 @@ export class NftStatisticsResolver {
       endCursor: endCursor,
       hasNextPage: hasNextPage,
       nodes: res,
+      skip: skip,
       totalCount: totalNumber
     }
   }
