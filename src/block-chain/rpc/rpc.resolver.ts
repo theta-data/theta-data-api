@@ -1,16 +1,11 @@
 import { Args, Context, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { RpcService } from './rpc.service'
-import { thetaTsSdk } from 'theta-ts-sdk'
 import { GraphQLString } from 'graphql'
-import { Logger } from '@nestjs/common'
 import { GetVersionModel, NodeStatusModel, ThetaRpcModel } from './rpc.model'
-const config = require('config')
 
 @Resolver((of) => ThetaRpcModel)
 export class RpcResolver {
-  constructor(private rpcService: RpcService) {
-    // thetaTsSdk.blockchain.setUrl(config.get('RPC_NODE_HOST'))
-  }
+  constructor(private rpcService: RpcService) {}
 
   @Query(() => ThetaRpcModel)
   async ThetaRpc(@Context() context) {

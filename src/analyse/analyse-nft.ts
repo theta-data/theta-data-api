@@ -8,10 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.createApplicationContext(AppModule)
   const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
   while (1) {
-    console.log('do while')
     await service.analyseData()
     await new Promise((resolve) => setTimeout(resolve, config.get('NFT.ANALYSE_INTERVAL')))
-    // await sleep
   }
 }
 bootstrap()

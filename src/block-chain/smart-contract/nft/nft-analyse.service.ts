@@ -1,10 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
-import {
-  SmartContractEntity,
-  SmartContractProtocolEnum
-} from 'src/block-chain/smart-contract/smart-contract.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
@@ -39,8 +35,6 @@ export class NftAnalyseService {
         }
       }
 
-      // this.startTimestamp = moment().unix()
-      // let smartContractList: { [key: string]: SmartContractEntity } = {}
       const contractRecordList = await this.smartContractConnection.manager.find(
         SmartContractCallRecordEntity,
         {
@@ -61,7 +55,6 @@ export class NftAnalyseService {
       }
 
       this.logger.debug('start update calltimes by period')
-      // await this.smartContractConnection.commitTransaction()
       await this.nftConnection.commitTransaction()
       if (contractRecordList.length > 0) {
         this.logger.debug(
@@ -74,16 +67,11 @@ export class NftAnalyseService {
       }
       this.logger.debug('commit success')
     } catch (e) {
-      // console.log(e)
       console.error(e.message)
       this.logger.error(e.message)
       this.logger.error('rollback')
-
-      // await this.smartContractConnection.rollbackTransaction()
       await this.nftConnection.rollbackTransaction()
-      // process.exit(0)
     } finally {
-      // await this.smartContractConnection.release()
       await this.nftConnection.release()
       this.logger.debug('end analyse nft data')
       this.logger.debug('release success')

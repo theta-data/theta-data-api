@@ -5,6 +5,7 @@ import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contra
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
+import { CMC_PRICE_INFORMATION } from 'theta-ts-sdk/dist/types/interface'
 import { getConnection, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')
@@ -20,6 +21,7 @@ export class NftStatisticsAnalyseService {
   private nftConnection: QueryRunner
   private nftStatisticsConnection: QueryRunner
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft-statistics/record.height'
+  private tfuelPrice: CMC_PRICE_INFORMATION
 
   constructor(private utilsService: UtilsService, private marketService: MarketService) {}
 
@@ -29,6 +31,7 @@ export class NftStatisticsAnalyseService {
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
       this.nftStatisticsConnection = getConnection('nft-statistics').createQueryRunner()
+      this.tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
 
       await this.smartContractConnection.connect()
       await this.nftConnection.connect()
@@ -108,16 +111,16 @@ export class NftStatisticsAnalyseService {
       transactionCount7D = 0,
       transactionCount30D = 0
 
-    const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
+    // const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
 
     for (const record of recordList) {
       if (record.timestamp >= moment().subtract(24, 'hours').unix()) {
         !users24H.includes(record.from) && users24H.push(record.from)
         !users24H.includes(record.to) && users24H.push(record.to)
-        if (record.tdrop_mined == 0) {
+        if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume24H += record.payment_token_amount
         } else {
-          volume24H += record.payment_token_amount * tfuelPrice.price
+          volume24H += record.payment_token_amount * this.tfuelPrice.price
         }
 
         transactionCount24H += 1
@@ -125,10 +128,10 @@ export class NftStatisticsAnalyseService {
       if (record.timestamp >= moment().subtract(7, 'days').unix()) {
         !users7D.includes(record.from) && users7D.push(record.from)
         !users7D.includes(record.to) && users7D.push(record.to)
-        if (record.tdrop_mined == 0) {
+        if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume7D += record.payment_token_amount
         } else {
-          volume7D += record.payment_token_amount * tfuelPrice.price
+          volume7D += record.payment_token_amount * this.tfuelPrice.price
         }
         transactionCount7D += 1
       }
@@ -138,7 +141,7 @@ export class NftStatisticsAnalyseService {
         if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume30D += record.payment_token_amount
         } else {
-          volume30D += record.payment_token_amount * tfuelPrice.price
+          volume30D += record.payment_token_amount * this.tfuelPrice.price
         }
         transactionCount30D += 1
       }
