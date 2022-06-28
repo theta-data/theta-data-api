@@ -9,10 +9,13 @@ export class PaginatedNftStatistics extends Paginated(NftStatisticsEntity) {}
 @ObjectType()
 export class NftDetailType {
   @Field({ nullable: true })
-  externel_url: string
+  contract_uri_detail: string
 
   @Field({ nullable: true })
   name: string
+
+  @Field({ nullable: true })
+  img_uri: string
 
   @Field(() => [NftDetailByDate])
   by_hours: Array<NftDetailByDate>

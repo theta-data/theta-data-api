@@ -142,8 +142,9 @@ export class NftStatisticsService {
     if (!nftDetail) {
       return {
         name: '',
-        externel_url: '',
-        by_hours: []
+        contract_uri_detail: '',
+        by_hours: [],
+        img_uri: ''
       }
     }
 
@@ -158,6 +159,7 @@ export class NftStatisticsService {
           users: number
           transactions: number
           date: string
+          img_uri: string
         }
       } = {}
       for (const record of nftStatistics) {
@@ -171,21 +173,24 @@ export class NftStatisticsService {
             volume: record.payment_token_amount,
             users: 1,
             transactions: 1,
+            img_uri: nftDetail.img_uri,
             date: moment(moment(record.timestamp * 1000).format('YYYY-MM-DD hh')).unix()
           }
         }
       }
       return {
         name: nftDetail.name,
-        externel_url: nftDetail.contract_uri_detail,
+        img_uri: nftDetail.img_uri,
+        contract_uri_detail: nftDetail.contract_uri_detail,
         by_hours: Object.values(statisticsObj)
       }
       // return nftStatistics
     }
     return {
       name: nftDetail.name,
-      externel_url: nftDetail.contract_uri_detail,
-      by_hours: []
+      contract_uri_detail: nftDetail.contract_uri_detail,
+      by_hours: [],
+      img_uri: nftDetail.img_uri
     }
   }
 }
