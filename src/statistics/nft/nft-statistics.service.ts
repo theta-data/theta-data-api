@@ -171,7 +171,7 @@ export class NftStatisticsService {
             volume: record.payment_token_amount,
             users: 1,
             transactions: 1,
-            date: date
+            date: moment(record.timestamp * 1000).format('YYYY-MM-DD hh')
           }
         }
       }
