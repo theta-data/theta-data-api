@@ -652,7 +652,7 @@ type PaginatedNftStatistics {
 type NftDetailType {
   externel_url: String
   name: String
-  by_date: [NftDetailByDate!]!
+  by_hours: [NftDetailByDate!]!
 }
 
 type NftDetailByDate {

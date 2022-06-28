@@ -15,7 +15,7 @@ export class NftDetailType {
   name: string
 
   @Field(() => [NftDetailByDate])
-  by_date: Array<NftDetailByDate>
+  by_hours: Array<NftDetailByDate>
 }
 
 @ObjectType()

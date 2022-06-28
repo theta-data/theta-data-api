@@ -143,7 +143,7 @@ export class NftStatisticsService {
       return {
         name: '',
         externel_url: '',
-        by_date: []
+        by_hours: []
       }
     }
 
@@ -161,7 +161,7 @@ export class NftStatisticsService {
         }
       } = {}
       for (const record of nftStatistics) {
-        const date = moment(record.timestamp * 1000).format('YYYY-MM-DD')
+        const date = moment(record.timestamp * 1000).format('YYYY-MM-DD-hh')
         if (statisticsObj[date]) {
           statisticsObj[date].volume += record.payment_token_amount
           statisticsObj[date].users += 1
@@ -178,14 +178,14 @@ export class NftStatisticsService {
       return {
         name: nftDetail.name,
         externel_url: nftDetail.contract_uri_detail,
-        by_date: Object.values(statisticsObj)
+        by_hours: Object.values(statisticsObj)
       }
       // return nftStatistics
     }
     return {
       name: nftDetail.name,
       externel_url: nftDetail.contract_uri_detail,
-      by_date: []
+      by_hours: []
     }
   }
 }
