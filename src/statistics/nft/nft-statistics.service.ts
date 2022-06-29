@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { registerEnumType } from '@nestjs/graphql'
 import { InjectRepository } from '@nestjs/typeorm'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
-import { FindManyOptions, LessThan, Repository } from 'typeorm'
+import { FindManyOptions, LessThan, MoreThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 import { NftDetailByDate, NftDetailType } from './nft-statistics.model'
 
@@ -137,7 +137,10 @@ export class NftStatisticsService {
 
   async nftDetail(contractAddress): Promise<NftDetailType> {
     const nftDetail = await this.nftStatisticsRepository.findOne({
-      where: { smart_contract_address: contractAddress }
+      where: {
+        smart_contract_address: contractAddress,
+        timestamp: MoreThan(moment().subtract(31, 'days').unix())
+      }
     })
     if (!nftDetail) {
       return {
