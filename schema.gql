@@ -582,7 +582,7 @@ type NftType {
   NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
   NftOwners(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
-  ContractNftTransfers(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
+  ContractNftTransfers(smart_contract_address: String!, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
   TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
 }
 
