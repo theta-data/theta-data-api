@@ -514,11 +514,13 @@ export class NftService {
   async getNftTransfersForSmartContract(
     contractAddress: string,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip = 0
   ): Promise<[boolean, number, Array<NftTransferRecordEntity>]> {
     const condition: FindManyOptions<NftTransferRecordEntity> = {
       where: { smart_contract_address: contractAddress },
       take: take + 1,
+      skip: skip,
       order: {
         id: 'ASC'
       }
