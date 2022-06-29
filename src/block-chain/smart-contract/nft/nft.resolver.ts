@@ -148,12 +148,14 @@ export class NftResolver {
   async ContractNftTransfers(
     @Args('smart_contract_address') contractAddress: string,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
-    @Args('after', { nullable: true }) after: string
+    @Args('after', { nullable: true }) after: string,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftService.getNftTransfersForSmartContract(
       contractAddress.toLowerCase(),
       take,
-      after
+      after,
+      skip
     )
     let endCursor = ''
     if (res.length > 0) {
