@@ -138,8 +138,7 @@ export class NftStatisticsService {
   async nftDetail(contractAddress): Promise<NftDetailType> {
     const nftDetail = await this.nftStatisticsRepository.findOne({
       where: {
-        smart_contract_address: contractAddress,
-        timestamp: MoreThan(moment().subtract(31, 'days').unix())
+        smart_contract_address: contractAddress
       }
     })
     if (!nftDetail) {
@@ -153,7 +152,10 @@ export class NftStatisticsService {
       }
     }
     const nftStatistics = await this.nftTransferRecordRepository.find({
-      where: { smart_contract_address: contractAddress },
+      where: {
+        smart_contract_address: contractAddress,
+        timestamp: MoreThan(moment().subtract(31, 'days').unix())
+      },
       order: { timestamp: 'ASC' }
     })
     if (nftStatistics) {
