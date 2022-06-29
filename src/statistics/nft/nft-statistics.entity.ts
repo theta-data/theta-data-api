@@ -4,6 +4,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  Index,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
@@ -12,6 +13,7 @@ import {
 @ObjectType()
 @Entity()
 @Unique(['smart_contract_address'])
+@Index(['smart_contract_address', 'timestamp'])
 export class NftStatisticsEntity {
   @PrimaryGeneratedColumn()
   id!: number
