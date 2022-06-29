@@ -653,11 +653,13 @@ type NftDetailType {
   contract_uri_detail: String
   name: String
   img_uri: String
-  by_hours: [NftDetailByDate!]!
+  by_24_hours: [NftDetailByDate!]!
+  by_7_days: [NftDetailByDate!]!
+  by_30_days: [NftDetailByDate!]!
 }
 
 type NftDetailByDate {
-  date: String!
+  date: Int!
   volume: Float!
   transactions: Int!
   users: Int!

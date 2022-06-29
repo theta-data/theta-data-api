@@ -4,7 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { FindManyOptions, LessThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
-import { NftDetailType } from './nft-statistics.model'
+import { NftDetailByDate, NftDetailType } from './nft-statistics.model'
 
 export enum NftStatisticsOrderByType {
   last_24_h_users,
@@ -155,52 +155,37 @@ export class NftStatisticsService {
     })
     if (nftStatistics) {
       const statisticsObj24H: {
-        [index: string]: {
-          volume: number
-          users: number
-          transactions: number
-          date: number
-          img_uri: string
-        }
+        [index: string]: NftDetailByDate
       } = {}
       const statisticsObj7Days: {
-        [index: string]: {
-          volume: number
-          users: number
-          transactions: number
-          date: number
-          img_uri: string
-        }
+        [index: string]: NftDetailByDate
       } = {}
       const statisticsObj30Days: {
-        [index: string]: {
-          volume: number
-          users: number
-          transactions: number
-          date: number
-          img_uri: string
-        }
+        [index: string]: NftDetailByDate
       } = {}
       const usersArr24H = {}
       const usersArr7Days = {}
       const usersArr30Days = {}
+      const statisticsArr24H: Array<NftDetailByDate> = []
+      const statisticsArr7Days: Array<NftDetailByDate> = []
+      const statisticsArr30Days: Array<NftDetailByDate> = []
       for (const record of nftStatistics) {
         if (record.timestamp > moment().subtract(24, 'hours').unix()) {
           const hourStr = moment(record.timestamp * 1000).format('YYYY-MM-DD-HH')
           if (statisticsObj24H[hourStr]) {
             usersArr24H[hourStr].includes(record.from) || usersArr24H[hourStr].push(record.from)
             usersArr24H[hourStr].includes(record.to) || usersArr24H[hourStr].push(record.to)
-            statisticsObj24H[record.timestamp].volume += record.payment_token_amount
-            statisticsObj24H[record.timestamp].users = usersArr24H[hourStr].length
-            statisticsObj24H[record.timestamp].transactions += 1
+            statisticsObj24H[hourStr].volume += record.payment_token_amount
+            statisticsObj24H[hourStr].users = usersArr24H[hourStr].length
+            statisticsObj24H[hourStr].transactions += 1
           } else {
             usersArr24H[hourStr] = [record.from, record.to]
             statisticsObj24H[hourStr] = {
               volume: record.payment_token_amount,
               users: 2,
               transactions: 1,
-              date: record.timestamp,
-              img_uri: nftDetail.img_uri
+              date: record.timestamp
+              // img_uri: nftDetail.img_uri
             }
           }
           if (usersArr24H[record.from]) {
@@ -214,17 +199,17 @@ export class NftStatisticsService {
           if (statisticsObj7Days[dayStr]) {
             usersArr7Days[dayStr].includes(record.from) || usersArr7Days[dayStr].push(record.from)
             usersArr7Days[dayStr].includes(record.to) || usersArr7Days[dayStr].push(record.to)
-            statisticsObj7Days[record.timestamp].volume += record.payment_token_amount
-            statisticsObj7Days[record.timestamp].users = usersArr7Days[dayStr].length
-            statisticsObj7Days[record.timestamp].transactions += 1
+            statisticsObj7Days[dayStr].volume += record.payment_token_amount
+            statisticsObj7Days[dayStr].users = usersArr7Days[dayStr].length
+            statisticsObj7Days[dayStr].transactions += 1
           } else {
             usersArr7Days[dayStr] = [record.from, record.to]
             statisticsObj7Days[dayStr] = {
               volume: record.payment_token_amount,
               users: 2,
               transactions: 1,
-              date: record.timestamp,
-              img_uri: nftDetail.img_uri
+              date: record.timestamp
+              // img_uri: nftDetail.img_uri
             }
           }
         }
@@ -233,28 +218,67 @@ export class NftStatisticsService {
           if (statisticsObj30Days[dayStr]) {
             usersArr30Days[dayStr].includes(record.from) || usersArr30Days[dayStr].push(record.from)
             usersArr30Days[dayStr].includes(record.to) || usersArr30Days[dayStr].push(record.to)
-            statisticsObj30Days[record.timestamp].volume += record.payment_token_amount
-            statisticsObj30Days[record.timestamp].users = usersArr30Days[dayStr].length
-            statisticsObj30Days[record.timestamp].transactions += 1
+            statisticsObj30Days[dayStr].volume += record.payment_token_amount
+            statisticsObj30Days[dayStr].users = usersArr30Days[dayStr].length
+            statisticsObj30Days[dayStr].transactions += 1
           } else {
             usersArr30Days[dayStr] = [record.from, record.to]
             statisticsObj30Days[dayStr] = {
               volume: record.payment_token_amount,
               users: 2,
               transactions: 1,
-              date: record.timestamp,
-              img_uri: nftDetail.img_uri
+              date: record.timestamp
+              // img_uri: nftDetail.img_uri
             }
           }
+        }
+      }
+      for (let i = 23; i >= 0; i--) {
+        const hourStr = moment().subtract(i, 'hours').format('YYYY-MM-DD-HH')
+        if (statisticsObj24H[hourStr]) {
+          statisticsArr24H.push(statisticsObj24H[hourStr])
+        } else {
+          statisticsArr24H.push({
+            date: moment().subtract(i, 'hours').unix(),
+            volume: 0,
+            users: 0,
+            transactions: 0
+          })
+        }
+      }
+      for (let i = 6; i >= 0; i--) {
+        const dayStr = moment().subtract(i, 'days').format('YYYY-MM-DD')
+        if (statisticsObj7Days[dayStr]) {
+          statisticsArr7Days.push(statisticsObj7Days[dayStr])
+        } else {
+          statisticsArr7Days.push({
+            date: moment().subtract(i, 'days').unix(),
+            volume: 0,
+            users: 0,
+            transactions: 0
+          })
+        }
+      }
+      for (let i = 29; i >= 0; i--) {
+        const dayStr = moment().subtract(i, 'days').format('YYYY-MM-DD')
+        if (statisticsObj30Days[dayStr]) {
+          statisticsArr30Days.push(statisticsObj30Days[dayStr])
+        } else {
+          statisticsArr30Days.push({
+            date: moment().subtract(i, 'days').unix(),
+            volume: 0,
+            users: 0,
+            transactions: 0
+          })
         }
       }
       return {
         name: nftDetail.name,
         img_uri: nftDetail.img_uri,
         contract_uri_detail: nftDetail.contract_uri_detail,
-        by_24_hours: Object.values(statisticsObj24H),
-        by_7_days: Object.values(statisticsObj7Days),
-        by_30_days: Object.values(statisticsObj30Days)
+        by_24_hours: statisticsArr24H,
+        by_7_days: statisticsArr7Days,
+        by_30_days: statisticsArr30Days
       }
       // return nftStatistics
     }
