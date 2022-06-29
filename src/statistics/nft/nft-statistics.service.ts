@@ -143,41 +143,108 @@ export class NftStatisticsService {
       return {
         name: '',
         contract_uri_detail: '',
-        by_hours: [],
+        by_24_hours: [],
+        by_30_days: [],
+        by_7_days: [],
         img_uri: ''
       }
     }
-
     const nftStatistics = await this.nftTransferRecordRepository.find({
       where: { smart_contract_address: contractAddress },
       order: { timestamp: 'ASC' }
     })
     if (nftStatistics) {
-      const statisticsObj: {
+      const statisticsObj24H: {
         [index: string]: {
           volume: number
           users: number
           transactions: number
-          date: string
+          date: number
           img_uri: string
         }
       } = {}
-      const usersArr = []
+      const statisticsObj7Days: {
+        [index: string]: {
+          volume: number
+          users: number
+          transactions: number
+          date: number
+          img_uri: string
+        }
+      } = {}
+      const statisticsObj30Days: {
+        [index: string]: {
+          volume: number
+          users: number
+          transactions: number
+          date: number
+          img_uri: string
+        }
+      } = {}
+      const usersArr24H = {}
+      const usersArr7Days = {}
+      const usersArr30Days = {}
       for (const record of nftStatistics) {
-        const date = moment(record.timestamp * 1000).format('YYYY-MM-DD-hh')
-        if (statisticsObj[date]) {
-          statisticsObj[date].volume += record.payment_token_amount
-          usersArr.includes(record.from) || usersArr.push(record.from)
-          usersArr.includes(record.to) || usersArr.push(record.to)
-          statisticsObj[date].users = usersArr.length
-          statisticsObj[date].transactions += 1
-        } else {
-          statisticsObj[date] = {
-            volume: record.payment_token_amount,
-            users: 2,
-            transactions: 1,
-            img_uri: nftDetail.img_uri,
-            date: moment(moment(record.timestamp * 1000).format('YYYY-MM-DD hh')).unix()
+        if (record.timestamp > moment().subtract(24, 'hours').unix()) {
+          const hourStr = moment(record.timestamp * 1000).format('YYYY-MM-DD-HH')
+          if (statisticsObj24H[hourStr]) {
+            usersArr24H[hourStr].includes(record.from) || usersArr24H[hourStr].push(record.from)
+            usersArr24H[hourStr].includes(record.to) || usersArr24H[hourStr].push(record.to)
+            statisticsObj24H[record.timestamp].volume += record.payment_token_amount
+            statisticsObj24H[record.timestamp].users = usersArr24H[hourStr].length
+            statisticsObj24H[record.timestamp].transactions += 1
+          } else {
+            usersArr24H[hourStr] = [record.from, record.to]
+            statisticsObj24H[hourStr] = {
+              volume: record.payment_token_amount,
+              users: 2,
+              transactions: 1,
+              date: record.timestamp,
+              img_uri: nftDetail.img_uri
+            }
+          }
+          if (usersArr24H[record.from]) {
+            usersArr24H[record.from] += 1
+          } else {
+            usersArr24H[record.from] = 1
+          }
+        }
+        if (record.timestamp > moment().subtract(7, 'days').unix()) {
+          const dayStr = moment(record.timestamp * 1000).format('YYYY-MM-DD')
+          if (statisticsObj7Days[dayStr]) {
+            usersArr7Days[dayStr].includes(record.from) || usersArr7Days[dayStr].push(record.from)
+            usersArr7Days[dayStr].includes(record.to) || usersArr7Days[dayStr].push(record.to)
+            statisticsObj7Days[record.timestamp].volume += record.payment_token_amount
+            statisticsObj7Days[record.timestamp].users = usersArr7Days[dayStr].length
+            statisticsObj7Days[record.timestamp].transactions += 1
+          } else {
+            usersArr7Days[dayStr] = [record.from, record.to]
+            statisticsObj7Days[dayStr] = {
+              volume: record.payment_token_amount,
+              users: 2,
+              transactions: 1,
+              date: record.timestamp,
+              img_uri: nftDetail.img_uri
+            }
+          }
+        }
+        if (record.timestamp > moment().subtract(30, 'days').unix()) {
+          const dayStr = moment(record.timestamp * 1000).format('YYYY-MM-DD')
+          if (statisticsObj30Days[dayStr]) {
+            usersArr30Days[dayStr].includes(record.from) || usersArr30Days[dayStr].push(record.from)
+            usersArr30Days[dayStr].includes(record.to) || usersArr30Days[dayStr].push(record.to)
+            statisticsObj30Days[record.timestamp].volume += record.payment_token_amount
+            statisticsObj30Days[record.timestamp].users = usersArr30Days[dayStr].length
+            statisticsObj30Days[record.timestamp].transactions += 1
+          } else {
+            usersArr30Days[dayStr] = [record.from, record.to]
+            statisticsObj30Days[dayStr] = {
+              volume: record.payment_token_amount,
+              users: 2,
+              transactions: 1,
+              date: record.timestamp,
+              img_uri: nftDetail.img_uri
+            }
           }
         }
       }
@@ -185,15 +252,114 @@ export class NftStatisticsService {
         name: nftDetail.name,
         img_uri: nftDetail.img_uri,
         contract_uri_detail: nftDetail.contract_uri_detail,
-        by_hours: Object.values(statisticsObj)
+        by_24_hours: Object.values(statisticsObj24H),
+        by_7_days: Object.values(statisticsObj7Days),
+        by_30_days: Object.values(statisticsObj30Days)
       }
       // return nftStatistics
     }
     return {
       name: nftDetail.name,
       contract_uri_detail: nftDetail.contract_uri_detail,
-      by_hours: [],
+      by_24_hours: [],
+      by_30_days: [],
+      by_7_days: [],
       img_uri: nftDetail.img_uri
     }
   }
+
+  // formatNftDetailData() {
+  //   try {
+  //     for (const item of data.NftDetail.by_hours) {
+  //       if (item.date >= moment().subtract(24, 'hours').unix()) {
+  //         last24hData[moment(Number(item.date) * 1000).format('YYYY-MM-DDhh')] = {
+  //           date: moment(Number(item.date) * 1000).format('MMMM Do, hh'),
+  //           volume: item.volume,
+  //           users: item.users,
+  //           transactions: item.transactions
+  //         }
+  //       }
+  //       if (item.date >= moment().subtract(7, 'days').unix()) {
+  //         if (!last7DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')]) {
+  //           last7DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')] = {
+  //             date: moment(Number(item.date) * 1000).format('MMMM Do'),
+  //             volume: item.volume,
+  //             users: item.users,
+  //             transactions: item.transactions
+  //           }
+  //         } else {
+  //           last7DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].volume +=
+  //             item.volume
+  //           last7DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].users += item.users
+  //           last7DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].transactions +=
+  //             item.transactions
+  //         }
+  //       }
+  //       if (item.date >= moment().subtract(30, 'days').unix()) {
+  //         if (!last30DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')]) {
+  //           last30DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')] = {
+  //             date: moment(Number(item.date) * 1000).format('MMMM Do'),
+  //             volume: item.volume,
+  //             users: item.users,
+  //             transactions: item.transactions
+  //           }
+  //         } else {
+  //           last30DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].volume +=
+  //             item.volume
+  //           last30DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].users +=
+  //             item.users
+  //           last30DaysData[moment(Number(item.date) * 1000).format('YYYY-MM-DD')].transactions +=
+  //             item.transactions
+  //         }
+  //       }
+  //     }
+  //     for (const i = 23; i >= 0; i--) {
+  //       const date = moment().subtract(i, 'hours').format('YYYY-MM-DDhh')
+  //       if (last24hData[date]) {
+  //         chartData24H.push(last24hData[date])
+  //       } else {
+  //         chartData24H.push({
+  //           date: moment().subtract(i, 'hours').format('MMMM Do YYYY, HH'),
+  //           volume: 0,
+  //           users: 0,
+  //           transactions: 0
+  //         })
+  //       }
+  //     }
+  //     for (const i = 6; i >= 0; i--) {
+  //       const date = moment().subtract(i, 'days').format('YYYY-MM-DD')
+  //       if (last7DaysData[date]) {
+  //         chartDataLast7Days.push(last7DaysData[date])
+  //       } else {
+  //         chartDataLast7Days.push({
+  //           date: moment().subtract(i, 'days').format('MMMM Do'),
+  //           volume: 0,
+  //           users: 0,
+  //           transactions: 0
+  //         })
+  //       }
+  //     }
+  //     console.log('last 30 days data', last30DaysData)
+  //     for (const i = 29; i >= 0; i--) {
+  //       const date = moment().subtract(i, 'days').format('YYYY-MM-DD')
+  //       if (last30DaysData[date]) {
+  //         chartDataLast30Days.push(last30DaysData[date])
+  //       } else {
+  //         chartDataLast30Days.push({
+  //           date: moment().subtract(i, 'days').format('MMMM Do'),
+  //           volume: 0,
+  //           users: 0,
+  //           transactions: 0
+  //         })
+  //       }
+  //     }
+  //     console.log('30 days chart data', chartDataLast30Days)
+  //     // setChartData24H(chartData24H)
+  //     // setChartData7Days(chartDataLast7Days)
+  //     // setChartData30Days(chartDataLast30Days)
+  //     // console.log(data)
+  //   } catch (e) {
+  //     console.log(e)
+  //   }
+  // }
 }
