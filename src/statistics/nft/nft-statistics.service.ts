@@ -162,16 +162,19 @@ export class NftStatisticsService {
           img_uri: string
         }
       } = {}
+      const usersArr = []
       for (const record of nftStatistics) {
         const date = moment(record.timestamp * 1000).format('YYYY-MM-DD-hh')
         if (statisticsObj[date]) {
           statisticsObj[date].volume += record.payment_token_amount
-          statisticsObj[date].users += 1
+          usersArr.includes(record.from) || usersArr.push(record.from)
+          usersArr.includes(record.to) || usersArr.push(record.to)
+          statisticsObj[date].users = usersArr.length
           statisticsObj[date].transactions += 1
         } else {
           statisticsObj[date] = {
             volume: record.payment_token_amount,
-            users: 1,
+            users: 2,
             transactions: 1,
             img_uri: nftDetail.img_uri,
             date: moment(moment(record.timestamp * 1000).format('YYYY-MM-DD hh')).unix()
