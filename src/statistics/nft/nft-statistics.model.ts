@@ -18,13 +18,19 @@ export class NftDetailType {
   img_uri: string
 
   @Field(() => [NftDetailByDate])
-  by_hours: Array<NftDetailByDate>
+  by_24_hours: Array<NftDetailByDate>
+
+  @Field(() => [NftDetailByDate])
+  by_7_days: Array<NftDetailByDate>
+
+  @Field(() => [NftDetailByDate])
+  by_30_days: Array<NftDetailByDate>
 }
 
 @ObjectType()
 export class NftDetailByDate {
-  @Field()
-  date: string
+  @Field(() => GraphQLInt)
+  date: number
 
   @Field(() => GraphQLFloat)
   volume: number
