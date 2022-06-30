@@ -216,11 +216,11 @@ export class NftStatisticsService {
               // img_uri: nftDetail.img_uri
             }
           }
-          if (usersArr24H[record.from]) {
-            usersArr24H[record.from] += 1
-          } else {
-            usersArr24H[record.from] = 1
-          }
+          // if (usersArr24H[record.from]) {
+          //   usersArr24H[record.from] += 1
+          // } else {
+          //   usersArr24H[record.from] = 1
+          // }
         }
         if (record.timestamp > moment().subtract(7, 'days').unix()) {
           const dayStr = moment(record.timestamp * 1000).format('YYYY-MM-DD')
@@ -259,9 +259,9 @@ export class NftStatisticsService {
             usersArr30Days[dayStr].includes(record.to) || usersArr30Days[dayStr].push(record.to)
             // statisticsObj30Days[dayStr].volume += record.payment_token_amount
             if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
-              statisticsArr30Days[dayStr].volume += record.payment_token_amount
+              statisticsObj30Days[dayStr].volume += record.payment_token_amount
             } else {
-              statisticsArr30Days[dayStr].volume += record.payment_token_amount * tfuelPrice.price
+              statisticsObj30Days[dayStr].volume += record.payment_token_amount * tfuelPrice.price
             }
             statisticsObj30Days[dayStr].users = usersArr30Days[dayStr].length
             statisticsObj30Days[dayStr].transactions += 1
