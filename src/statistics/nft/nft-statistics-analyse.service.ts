@@ -31,7 +31,7 @@ export class NftStatisticsAnalyseService {
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
       this.nftStatisticsConnection = getConnection('nft-statistics').createQueryRunner()
-      const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
+      this.tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
 
       await this.smartContractConnection.connect()
       await this.nftConnection.connect()
