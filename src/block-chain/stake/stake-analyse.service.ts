@@ -1,3 +1,4 @@
+import { LatestStakeInfoEntity } from './latest-stake-info.entity'
 import { CACHE_MANAGER, Inject, Injectable, Logger, SerializeOptions } from '@nestjs/common'
 import { getConnection, LessThan, MoreThan, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
@@ -11,6 +12,7 @@ import { Interval } from '@nestjs/schedule'
 import { LoggerService } from 'src/common/logger.service'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { UtilsService } from 'src/common/utils.service'
+import { STAKE_NODE_TYPE_ENUM } from './stake.entity'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -250,6 +252,15 @@ export class StakeAnalyseService {
       return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
+    await this.stakeConnection.manager.upsert(
+      LatestStakeInfoEntity,
+      {
+        height: Number(block.height),
+        node_type: STAKE_NODE_TYPE_ENUM.validator,
+        holder: JSON.stringify(validatorList)
+      },
+      ['node_type']
+    )
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
       totalNodeNum++
       node.Stakes.forEach((stake) => {
@@ -280,6 +291,15 @@ export class StakeAnalyseService {
       return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
+    await this.stakeConnection.manager.upsert(
+      LatestStakeInfoEntity,
+      {
+        height: Number(block.height),
+        node_type: STAKE_NODE_TYPE_ENUM.guardian,
+        holder: JSON.stringify(gcpList)
+      },
+      ['node_type']
+    )
     for (const guardian of gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians) {
       totalNodeNum++
       guardian.Stakes.forEach((stake) => {
@@ -314,6 +334,15 @@ export class StakeAnalyseService {
       // return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
+    await this.stakeConnection.manager.upsert(
+      LatestStakeInfoEntity,
+      {
+        height: Number(block.height),
+        node_type: STAKE_NODE_TYPE_ENUM.edge_cache,
+        holder: JSON.stringify(eenpList)
+      },
+      ['node_type']
+    )
     eenpList.result.BlockHashEenpPairs[0].EENs.forEach((eenp) => {
       totalNodeNum++
       let isEffectiveNode = false
