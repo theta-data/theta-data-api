@@ -446,7 +446,8 @@ export class NftService {
   async getNftByWalletAddress(
     address: string,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip: number = 0
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     this.logger.debug('address: ' + address)
     const condition: FindManyOptions<NftBalanceEntity> = {
@@ -454,6 +455,7 @@ export class NftService {
         owner: address
       },
       take: take + 1,
+      skip: skip,
       order: {
         // id: 'ASC',
         id: 'DESC'
@@ -481,13 +483,15 @@ export class NftService {
   async getNftsBySmartContractAddress(
     address: string,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip: number = 0
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     const condition: FindManyOptions<NftBalanceEntity> = {
       where: {
         smart_contract_address: address,
         owner: Not('0x0000000000000000000000000000000000000000')
       },
+      skip: skip,
       take: take + 1,
       order: {
         id: 'ASC'
