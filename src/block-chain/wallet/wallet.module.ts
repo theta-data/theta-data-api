@@ -7,11 +7,13 @@ import { WalletEntity } from './wallet.entity'
 import { ActiveWalletsEntity } from './active-wallets.entity'
 import { CommonModule } from 'src/common/common.module'
 import { WalletsAnalyseService } from './wallets-analyse.service'
+import { LatestStakeInfoEntity } from '../stake/latest-stake-info.entity'
 
 @Module({
   imports: [
     CacheModule.register(),
     TypeOrmModule.forFeature([WalletEntity, ActiveWalletsEntity], 'wallet'),
+    TypeOrmModule.forFeature([LatestStakeInfoEntity], 'stake'),
     CommonModule
   ],
   providers: [WalletResolver, WalletService, MarketService, WalletsAnalyseService],
