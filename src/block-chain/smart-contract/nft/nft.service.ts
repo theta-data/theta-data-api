@@ -470,10 +470,11 @@ export class NftService {
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = LessThan(id)
     }
-
-    const totalNft = await this.nftBalanceRepository.count({
+    const totalCondition = {
       owner: address
-    })
+    }
+    if (search) totalCondition['name'] = Like(`%${search}%`)
+    const totalNft = await this.nftBalanceRepository.count(totalCondition)
     let nftList = await this.nftBalanceRepository.find(condition)
     let hasNextPage = false
     if (nftList.length > take) {
