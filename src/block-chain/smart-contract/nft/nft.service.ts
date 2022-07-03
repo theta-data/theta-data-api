@@ -447,7 +447,8 @@ export class NftService {
     address: string,
     take: number = 20,
     after: string | undefined,
-    skip: number = 0
+    skip: number = 0,
+    search: string | undefined = null
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     this.logger.debug('address: ' + address)
     const condition: FindManyOptions<NftBalanceEntity> = {
@@ -460,6 +461,9 @@ export class NftService {
         // id: 'ASC',
         id: 'DESC'
       }
+    }
+    if (search) {
+      condition.where['name'] = Like(`%${search}%`)
     }
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
