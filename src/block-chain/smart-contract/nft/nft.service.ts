@@ -474,6 +474,7 @@ export class NftService {
       owner: address
     }
     if (search) totalCondition['name'] = Like(`%${search}%`)
+    this.logger.debug('total count condition', JSON.stringify(totalCondition))
     const totalNft = await this.nftBalanceRepository.count(totalCondition)
     let nftList = await this.nftBalanceRepository.find(condition)
     let hasNextPage = false
