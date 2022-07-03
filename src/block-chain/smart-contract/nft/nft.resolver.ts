@@ -42,6 +42,7 @@ export class NftResolver {
   @ResolveField(() => PaginatedNftBalance)
   async Balance(
     @Args('wallet_address') walletAddress: string,
+    @Args('search') search: string,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
     @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number,
     @Args('after', { nullable: true }) after: string
@@ -50,7 +51,8 @@ export class NftResolver {
       walletAddress.toLowerCase(),
       take,
       after,
-      skip
+      skip,
+      search
     )
     let endCursor = ''
     if (res.length > 0) {
