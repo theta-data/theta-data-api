@@ -537,6 +537,7 @@ export class NftService {
       }
     }
     if (tokenId) condition.where['token_id'] = tokenId
+    this.logger.debug(JSON.stringify(condition))
     if (after) {
       const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
