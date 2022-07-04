@@ -523,6 +523,7 @@ export class NftService {
 
   async getNftTransfersForSmartContract(
     contractAddress: string,
+    tokenId: number | undefined,
     take: number = 20,
     after: string | undefined,
     skip = 0
@@ -535,16 +536,20 @@ export class NftService {
         id: 'ASC'
       }
     }
+    if (tokenId) condition.where['token_id'] = tokenId
     if (after) {
       const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = MoreThan(id)
     }
-    const totalRecord = await this.nftTransferRecordRepository.count({
+    const countCondition = {
       where: {
         smart_contract_address: contractAddress
       }
-    })
+    }
+    if (tokenId) countCondition.where['token_id'] = tokenId
+    countCondition
+    const totalRecord = await this.nftTransferRecordRepository.count(countCondition)
     let recordList = await this.nftTransferRecordRepository.find(condition)
     let hasNextPage = false
     if (recordList.length > take) {
