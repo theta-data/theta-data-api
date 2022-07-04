@@ -155,14 +155,14 @@ export class NftResolver {
   @ResolveField(() => PaginatedNftTransferRecord)
   async ContractNftTransfers(
     @Args('smart_contract_address') contractAddress: string,
-    @Args('token_id', { type: () => Int,  nullable: true }) tokenId: number,
+    @Args('token_id', { type: () => Int, nullable: true }) tokenId: number,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
     @Args('after', { nullable: true }) after: string,
     @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftService.getNftTransfersForSmartContract(
       contractAddress.toLowerCase(),
-      tokenId
+      tokenId,
       take,
       after,
       skip
