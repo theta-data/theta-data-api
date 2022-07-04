@@ -174,6 +174,7 @@ export class NftResolver {
     return {
       endCursor: endCursor,
       hasNextPage: hasNextPage,
+      skip: skip,
       nodes: res,
       totalCount: totalNumber
     }
