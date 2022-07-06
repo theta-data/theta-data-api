@@ -645,10 +645,12 @@ export class NftService {
   }
 
   async getNftByTokenId(tokenId: number, contractAddress: string) {
-    const nft = await this.nftBalanceRepository.findOne({
+    const searchCondition = {
       token_id: tokenId,
       smart_contract_address: contractAddress
-    })
+    }
+    this.logger.debug('search condtion get nft by token id', JSON.stringify(searchCondition))
+    const nft = await this.nftBalanceRepository.findOne(searchCondition)
     this.logger.debug(JSON.stringify(nft))
     if (!nft) return undefined
     return (await this.checkSources([nft]))[0]
