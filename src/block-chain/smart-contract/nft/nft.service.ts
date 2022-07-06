@@ -533,7 +533,7 @@ export class NftService {
       take: take + 1,
       skip: skip,
       order: {
-        id: 'ASC'
+        timestamp: 'DESC'
       }
     }
     if (tokenId) condition.where['token_id'] = tokenId
@@ -541,7 +541,7 @@ export class NftService {
     if (after) {
       const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      condition.where['timestamp'] = LessThan(id)
     }
     const countCondition = {
       where: {
