@@ -169,7 +169,7 @@ export class NftResolver {
     )
     let endCursor = ''
     if (res.length > 0) {
-      endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
+      endCursor = Buffer.from(res[res.length - 1].timestamp.toString()).toString('base64')
     }
     return {
       endCursor: endCursor,
