@@ -149,6 +149,11 @@ export class ExplorerAnalyseService {
         case THETA_TRANSACTION_TYPE_ENUM.reserve_fund:
           from = transaction.raw.source.address
           break
+        case THETA_TRANSACTION_TYPE_ENUM.split_rule:
+          //@ts-ignore
+          from = transaction.raw.initiator.address
+          break
+        // to =
         default:
           from = transaction.raw.from
             ? transaction.raw.from.address
