@@ -2,6 +2,45 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TransactionEntity {
+  tx_hash: String!
+  from: String
+  to: String
+  height: Int!
+  timestamp: Int!
+  theta: Float!
+  theta_fuel: Float!
+}
+
+type BlokcListEntity {
+  height: Int!
+  block_hash: String!
+  timestamp: Int!
+  tfuel_burnt: Float!
+  txns: Int!
+}
+
+type PaginatedBlockList {
+  nodes: [BlokcListEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedTransactions {
+  nodes: [TransactionEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type ExplorerModelType {
+  blockList(take: Int = 10, after: String, skip: Int = 0): PaginatedBlockList!
+  transactions(take: Int = 10, after: String, skip: Int = 0): PaginatedTransactions!
+}
+
 type ThetaTxNumByHoursEntity {
   year: Int!
   month: Int!
@@ -24,6 +63,13 @@ type ThetaTxNumByHoursEntity {
   smart_contract_transaction: Int!
   latest_block_height: Int!
   timestamp: String!
+}
+
+type Stake {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
 }
 
 type ThetaTransactionStatisticsType {
@@ -100,13 +146,6 @@ type BalanceModel {
   stake_to_elite_node: [StakeBalanceType!]
   stake_to_validator_node: [StakeBalanceType!]
   total: TotalBalanceType!
-}
-
-type Stake {
-  source: String!
-  amount: String!
-  withdrawn: Boolean!
-  return_height: String!
 }
 
 """Return to statistics related to token pledges"""
@@ -577,12 +616,12 @@ type NftTransferRecordEntity {
 
 type NftType {
   SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
-  Balance(wallet_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
+  Balance(wallet_address: String!, search: String, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
   NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
   NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
   NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
-  NftOwners(smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance!
-  ContractNftTransfers(smart_contract_address: String!, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
+  NftOwners(smart_contract_address: String!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
+  ContractNftTransfers(smart_contract_address: String!, token_id: Int, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
   TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
 }
 
@@ -678,6 +717,7 @@ type Query {
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
   NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftStatistics!
   NftDetail(contract_address: String!): NftDetailType!
+  Explorer: ExplorerModelType!
 }
 
 enum LoggerRankByEnum {

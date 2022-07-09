@@ -1,3 +1,4 @@
+import { ExplorerModule } from './block-chain/explorer/explorer.module'
 import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -77,6 +78,12 @@ const config = require('config')
       name: 'nft-statistics',
       entities: []
     }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'explorer/data.sqlite',
+      name: 'explorer',
+      entities: []
+    }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
@@ -103,7 +110,8 @@ const config = require('config')
     WalletModule,
     ContactModule,
     LoggerModule,
-    NftStatisticsModule
+    NftStatisticsModule,
+    ExplorerModule
   ],
   providers: [
     {

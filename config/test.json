@@ -44,6 +44,11 @@
     "ANALYSE_NUMBER": 5000,
     "ANALYSE_INTERVAL": 1000
   },
+  "EXPLORER": {
+    "ANALYSE_NUMBER": 1000,
+    "ANALYSE_INTERVAL": 1000,
+    "START_HEIGHT": 1
+  },
   "STAKE": {},
   "TX": {},
   "WALLET": {}
