@@ -132,7 +132,6 @@ export class ExplorerAnalyseService {
             from = transaction.raw.from.address
             to = transaction.raw.to.address
           }
-
           break
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
           from = transaction.raw.from.address
@@ -155,9 +154,13 @@ export class ExplorerAnalyseService {
           break
         // to =
         default:
-          from = transaction.raw.from
-            ? transaction.raw.from.address
-            : transaction.raw.source.address
+          if (transaction.raw.from) from = transaction.raw.from.address
+          else if (transaction.raw.source) {
+            from = transaction.raw.source.address
+          } else {
+            //@ts-ignore
+            from = transaction.holder.address
+          }
           break
       }
       await this.explorerConnection.manager.insert(TransactionEntity, {
