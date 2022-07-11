@@ -155,7 +155,7 @@ export class ExplorerAnalyseService {
         //@ts-ignore
         case 11:
           //@ts-ignore
-          from = transaction.holder.address
+          from = transaction.raw.holder.address
           break
         // to =
         default:
