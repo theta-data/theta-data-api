@@ -9,7 +9,7 @@ export class TransactionEntity {
   id!: number
 
   @Field()
-  @Column()
+  @Column({ unique: true })
   tx_hash: string
 
   @Field(() => GraphQLString, { nullable: true })

@@ -165,16 +165,20 @@ export class ExplorerAnalyseService {
           }
           break
       }
-      await this.explorerConnection.manager.insert(TransactionEntity, {
-        tx_hash: transaction.hash,
-        height: Number(block.height),
-        // from
-        from: from,
-        to: to,
-        timestamp: Number(block.timestamp),
-        theta: theta,
-        theta_fuel: thetaFuel
-      })
+      if (config.get('CONFLICT_TRANSACTIONS').indexOf(transaction.hash) !== -1) {
+        continue
+      } else {
+        await this.explorerConnection.manager.insert(TransactionEntity, {
+          tx_hash: transaction.hash,
+          height: Number(block.height),
+          // from
+          from: from,
+          to: to,
+          timestamp: Number(block.timestamp),
+          theta: theta,
+          theta_fuel: thetaFuel
+        })
+      }
     }
     return await this.explorerConnection.manager.insert(BlokcListEntity, {
       height: Number(block.height),
