@@ -52,13 +52,13 @@ export class ExplorerService {
       skip: skip,
       order: {
         // id: 'ASC',
-        height: 'DESC'
+        id: 'DESC'
       }
     }
     if (after) {
-      const height = Number(Buffer.from(after, 'base64').toString('ascii'))
-      this.logger.debug('decode from base64:' + height)
-      condition.where[height] = LessThan(height)
+      const id = Number(Buffer.from(after, 'base64').toString('ascii'))
+      this.logger.debug('decode from base64:' + id)
+      condition.where['id'] = LessThan(id)
     }
     const totalBlock = await this.transactionRepository.count()
     let blockList = await this.transactionRepository.find(condition)
