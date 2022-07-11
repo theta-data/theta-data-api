@@ -171,6 +171,7 @@ export class ExplorerAnalyseService {
         await this.explorerConnection.manager.insert(TransactionEntity, {
           tx_hash: transaction.hash,
           height: Number(block.height),
+          tx_type: transaction.type,
           // from
           from: from,
           to: to,

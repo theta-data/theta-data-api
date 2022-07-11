@@ -12,6 +12,10 @@ export class TransactionEntity {
   @Column({ unique: true })
   tx_hash: string
 
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int' })
+  tx_type: number
+
   @Field(() => GraphQLString, { nullable: true })
   @Column({ nullable: true })
   from: string
