@@ -1,3 +1,5 @@
+import { BLOCK_COUNT_KEY, TRANSACTION_COUNT_KEY } from './const'
+import { CountEntity } from './count.entity'
 import { TransactionEntity } from './transaction.entity'
 import { BlokcListEntity } from './block-list.entity'
 import { UtilsService } from 'src/common/utils.service'
@@ -20,6 +22,8 @@ export class ExplorerAnalyseService {
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'explorer/record.height'
 
   private current: any = {}
+  private transactionNum = 0
+  // private transactionCountKey
   // utilsService: any
 
   constructor(private utilsService: UtilsService) {}
@@ -57,6 +61,7 @@ export class ExplorerAnalyseService {
       this.explorerConnection = getConnection('explorer').createQueryRunner()
       await this.explorerConnection.connect()
       await this.explorerConnection.startTransaction()
+      this.transactionNum = 0
       const [startHeight, endHeight] = await this.getInitHeight('explorer')
       if (endHeight == 0) {
         await this.explorerConnection.commitTransaction()
@@ -75,6 +80,31 @@ export class ExplorerAnalyseService {
       for (const block of blockList.result) {
         await this.handleData(block)
       }
+      const tansactionCountEntity = await this.explorerConnection.manager.findOne(CountEntity, {
+        key: TRANSACTION_COUNT_KEY
+      })
+      if (tansactionCountEntity) {
+        tansactionCountEntity.count += this.transactionNum
+        await this.explorerConnection.manager.save(tansactionCountEntity)
+      } else {
+        await this.explorerConnection.manager.insert(CountEntity, {
+          key: TRANSACTION_COUNT_KEY,
+          count: this.transactionNum
+        })
+      }
+      const blockCountEntity = await this.explorerConnection.manager.findOne(CountEntity, {
+        key: BLOCK_COUNT_KEY
+      })
+      if (blockCountEntity) {
+        blockCountEntity.count += blockList.result.length
+        await this.explorerConnection.manager.save(blockCountEntity)
+      } else {
+        await this.explorerConnection.manager.insert(CountEntity, {
+          key: BLOCK_COUNT_KEY,
+          count: blockList.result.length
+        })
+      }
+
       if (blockList.result.length > 0) {
         this.utilsService.updateRecordHeight(
           this.heightConfigFile,
@@ -181,6 +211,7 @@ export class ExplorerAnalyseService {
         })
       }
     }
+    this.transactionNum += block.transactions.length
     return await this.explorerConnection.manager.insert(BlokcListEntity, {
       height: Number(block.height),
       block_hash: block.hash,
