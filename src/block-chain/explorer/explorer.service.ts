@@ -42,6 +42,7 @@ export class ExplorerService {
     }
     return [hasNextPage, totalBlock, blockList]
   }
+
   public async getTransactions(
     take: number = 20,
     after: string | undefined,

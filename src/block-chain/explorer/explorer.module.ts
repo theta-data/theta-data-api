@@ -1,3 +1,4 @@
+import { CountEntity } from './count.entity'
 import { ExplorerService } from './explorer.service'
 import { ExplorerResolver } from './explorer.resolver'
 import { ExplorerAnalyseService } from './explorer-analyse.service'
@@ -9,7 +10,7 @@ import { Module } from '@nestjs/common'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([BlokcListEntity, TransactionEntity], 'explorer'),
+    TypeOrmModule.forFeature([BlokcListEntity, TransactionEntity, CountEntity], 'explorer'),
     CommonModule
   ],
   providers: [ExplorerAnalyseService, ExplorerResolver, ExplorerService],
