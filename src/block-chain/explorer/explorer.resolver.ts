@@ -1,11 +1,17 @@
 import { ExplorerService } from './explorer.service'
-import { ExplorerModelType, PaginatedBlockList, PaginatedTransactions } from './explorer.model'
+import {
+  ExplorerModelType,
+  ExplorerSearchModelType,
+  PaginatedBlockList,
+  PaginatedTransactions
+} from './explorer.model'
 import { Args, Context, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLInt } from 'graphql'
+import { RpcService } from '../rpc/rpc.service'
 
 @Resolver((of) => ExplorerModelType)
 export class ExplorerResolver {
-  constructor(private explorerService: ExplorerService) {}
+  constructor(private explorerService: ExplorerService, private rpcService: RpcService) {}
 
   @Query(() => ExplorerModelType)
   async Explorer(@Context() context) {
@@ -62,6 +68,16 @@ export class ExplorerResolver {
       nodes: res,
       skip: skip,
       totalCount: totalNumber
+    }
+  }
+
+  @ResolveField(() => ExplorerSearchModelType)
+  async search(@Args('search') search: string) {
+    if (!isNaN(Number(search))) {
+      const res = await this.rpcService.getBlockByHeight(Number(search))
+      if (!res) return {}
+      const blockInfo = await this.explorerService.getBlockInfo(Number(search))
+      return { block: res, block_extend: blockInfo }
     }
   }
 }
