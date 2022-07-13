@@ -4,6 +4,7 @@
 
 type TransactionEntity {
   tx_hash: String!
+  tx_type: Int!
   from: String
   to: String
   height: Int!
@@ -18,201 +19,6 @@ type BlokcListEntity {
   timestamp: Int!
   tfuel_burnt: Float!
   txns: Int!
-}
-
-type PaginatedBlockList {
-  nodes: [BlokcListEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type PaginatedTransactions {
-  nodes: [TransactionEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type ExplorerModelType {
-  blockList(take: Int = 10, after: String, skip: Int = 0): PaginatedBlockList!
-  transactions(take: Int = 10, after: String, skip: Int = 0): PaginatedTransactions!
-}
-
-type ThetaTxNumByHoursEntity {
-  year: Int!
-  month: Int!
-  date: Int!
-  hour: Int!
-  block_number: Int!
-  theta_fuel_burnt: Float!
-  theta_fuel_burnt_by_smart_contract: Float!
-  theta_fuel_burnt_by_transfers: Float!
-  active_wallet: Int!
-  coin_base_transaction: Int!
-  slash_transaction: Int!
-  send_transaction: Int!
-  reserve_fund_transaction: Int!
-  release_fund_transaction: Int!
-  service_payment_transaction: Int!
-  split_rule_transaction: Int!
-  deposit_stake_transaction: Int!
-  withdraw_stake_transaction: Int!
-  smart_contract_transaction: Int!
-  latest_block_height: Int!
-  timestamp: String!
-}
-
-type Stake {
-  source: String!
-  amount: String!
-  withdrawn: Boolean!
-  return_height: String!
-}
-
-type ThetaTransactionStatisticsType {
-  ByDate(
-    """
-    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
-    """
-    timezoneOffset: Int = 0
-  ): [ThetaTxNumByDateModel!]!
-  ByHour(
-    """
-    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
-    """
-    timezoneOffset: Int = 0
-  ): [ThetaTxNumByHoursEntity!]!
-}
-
-type ThetaTxNumByDateModel {
-  year: Int!
-  month: Int!
-  date: Int!
-  block_number: Int!
-  theta_fuel_burnt: Float!
-  theta_fuel_burnt_by_smart_contract: Float!
-  theta_fuel_burnt_by_transfers: Float!
-  active_wallet: Int!
-  coin_base_transaction: Int!
-  slash_transaction: Int!
-  send_transaction: Int!
-  reserve_fund_transaction: Int!
-  release_fund_transaction: Int!
-  service_payment_transaction: Int!
-  split_rule_transaction: Int!
-  deposit_stake_transaction: Int!
-  withdraw_stake_transaction: Int!
-  smart_contract_transaction: Int!
-  latest_block_height: Int!
-  timestamp: Int!
-}
-
-type WalletModel {
-  Balance(wallet_address: String!): BalanceModel!
-}
-
-type FiatCurrencyType {
-  usd: Float!
-  cny: Float!
-  eur: Float!
-}
-
-type TokenBalanceType {
-  amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type StakeBalanceType {
-  node_address: String!
-  amount: Float!
-  withdrawn: Boolean!
-  return_height: String!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type TotalBalanceType {
-  theta_amount: Float!
-  theta_fuel_amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type BalanceModel {
-  theta: TokenBalanceType!
-  theta_fuel: TokenBalanceType!
-  stake_to_guardian: [StakeBalanceType!]
-  stake_to_elite_node: [StakeBalanceType!]
-  stake_to_validator_node: [StakeBalanceType!]
-  total: TotalBalanceType!
-}
-
-"""Return to statistics related to token pledges"""
-type StakeStatisticsEntity {
-  """Height of the block where pledge statistics are performed """
-  block_height: Int!
-
-  """Total number of elite edge nodes"""
-  total_elite_edge_node_number: Int!
-
-  """Number of theta fuel pledged to elite edge nodes"""
-  total_edge_node_stake_amount: String!
-
-  """Total number of guardian nodes"""
-  total_guardian_node_number: Int!
-
-  """Number of online guardian nodes"""
-  effective_guardian_node_number: Int!
-
-  """Total number of theta tokens pledged to the guardian nodes"""
-  total_guardian_stake_amount: String!
-
-  """Total number of theta pledges for the online guardian nodes"""
-  effective_guardian_stake_amount: String!
-
-  """Total number of validator nodes"""
-  total_validator_node_number: Int!
-
-  """Number of online validator nodes"""
-  effective_validator_node_number: Int!
-
-  """otal number of theta tokens pledged to the validator nodes"""
-  total_validator_stake_amount: String!
-
-  """The number of tokens pledged by the online validator nodes"""
-  effective_validator_stake_amount: String!
-
-  """Theta Fuel pledge ratio"""
-  theta_fuel_stake_ratio: Float!
-
-  """Theta pledge ratio"""
-  theta_stake_ratio: Float!
-
-  """Block time for performing pledge statistics"""
-  timestamp: Int!
-  stake_reward(wallet_address: String!): StakeRewardModel
-}
-
-type StakeRewardModel {
-  last_24_hour: TokenBalanceType
-  last_3_days: TokenBalanceType
-  last_7_days: TokenBalanceType
-}
-
-type TokenMarketInformationType {
-  name: String!
-  price: Float!
-  volume_24h: Float!
-  market_cap: Float!
-  total_supply: Float!
-  circulating_supply: Float!
-  last_updated: String!
-}
-
-type MarketInformationType {
-  Theta: TokenMarketInformationType!
-  ThetaFuel: TokenMarketInformationType!
 }
 
 type CandidateStakeType {
@@ -521,6 +327,209 @@ type ThetaRpcModel {
   """This field returns the pending transactions in the mempool."""
   GetPendingTransactions: GetPendingTransactionsModel!
   GetStakeRewardDistributionByHeight(height: Int): BlockHashStakeRewardDistributionRuleSetPairsModel!
+}
+
+type PaginatedBlockList {
+  nodes: [BlokcListEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedTransactions {
+  nodes: [TransactionEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type ExplorerSearchModelType {
+  transaction: GetTransactionModel
+  block: BlockModel
+  account: GetAccountModel
+  block_extend: BlokcListEntity
+}
+
+type ExplorerModelType {
+  blockList(take: Int = 10, after: String, skip: Int = 0): PaginatedBlockList!
+  transactions(take: Int = 10, after: String, skip: Int = 0): PaginatedTransactions!
+  search(search: String!): ExplorerSearchModelType!
+}
+
+type ThetaTxNumByHoursEntity {
+  year: Int!
+  month: Int!
+  date: Int!
+  hour: Int!
+  block_number: Int!
+  theta_fuel_burnt: Float!
+  theta_fuel_burnt_by_smart_contract: Float!
+  theta_fuel_burnt_by_transfers: Float!
+  active_wallet: Int!
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
+  latest_block_height: Int!
+  timestamp: String!
+}
+
+type Stake {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
+}
+
+type ThetaTransactionStatisticsType {
+  ByDate(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [ThetaTxNumByDateModel!]!
+  ByHour(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [ThetaTxNumByHoursEntity!]!
+}
+
+type ThetaTxNumByDateModel {
+  year: Int!
+  month: Int!
+  date: Int!
+  block_number: Int!
+  theta_fuel_burnt: Float!
+  theta_fuel_burnt_by_smart_contract: Float!
+  theta_fuel_burnt_by_transfers: Float!
+  active_wallet: Int!
+  coin_base_transaction: Int!
+  slash_transaction: Int!
+  send_transaction: Int!
+  reserve_fund_transaction: Int!
+  release_fund_transaction: Int!
+  service_payment_transaction: Int!
+  split_rule_transaction: Int!
+  deposit_stake_transaction: Int!
+  withdraw_stake_transaction: Int!
+  smart_contract_transaction: Int!
+  latest_block_height: Int!
+  timestamp: Int!
+}
+
+type WalletModel {
+  Balance(wallet_address: String!): BalanceModel!
+}
+
+type FiatCurrencyType {
+  usd: Float!
+  cny: Float!
+  eur: Float!
+}
+
+type TokenBalanceType {
+  amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type StakeBalanceType {
+  node_address: String!
+  amount: Float!
+  withdrawn: Boolean!
+  return_height: String!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type TotalBalanceType {
+  theta_amount: Float!
+  theta_fuel_amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type BalanceModel {
+  theta: TokenBalanceType!
+  theta_fuel: TokenBalanceType!
+  stake_to_guardian: [StakeBalanceType!]
+  stake_to_elite_node: [StakeBalanceType!]
+  stake_to_validator_node: [StakeBalanceType!]
+  total: TotalBalanceType!
+}
+
+"""Return to statistics related to token pledges"""
+type StakeStatisticsEntity {
+  """Height of the block where pledge statistics are performed """
+  block_height: Int!
+
+  """Total number of elite edge nodes"""
+  total_elite_edge_node_number: Int!
+
+  """Number of theta fuel pledged to elite edge nodes"""
+  total_edge_node_stake_amount: String!
+
+  """Total number of guardian nodes"""
+  total_guardian_node_number: Int!
+
+  """Number of online guardian nodes"""
+  effective_guardian_node_number: Int!
+
+  """Total number of theta tokens pledged to the guardian nodes"""
+  total_guardian_stake_amount: String!
+
+  """Total number of theta pledges for the online guardian nodes"""
+  effective_guardian_stake_amount: String!
+
+  """Total number of validator nodes"""
+  total_validator_node_number: Int!
+
+  """Number of online validator nodes"""
+  effective_validator_node_number: Int!
+
+  """otal number of theta tokens pledged to the validator nodes"""
+  total_validator_stake_amount: String!
+
+  """The number of tokens pledged by the online validator nodes"""
+  effective_validator_stake_amount: String!
+
+  """Theta Fuel pledge ratio"""
+  theta_fuel_stake_ratio: Float!
+
+  """Theta pledge ratio"""
+  theta_stake_ratio: Float!
+
+  """Block time for performing pledge statistics"""
+  timestamp: Int!
+  stake_reward(wallet_address: String!): StakeRewardModel
+}
+
+type StakeRewardModel {
+  last_24_hour: TokenBalanceType
+  last_3_days: TokenBalanceType
+  last_7_days: TokenBalanceType
+}
+
+type TokenMarketInformationType {
+  name: String!
+  price: Float!
+  volume_24h: Float!
+  market_cap: Float!
+  total_supply: Float!
+  circulating_supply: Float!
+  last_updated: String!
+}
+
+type MarketInformationType {
+  Theta: TokenMarketInformationType!
+  ThetaFuel: TokenMarketInformationType!
 }
 
 type SmartContractEntity {

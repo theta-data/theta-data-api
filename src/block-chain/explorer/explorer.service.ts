@@ -83,4 +83,8 @@ export class ExplorerService {
     }
     return [hasNextPage, totalBlock, blockList]
   }
+
+  public async getBlockInfo(height: number) {
+    return await this.blockListRepository.findOne({ height })
+  }
 }
