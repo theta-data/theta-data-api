@@ -1,9 +1,17 @@
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat, GraphQLInt, GraphQLString } from 'graphql'
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @ObjectType()
 @Entity()
+@Index(['height'])
 export class TransactionEntity {
   @PrimaryGeneratedColumn()
   id!: number
