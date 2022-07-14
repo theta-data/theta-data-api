@@ -3,7 +3,8 @@ import {
   ExplorerModelType,
   ExplorerSearchModelType,
   PaginatedBlockList,
-  PaginatedTransactions
+  PaginatedTransactions,
+  SEARCH_TYPE_ENUM
 } from './explorer.model'
 import { Args, Context, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLInt } from 'graphql'
@@ -77,7 +78,7 @@ export class ExplorerResolver {
       const res = await this.rpcService.getBlockByHeight(Number(search))
       if (!res) return {}
       const blockInfo = await this.explorerService.getBlockInfo(Number(search))
-      return { block: res, block_extend: blockInfo }
+      return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
     }
   }
 }
