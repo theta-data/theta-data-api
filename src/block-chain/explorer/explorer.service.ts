@@ -64,7 +64,8 @@ export class ExplorerService {
       order: {
         // id: 'ASC',
         id: 'DESC'
-      }
+      },
+      where: {}
     }
     if (blockHeight) {
       condition.where['height'] = blockHeight
