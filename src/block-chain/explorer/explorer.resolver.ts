@@ -48,13 +48,16 @@ export class ExplorerResolver {
   @ResolveField(() => PaginatedTransactions)
   async transactions(
     @Args('take', { type: () => GraphQLInt, defaultValue: 10 }) take: number,
+    @Args('block_height', { type: () => GraphQLInt, defaultValue: 0, nullable: true })
+    blockHeight: number,
     @Args('after', { nullable: true }) after: string,
     @Args('skip', { type: () => GraphQLInt, defaultValue: 0 }) skip: number
   ) {
     const [hasNextPage, totalNumber, res] = await this.explorerService.getTransactions(
       take,
       after,
-      skip
+      skip,
+      blockHeight
     )
     console.log('get transactions nun', res.length)
     let endCursor = ''

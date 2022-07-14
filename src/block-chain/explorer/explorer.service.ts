@@ -55,7 +55,8 @@ export class ExplorerService {
   public async getTransactions(
     take: number = 20,
     after: string | undefined,
-    skip: number = 0
+    skip: number = 0,
+    blockHeight: number = 0
   ): Promise<[boolean, number, Array<TransactionEntity>]> {
     const condition: FindManyOptions<TransactionEntity> = {
       take: take + 1,
@@ -65,16 +66,26 @@ export class ExplorerService {
         id: 'DESC'
       }
     }
+    if (blockHeight) {
+      condition.where['height'] = blockHeight
+    }
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = LessThan(id)
     }
-    const totalBlock = (
-      await this.countRepository.findOne({
-        key: TRANSACTION_COUNT_KEY
+    let totalBlock = 0
+    if (blockHeight) {
+      totalBlock = await this.transactionRepository.count({
+        height: blockHeight
       })
-    ).count
+    } else {
+      totalBlock = (
+        await this.countRepository.findOne({
+          key: TRANSACTION_COUNT_KEY
+        })
+      ).count
+    }
     let blockList = await this.transactionRepository.find(condition)
     let hasNextPage = false
     if (blockList.length > take) {
