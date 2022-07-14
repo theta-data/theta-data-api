@@ -347,14 +347,21 @@ type PaginatedTransactions {
 
 type ExplorerSearchModelType {
   transaction: GetTransactionModel
+  search_type: SEARCH_TYPE_ENUM
   block: BlockModel
   account: GetAccountModel
   block_extend: BlokcListEntity
 }
 
+enum SEARCH_TYPE_ENUM {
+  block
+  transaction
+  account
+}
+
 type ExplorerModelType {
   blockList(take: Int = 10, after: String, skip: Int = 0): PaginatedBlockList!
-  transactions(take: Int = 10, after: String, skip: Int = 0): PaginatedTransactions!
+  transactions(take: Int = 10, block_height: Int = 0, after: String, skip: Int = 0): PaginatedTransactions!
   search(search: String!): ExplorerSearchModelType!
 }
 
