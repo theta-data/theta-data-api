@@ -96,7 +96,7 @@ export class ExplorerService {
     return [hasNextPage, totalBlock, blockList]
   }
 
-  public async getBlockInfo(heightOrHash: number) {
+  public async getBlockInfo(heightOrHash: number | string) {
     return await this.blockListRepository.findOne({
       where: [{ height: heightOrHash }, { block_hash: heightOrHash }]
     })

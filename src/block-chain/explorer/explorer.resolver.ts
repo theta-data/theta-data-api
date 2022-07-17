@@ -77,7 +77,7 @@ export class ExplorerResolver {
 
   @ResolveField(() => ExplorerSearchModelType)
   async search(@Args('search') search: string) {
-    const blockInfo = await this.explorerService.getBlockInfo(Number(search))
+    const blockInfo = await this.explorerService.getBlockInfo(search)
     if (blockInfo) {
       const res = await this.rpcService.getBlockByHeight(blockInfo.height)
       return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
