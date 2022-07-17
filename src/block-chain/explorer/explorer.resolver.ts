@@ -77,11 +77,11 @@ export class ExplorerResolver {
 
   @ResolveField(() => ExplorerSearchModelType)
   async search(@Args('search') search: string) {
-    if (!isNaN(Number(search))) {
-      const res = await this.rpcService.getBlockByHeight(Number(search))
-      if (!res) return {}
-      const blockInfo = await this.explorerService.getBlockInfo(Number(search))
+    const blockInfo = await this.explorerService.getBlockInfo(Number(search))
+    if (blockInfo) {
+      const res = await this.rpcService.getBlockByHeight(blockInfo.height)
       return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
     }
+    return {}
   }
 }
