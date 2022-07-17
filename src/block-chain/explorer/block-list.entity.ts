@@ -13,7 +13,7 @@ export class BlokcListEntity {
   height: number
 
   @Field()
-  @Column()
+  @Column({ unique: true })
   block_hash: string
 
   @Field(() => GraphQLInt)
