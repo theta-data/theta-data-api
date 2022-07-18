@@ -84,7 +84,7 @@ export class ExplorerResolver {
     if (transactionInfo) {
       return {
         transaction: transactionInfo,
-        transactionRpc: transactionRpc,
+        transaction_rpc: transactionRpc,
         search_type: SEARCH_TYPE_ENUM.transaction
       }
     }
