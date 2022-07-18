@@ -21,7 +21,10 @@ registerEnumType(SEARCH_TYPE_ENUM, {
 @ObjectType()
 export class ExplorerSearchModelType {
   @Field(() => GetTransactionModel, { nullable: true })
-  transaction: GetTransactionModel
+  transaction_rpc: GetTransactionModel
+
+  @Field(() => TransactionEntity, { nullable: true })
+  transaction: TransactionEntity
 
   @Field(() => SEARCH_TYPE_ENUM, { nullable: true })
   search_type: SEARCH_TYPE_ENUM
