@@ -118,9 +118,11 @@ export class ExplorerAnalyseService {
       this.logger.debug(JSON.stringify(this.current))
       await this.explorerConnection.rollbackTransaction()
       await this.explorerConnection.release()
-      return
+      // return
     } finally {
       await this.explorerConnection.release()
+      // await getConnection('explorer').close()
+      // await this.explorerConnection.close()
     }
     //  let height: number = 0
   }
