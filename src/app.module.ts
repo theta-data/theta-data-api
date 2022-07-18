@@ -40,10 +40,10 @@ const config = require('config')
       ...config.get('ORM_CONFIG'),
       database: config.get('ORM_CONFIG')['database'] + 'smart_contract/smart_contract.sqlite',
       name: 'smart_contract',
-      prepareDatabase: (obj) => {
-        obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
-        console.log('prepare database obj', obj)
-      },
+      // prepareDatabase: (obj) => {
+      //   obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
+      //   console.log('prepare database obj', obj)
+      // },
       entities: []
     }),
     TypeOrmModule.forRoot({
@@ -86,10 +86,10 @@ const config = require('config')
       ...config.get('ORM_CONFIG'),
       database: config.get('ORM_CONFIG')['database'] + 'explorer/data.sqlite',
       name: 'explorer',
-      prepareDatabase: (obj) => {
-        obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
-        console.log('prepare database obj', obj)
-      },
+      // prepareDatabase: (obj) => {
+      //   obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
+      //   console.log('prepare database obj', obj)
+      // },
 
       entities: []
     }),
