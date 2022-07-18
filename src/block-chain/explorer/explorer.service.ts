@@ -101,4 +101,10 @@ export class ExplorerService {
       where: [{ height: heightOrHash }, { block_hash: heightOrHash }]
     })
   }
+
+  public async getTransactionInfo(hash) {
+    return await this.transactionRepository.findOne({
+      where: { tx_hash: hash }
+    })
+  }
 }

@@ -59,11 +59,8 @@ export class ExplorerResolver {
       skip,
       blockHeight
     )
-    console.log('get transactions nun', res.length)
     let endCursor = ''
     if (res.length > 0) {
-      // this.console.log();
-      console.log(res[res.length - 1].id.toString())
       endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
     }
     return {
@@ -82,10 +79,12 @@ export class ExplorerResolver {
       const res = await this.rpcService.getBlockByHeight(blockInfo.height)
       return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
     }
-    const transactionInfo = await this.rpcService.getTransactionByHash(search)
+    const transactionRpc = await this.rpcService.getTransactionByHash(search)
+    const transactionInfo = await this.explorerService.getTransactionInfo(search)
     if (transactionInfo) {
       return {
         transaction: transactionInfo,
+        transactionRpc: transactionRpc,
         search_type: SEARCH_TYPE_ENUM.transaction
       }
     }
