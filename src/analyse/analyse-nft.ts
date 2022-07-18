@@ -5,11 +5,13 @@ import { NftModule } from 'src/block-chain/smart-contract/nft/nft.module'
 const config = require('config')
 
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule)
-  const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
   while (1) {
+    const app = await NestFactory.createApplicationContext(AppModule)
+    const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
+
     await service.analyseData()
     await new Promise((resolve) => setTimeout(resolve, config.get('NFT.ANALYSE_INTERVAL')))
+    app.close()
   }
 }
 bootstrap()
