@@ -57,13 +57,15 @@ export class SmartContractAnalyseService {
         }
       }
 
-      const latestRecordHeight = (
-        await this.smartContractConnection.manager.findOne(SmartContractCallRecordEntity, {
+      const latestRecord = await this.smartContractConnection.manager.findOne(
+        SmartContractCallRecordEntity,
+        {
           order: {
             height: 'DESC'
           }
-        })
-      ).height
+        }
+      )
+      const latestRecordHeight = latestRecord ? latestRecord.height : 0
 
       if (latestRecordHeight >= height) {
         height = latestRecordHeight + 1

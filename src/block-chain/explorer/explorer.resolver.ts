@@ -82,6 +82,13 @@ export class ExplorerResolver {
       const res = await this.rpcService.getBlockByHeight(blockInfo.height)
       return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
     }
+    const transactionInfo = await this.rpcService.getTransactionByHash(search)
+    if (transactionInfo) {
+      return {
+        transaction: transactionInfo,
+        search_type: SEARCH_TYPE_ENUM.transaction
+      }
+    }
     return {}
   }
 }
