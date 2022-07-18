@@ -86,6 +86,11 @@ const config = require('config')
       ...config.get('ORM_CONFIG'),
       database: config.get('ORM_CONFIG')['database'] + 'explorer/data.sqlite',
       name: 'explorer',
+      prepareDatabase: (obj) => {
+        obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
+        console.log('prepare database obj', obj)
+      },
+
       entities: []
     }),
     GraphQLModule.forRoot({
