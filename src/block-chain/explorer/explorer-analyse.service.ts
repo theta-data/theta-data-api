@@ -204,7 +204,6 @@ export class ExplorerAnalyseService {
           height: Number(block.height),
           fee: JSON.stringify(transaction.raw.fee),
           tx_type: transaction.type,
-          // from
           from: from,
           to: to,
           timestamp: Number(block.timestamp),
