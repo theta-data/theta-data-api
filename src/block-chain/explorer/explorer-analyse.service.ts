@@ -154,8 +154,8 @@ export class ExplorerAnalyseService {
             // theta = thetaFuel = new BigNumber(transaction.raw.inputs[0].coins.tfuelwei)
             //   .dividedBy('1e18')
             //   .toNumber()
-            from = transaction.raw.inputs[0].address
-            to = transaction.raw.outputs[0].address
+            from = JSON.stringify(transaction.raw.inputs)
+            to = JSON.stringify(transaction.raw.outputs)
           } else {
             theta = new BigNumber(transaction.raw.from.coins.thetawei).dividedBy('1e18').toNumber()
             thetaFuel = new BigNumber(transaction.raw.from.coins.tfuelwei)
@@ -197,6 +197,8 @@ export class ExplorerAnalyseService {
           }
           break
       }
+      const gasPrice = transaction.raw.gas_price
+      const gasLimit = transaction.raw.gas_limit
       if (config.get('CONFLICT_TRANSACTIONS').indexOf(transaction.hash) !== -1) {
         continue
       } else {
@@ -209,7 +211,9 @@ export class ExplorerAnalyseService {
           to: to,
           timestamp: Number(block.timestamp),
           theta: theta,
-          theta_fuel: thetaFuel
+          theta_fuel: thetaFuel,
+          gas_price: gasPrice,
+          gas_limit: gasLimit
         })
       }
     }
