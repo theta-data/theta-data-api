@@ -32,6 +32,18 @@ export class TransactionEntity {
   @Column({ nullable: true })
   to: string
 
+  @Field(() => GraphQLString, { nullable: true })
+  @Column({ nullable: true })
+  fee: string
+
+  @Field(() => GraphQLString, { nullable: true })
+  @Column({ nullable: true })
+  gas_price: string
+
+  @Field(() => GraphQLString, { nullable: true })
+  @Column({ nullable: true })
+  gas_limit: string
+
   @Field(() => GraphQLInt)
   @Column({ type: 'int' })
   height: number
