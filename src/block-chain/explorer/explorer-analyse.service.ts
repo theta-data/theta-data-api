@@ -151,9 +151,6 @@ export class ExplorerAnalyseService {
             thetaFuel = transaction.raw.inputs.reduce((curr, item) => {
               return curr + new BigNumber(item.coins.tfuelwei).dividedBy('1e18').toNumber()
             }, 0)
-            // theta = thetaFuel = new BigNumber(transaction.raw.inputs[0].coins.tfuelwei)
-            //   .dividedBy('1e18')
-            //   .toNumber()
             from = JSON.stringify(transaction.raw.inputs)
             to = JSON.stringify(transaction.raw.outputs)
           } else {
