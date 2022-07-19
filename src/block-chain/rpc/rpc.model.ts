@@ -263,14 +263,23 @@ export class transactionRawType {
   @Field({ nullable: true })
   reserve_sequence: string
 
-  @Field({ nullable: true })
-  resource_id: string
+  @Field(() => [String], { nullable: true })
+  resource_id: Array<string>
 
   @Field(() => SourceTargetType, { nullable: true })
   source: SourceTargetType
 
   @Field(() => SourceTargetType, { nullable: true })
   target: SourceTargetType
+
+  @Field(() => TokenType, { nullable: true })
+  collateral: TokenType
+
+  @Field(() => [String], { nullable: true })
+  resource_ids: Array<string>
+
+  @Field({ nullable: true })
+  duration: string
 }
 
 @ObjectType()
