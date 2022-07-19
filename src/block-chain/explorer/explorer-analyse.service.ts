@@ -161,8 +161,8 @@ export class ExplorerAnalyseService {
             thetaFuel = new BigNumber(transaction.raw.from.coins.tfuelwei)
               .dividedBy('1e18')
               .toNumber()
-            from = transaction.raw.from.address
-            to = transaction.raw.to.address
+            from = JSON.stringify([transaction.raw.from])
+            to = JSON.stringify([transaction.raw.to])
           }
           break
         case THETA_TRANSACTION_TYPE_ENUM.smart_contract:
