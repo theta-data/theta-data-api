@@ -136,6 +136,20 @@ export class EliteEdgeNodeVotesType {
   @Field(() => [GraphQLString])
   Addresses: Array<string>
 }
+@ObjectType()
+export class SourceTargetType {
+  @Field()
+  address: string
+
+  @Field()
+  sequence: string
+
+  @Field(() => TokenType)
+  coins: TokenType
+
+  @Field()
+  signature: string
+}
 
 @ObjectType()
 export class BlockModel {
@@ -242,6 +256,21 @@ export class transactionRawType {
 
   @Field({ nullable: true })
   block_height: string
+
+  @Field({ nullable: true })
+  payment_sequence: string
+
+  @Field({ nullable: true })
+  reserve_sequence: string
+
+  @Field({ nullable: true })
+  resource_id: string
+
+  @Field(() => SourceTargetType, { nullable: true })
+  source: SourceTargetType
+
+  @Field(() => SourceTargetType, { nullable: true })
+  target: SourceTargetType
 }
 
 @ObjectType()
