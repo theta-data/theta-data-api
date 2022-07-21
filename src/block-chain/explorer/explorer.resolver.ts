@@ -91,19 +91,20 @@ export class ExplorerResolver {
       const res = await this.rpcService.getBlockByHeight(blockInfo.height)
       return { block: res, block_extend: blockInfo, search_type: SEARCH_TYPE_ENUM.block }
     }
-    const transactionRpc = await this.rpcService.getTransactionByHash(search)
+
     const transactionInfo = await this.explorerService.getTransactionInfo(search)
-    let nftTransferRecords = []
-    if (transactionInfo.tx_type === THETA_TRANSACTION_TYPE_ENUM.smart_contract) {
-      const contract = await this.smartContractService.getContractByAddress(transactionInfo.to)
-      if (contract.protocol == SmartContractProtocolEnum.tnt721) {
-        nftTransferRecords = await this.nftService.getNftTransferRecordsByTxHash(
-          transactionInfo.tx_hash
-        )
-      }
-    }
 
     if (transactionInfo) {
+      const transactionRpc = await this.rpcService.getTransactionByHash(search)
+      let nftTransferRecords = []
+      if (transactionInfo.tx_type === THETA_TRANSACTION_TYPE_ENUM.smart_contract) {
+        const contract = await this.smartContractService.getContractByAddress(transactionInfo.to)
+        if (contract.protocol == SmartContractProtocolEnum.tnt721) {
+          nftTransferRecords = await this.nftService.getNftTransferRecordsByTxHash(
+            transactionInfo.tx_hash
+          )
+        }
+      }
       return {
         transaction: transactionInfo,
         transaction_rpc: transactionRpc,
@@ -111,6 +112,8 @@ export class ExplorerResolver {
         search_type: SEARCH_TYPE_ENUM.transaction
       }
     }
-    return {}
+    return {
+      search_type: SEARCH_TYPE_ENUM.none
+    }
   }
 }
