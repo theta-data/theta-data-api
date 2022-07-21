@@ -12,6 +12,7 @@ export class PaginatedBlockList extends Paginated(BlokcListEntity) {}
 export class PaginatedTransactions extends Paginated(TransactionEntity) {}
 
 export enum SEARCH_TYPE_ENUM {
+  none,
   block,
   transaction,
   account
