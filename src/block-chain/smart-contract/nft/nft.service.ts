@@ -233,6 +233,7 @@ export class NftService {
               smart_contract_address: log.address.toLowerCase(),
               height: record.height,
               name: logContract.name,
+              transaction_hash: record.transaction_hash,
               timestamp: record.timestamp
             })
           }
