@@ -1,3 +1,5 @@
+import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
+import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import { UtilsService } from './../../common/utils.service'
@@ -20,7 +22,8 @@ export class ExplorerResolver {
     private explorerService: ExplorerService,
     private rpcService: RpcService,
     private utilService: UtilsService,
-    private smartContractService: SmartContractService
+    private smartContractService: SmartContractService,
+    private nftService: NftService
   ) {}
 
   @Query(() => ExplorerModelType)
@@ -90,13 +93,21 @@ export class ExplorerResolver {
     }
     const transactionRpc = await this.rpcService.getTransactionByHash(search)
     const transactionInfo = await this.explorerService.getTransactionInfo(search)
+    let nftTransferRecords = []
     if (transactionInfo.tx_type === THETA_TRANSACTION_TYPE_ENUM.smart_contract) {
       const contract = await this.smartContractService.getContractByAddress(transactionInfo.to)
+      if (contract.protocol == SmartContractProtocolEnum.tnt721) {
+        nftTransferRecords = await this.nftService.getNftTransferRecordsByTxHash(
+          transactionInfo.tx_hash
+        )
+      }
     }
+
     if (transactionInfo) {
       return {
         transaction: transactionInfo,
         transaction_rpc: transactionRpc,
+        transaction_nft_records: nftTransferRecords,
         search_type: SEARCH_TYPE_ENUM.transaction
       }
     }

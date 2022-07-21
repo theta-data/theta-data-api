@@ -769,4 +769,10 @@ export class NftService {
     return [hasNextPage, totalNft, nftList]
     // return
   }
+
+  public async getNftTransferRecordsByTxHash(txHash) {
+    return await this.nftTransferRecordRepository.find({
+      transaction_hash: txHash
+    })
+  }
 }

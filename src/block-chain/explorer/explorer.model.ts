@@ -1,3 +1,4 @@
+import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { Paginated } from 'src/common/common.model'
 import { BlockModel, GetAccountModel, GetTransactionModel } from '../rpc/rpc.model'
@@ -25,6 +26,9 @@ export class ExplorerSearchModelType {
 
   @Field(() => TransactionEntity, { nullable: true })
   transaction?: TransactionEntity
+
+  @Field(() => [NftTransferRecordEntity], { nullable: true })
+  transaction_nft_records?: Array<NftTransferRecordEntity>
 
   @Field(() => SEARCH_TYPE_ENUM, { nullable: true })
   search_type?: SEARCH_TYPE_ENUM

@@ -1,3 +1,4 @@
+import { NftModule } from 'src/block-chain/smart-contract/nft/nft.module'
 import { SmartContractModule } from 'src/block-chain/smart-contract/smart-contract.module'
 import { CountEntity } from './count.entity'
 import { ExplorerService } from './explorer.service'
@@ -15,7 +16,8 @@ import { RpcModule } from '../rpc/rpc.module'
     TypeOrmModule.forFeature([BlokcListEntity, TransactionEntity, CountEntity], 'explorer'),
     CommonModule,
     RpcModule,
-    SmartContractModule
+    SmartContractModule,
+    NftModule
   ],
   providers: [ExplorerAnalyseService, ExplorerResolver, ExplorerService],
   exports: []
