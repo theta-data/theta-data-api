@@ -2,11 +2,141 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type SmartContractEntity {
+  """Address of the smart contract"""
+  contract_address: String!
+  verified: Boolean!
+  protocol: Int!
+  abi: String
+  source_code: String
+  byte_code: String
+  verification_date: Int!
+  compiler_version: String
+  optimizer: String
+  optimizerRuns: Int!
+  name: String
+  function_hash: String
+  constructor_arguments: String
+
+  """Total number of smart contract calls"""
+  call_times: Int!
+
+  """Number of smart contract calls in the last 7 days"""
+  last_seven_days_call_times: Int!
+
+  """Number of smart contract calls in the last 24 hours"""
+  last_24h_call_times: Int!
+
+  """call times update timestamp"""
+  call_times_update_timestamp: Int!
+
+  """verification check timestamp"""
+  verification_check_timestamp: Int!
+  contract_uri: String!
+  contract_uri_detail: String!
+  latest_record_parse_height: Int!
+}
+
+type NftBalanceEntity {
+  smart_contract_address: String!
+  owner: String!
+  from: String!
+  contract_uri: String!
+  base_token_uri: String!
+  token_uri: String!
+  name: String!
+  img_uri: String!
+  detail: String!
+  token_id: Int!
+}
+
+type NftTransferRecordEntity {
+  smart_contract_address: String!
+  from: String!
+  name: String!
+  to: String!
+  token_id: Int!
+  payment_token_amount: Float!
+  tdrop_mined: Float!
+  height: Int!
+  transaction_hash: String!
+  timestamp: Int!
+}
+
+type NftType {
+  SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
+  Balance(wallet_address: String!, search: String, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
+  NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
+  NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
+  NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
+  NftOwners(smart_contract_address: String!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
+  ContractNftTransfers(smart_contract_address: String!, token_id: Int, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
+  TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
+}
+
+type PaginatedNftBalance {
+  nodes: [NftBalanceEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedSmartContract {
+  nodes: [SmartContractEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedNftTransferRecord {
+  nodes: [NftTransferRecordEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+"""Statistics on smart contract related calls"""
+type SmartContractStatisticsType {
+  CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+  Search(protocol: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+}
+
+enum RankByEnum {
+  call_times
+  last_24h_call_times
+  last_seven_days_call_times
+}
+
+enum SmartContractProtocolEnum {
+  unknow
+  tnt721
+  tnt20
+}
+
+type SmartContractScType {
+  address: String!
+  abi: String!
+  source_code: String!
+  verification_date: String!
+  compiler_version: String!
+  optimizer: String!
+  optimizerRuns: Float!
+  name: String!
+  function_hash: String!
+  constructor_arguments: String!
+}
+
 type TransactionEntity {
   tx_hash: String!
   tx_type: Int!
   from: String
   to: String
+  fee: String
+  gas_price: String
+  gas_limit: String
   height: Int!
   timestamp: Int!
   theta: Float!
@@ -19,6 +149,13 @@ type BlokcListEntity {
   timestamp: Int!
   tfuel_burnt: Float!
   txns: Int!
+}
+
+type ContactEntity {
+  first_name: String!
+  last_name: String!
+  email: String!
+  content: String!
 }
 
 type CandidateStakeType {
@@ -171,6 +308,13 @@ type EliteEdgeNodeVotesType {
   Addresses: [String!]!
 }
 
+type SourceTargetType {
+  address: String!
+  sequence: String!
+  coins: TokenType!
+  signature: String!
+}
+
 type BlockModel {
   """ID of the chain"""
   chain_id: String!
@@ -245,34 +389,42 @@ type transactionRawType {
   to: proposerType
   data: String
   block_height: String
+  payment_sequence: String
+  reserve_sequence: String
+  resource_id: String
+  source: SourceTargetType
+  target: SourceTargetType
+  collateral: TokenType
+  resource_ids: [String!]
+  duration: String
 }
 
 type transactionType {
   raw: transactionRawType
-  type: THETA_TX_TYPE_ENUM!
+  type: THETA_TRANSACTION_TYPE_ENUM!
   hash: String!
   receipt: receiptType
 }
 
-enum THETA_TX_TYPE_ENUM {
-  TxCoinbase
-  TxSlash
-  TxSend
-  TxReserveFund
-  TxReleaseFund
-  TxServicePayment
-  TxSplitRule
-  TxSmartContract
-  TxDepositStake
-  TxWithdrawStake
-  TxDepositStakeV2
-  TxStakeRewardDistribution
+enum THETA_TRANSACTION_TYPE_ENUM {
+  coinbase
+  slash
+  send
+  reserve_fund
+  release_fund
+  service_payment
+  split_rule
+  smart_contract
+  deposit_stake
+  withdraw_stake
+  tx_deposit_stake_v2
+  tx_stake_reward_distribution
 }
 
 type GetTransactionModel {
   block_hash: String!
   block_height: String!
-  type: THETA_TX_TYPE_ENUM!
+  type: THETA_TRANSACTION_TYPE_ENUM!
   status: String!
   hash: String!
   transaction: transactionRawType!
@@ -346,7 +498,9 @@ type PaginatedTransactions {
 }
 
 type ExplorerSearchModelType {
-  transaction: GetTransactionModel
+  transaction_rpc: GetTransactionModel
+  transaction: TransactionEntity
+  transaction_nft_records: [NftTransferRecordEntity!]
   search_type: SEARCH_TYPE_ENUM
   block: BlockModel
   account: GetAccountModel
@@ -537,139 +691,6 @@ type TokenMarketInformationType {
 type MarketInformationType {
   Theta: TokenMarketInformationType!
   ThetaFuel: TokenMarketInformationType!
-}
-
-type SmartContractEntity {
-  """Address of the smart contract"""
-  contract_address: String!
-  verified: Boolean!
-  protocol: Int!
-  abi: String
-  source_code: String
-  byte_code: String
-  verification_date: Int!
-  compiler_version: String
-  optimizer: String
-  optimizerRuns: Int!
-  name: String
-  function_hash: String
-  constructor_arguments: String
-
-  """Total number of smart contract calls"""
-  call_times: Int!
-
-  """Number of smart contract calls in the last 7 days"""
-  last_seven_days_call_times: Int!
-
-  """Number of smart contract calls in the last 24 hours"""
-  last_24h_call_times: Int!
-
-  """call times update timestamp"""
-  call_times_update_timestamp: Int!
-
-  """verification check timestamp"""
-  verification_check_timestamp: Int!
-  contract_uri: String!
-  contract_uri_detail: String!
-  latest_record_parse_height: Int!
-}
-
-"""Statistics on smart contract related calls"""
-type SmartContractStatisticsType {
-  CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
-  Search(protocol: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
-}
-
-enum RankByEnum {
-  call_times
-  last_24h_call_times
-  last_seven_days_call_times
-}
-
-enum SmartContractProtocolEnum {
-  unknow
-  tnt721
-  tnt20
-}
-
-type SmartContractScType {
-  address: String!
-  abi: String!
-  source_code: String!
-  verification_date: String!
-  compiler_version: String!
-  optimizer: String!
-  optimizerRuns: Float!
-  name: String!
-  function_hash: String!
-  constructor_arguments: String!
-}
-
-type NftBalanceEntity {
-  smart_contract_address: String!
-  owner: String!
-  from: String!
-  contract_uri: String!
-  base_token_uri: String!
-  token_uri: String!
-  name: String!
-  img_uri: String!
-  detail: String!
-  token_id: Int!
-}
-
-type NftTransferRecordEntity {
-  smart_contract_address: String!
-  from: String!
-  name: String!
-  to: String!
-  token_id: Int!
-  payment_token_amount: Float!
-  tdrop_mined: Float!
-  height: Int!
-  timestamp: Int!
-}
-
-type NftType {
-  SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
-  Balance(wallet_address: String!, search: String, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
-  NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
-  NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
-  NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
-  NftOwners(smart_contract_address: String!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
-  ContractNftTransfers(smart_contract_address: String!, token_id: Int, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
-  TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
-}
-
-type PaginatedNftBalance {
-  nodes: [NftBalanceEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type PaginatedSmartContract {
-  nodes: [SmartContractEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type PaginatedNftTransferRecord {
-  nodes: [NftTransferRecordEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type ContactEntity {
-  first_name: String!
-  last_name: String!
-  email: String!
-  content: String!
 }
 
 type LoggerEntity {
