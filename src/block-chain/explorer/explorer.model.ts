@@ -21,22 +21,22 @@ registerEnumType(SEARCH_TYPE_ENUM, {
 @ObjectType()
 export class ExplorerSearchModelType {
   @Field(() => GetTransactionModel, { nullable: true })
-  transaction_rpc: GetTransactionModel
+  transaction_rpc?: GetTransactionModel
 
   @Field(() => TransactionEntity, { nullable: true })
-  transaction: TransactionEntity
+  transaction?: TransactionEntity
 
   @Field(() => SEARCH_TYPE_ENUM, { nullable: true })
-  search_type: SEARCH_TYPE_ENUM
+  search_type?: SEARCH_TYPE_ENUM
 
   @Field(() => BlockModel, { nullable: true })
-  block: BlockModel
+  block?: BlockModel
 
   @Field(() => GetAccountModel, { nullable: true })
-  account: GetAccountModel
+  account?: GetAccountModel
 
   @Field(() => BlokcListEntity, { nullable: true })
-  block_extend: BlokcListEntity
+  block_extend?: BlokcListEntity
 }
 
 @ObjectType()

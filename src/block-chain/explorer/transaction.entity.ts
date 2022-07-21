@@ -1,3 +1,5 @@
+import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
+// import { THETA_TX_TYPE_ENUM } from './../tx/theta.enum'
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat, GraphQLInt, GraphQLString } from 'graphql'
 import {
@@ -22,7 +24,7 @@ export class TransactionEntity {
 
   @Field(() => GraphQLInt)
   @Column({ type: 'int' })
-  tx_type: number
+  tx_type: THETA_TRANSACTION_TYPE_ENUM
 
   @Field(() => GraphQLString, { nullable: true })
   @Column({ nullable: true })

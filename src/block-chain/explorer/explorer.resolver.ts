@@ -1,3 +1,6 @@
+import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
+import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
+import { UtilsService } from './../../common/utils.service'
 import { ExplorerService } from './explorer.service'
 import {
   ExplorerModelType,
@@ -9,10 +12,16 @@ import {
 import { Args, Context, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { GraphQLInt } from 'graphql'
 import { RpcService } from '../rpc/rpc.service'
+// import { THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
 
 @Resolver((of) => ExplorerModelType)
 export class ExplorerResolver {
-  constructor(private explorerService: ExplorerService, private rpcService: RpcService) {}
+  constructor(
+    private explorerService: ExplorerService,
+    private rpcService: RpcService,
+    private utilService: UtilsService,
+    private smartContractService: SmartContractService
+  ) {}
 
   @Query(() => ExplorerModelType)
   async Explorer(@Context() context) {
@@ -73,7 +82,7 @@ export class ExplorerResolver {
   }
 
   @ResolveField(() => ExplorerSearchModelType)
-  async search(@Args('search') search: string) {
+  async search(@Args('search') search: string): Promise<ExplorerSearchModelType> {
     const blockInfo = await this.explorerService.getBlockInfo(search)
     if (blockInfo) {
       const res = await this.rpcService.getBlockByHeight(blockInfo.height)
@@ -81,6 +90,9 @@ export class ExplorerResolver {
     }
     const transactionRpc = await this.rpcService.getTransactionByHash(search)
     const transactionInfo = await this.explorerService.getTransactionInfo(search)
+    if (transactionInfo.tx_type === THETA_TRANSACTION_TYPE_ENUM.smart_contract) {
+      const contract = await this.smartContractService.getContractByAddress(transactionInfo.to)
+    }
     if (transactionInfo) {
       return {
         transaction: transactionInfo,

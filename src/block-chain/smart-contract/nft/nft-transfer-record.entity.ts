@@ -55,6 +55,10 @@ export class NftTransferRecordEntity {
   })
   height: number
 
+  @Field()
+  @Column({ default: '' })
+  transaction_hash: string
+
   @Field(() => Int)
   @Column({ type: 'int' })
   timestamp: number

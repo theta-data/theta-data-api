@@ -1,5 +1,6 @@
+import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { Field, Int, ObjectType } from '@nestjs/graphql'
-import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
+import { THETA_BLOCK_STATUS_ENUM } from '../tx/theta.enum'
 import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
@@ -228,58 +229,58 @@ export class inputOutputType {
 @ObjectType()
 export class transactionRawType {
   @Field(() => proposerType, { nullable: true })
-  proposer: proposerType
+  proposer?: proposerType
 
   @Field(() => TokenType, { nullable: true })
-  fee: TokenType
+  fee?: TokenType
 
   @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
-  outputs: Array<inputOutputType>
+  outputs?: Array<inputOutputType>
 
   @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
-  inputs: Array<inputOutputType>
+  inputs?: Array<inputOutputType>
 
   @Field({ nullable: true })
-  gas_limit: string
+  gas_limit?: string
 
   @Field({ nullable: true })
-  gas_price: string
+  gas_price?: string
 
   @Field((type) => proposerType, { nullable: true })
-  from: proposerType
+  from?: proposerType
 
   @Field((type) => proposerType, { nullable: true })
-  to: proposerType
+  to?: proposerType
 
   @Field({ nullable: true })
-  data: string
+  data?: string
 
   @Field({ nullable: true })
-  block_height: string
+  block_height?: string
 
   @Field({ nullable: true })
-  payment_sequence: string
+  payment_sequence?: string
 
   @Field({ nullable: true })
-  reserve_sequence: string
+  reserve_sequence?: string
 
   @Field({ nullable: true })
-  resource_id: string
+  resource_id?: string
 
   @Field(() => SourceTargetType, { nullable: true })
-  source: SourceTargetType
+  source?: SourceTargetType
 
   @Field(() => SourceTargetType, { nullable: true })
-  target: SourceTargetType
+  target?: SourceTargetType
 
   @Field(() => TokenType, { nullable: true })
-  collateral: TokenType
+  collateral?: TokenType
 
   @Field(() => [String], { nullable: true })
-  resource_ids: Array<string>
+  resource_ids?: Array<string>
 
   @Field({ nullable: true })
-  duration: string
+  duration?: string
 }
 
 @ObjectType()
@@ -287,8 +288,8 @@ export class transactionType {
   @Field(() => transactionRawType, { nullable: true })
   raw: transactionRawType
 
-  @Field(() => THETA_TX_TYPE_ENUM)
-  type: THETA_TX_TYPE_ENUM
+  @Field(() => THETA_TRANSACTION_TYPE_ENUM)
+  type: THETA_TRANSACTION_TYPE_ENUM
 
   // @Field(() => TokenType, { nullable: true })
   // fee: TokenType
@@ -297,7 +298,7 @@ export class transactionType {
   hash: string
 
   @Field(() => receiptType, { nullable: true })
-  receipt: receiptType
+  receipt?: receiptType
 }
 
 @ObjectType()
@@ -308,8 +309,8 @@ export class GetTransactionModel {
   @Field()
   block_height: string //"3",
 
-  @Field(() => THETA_TX_TYPE_ENUM)
-  type: THETA_TX_TYPE_ENUM
+  @Field(() => THETA_TRANSACTION_TYPE_ENUM)
+  type: THETA_TRANSACTION_TYPE_ENUM
 
   @Field()
   status: string //"finalized",
@@ -321,7 +322,7 @@ export class GetTransactionModel {
   transaction: transactionRawType
 
   @Field(() => receiptType, { nullable: true })
-  receipt: receiptType
+  receipt?: receiptType
 }
 
 @ObjectType()
