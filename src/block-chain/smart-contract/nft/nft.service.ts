@@ -380,6 +380,7 @@ export class NftService {
               smart_contract_address: nftContractAddress,
               height: record.height,
               name: logContract.name,
+              transaction_hash: record.transaction_hash,
               timestamp: record.timestamp,
               payment_token_amount: Number(
                 new BigNumber(paymentTokenAmount).dividedBy('1e18').toFixed()
