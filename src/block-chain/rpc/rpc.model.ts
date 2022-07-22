@@ -1,8 +1,9 @@
+import { RankByEnum } from './../smart-contract/smart-contract.model'
 import { THETA_TRANSACTION_TYPE_ENUM } from './../tx/theta.enum'
 // import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
-import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { THETA_BLOCK_STATUS_ENUM } from '../tx/theta.enum'
-import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
+import { GraphQLBoolean, GraphQLInt, GraphQLString, Token } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
@@ -305,6 +306,24 @@ export class transactionType {
   receipt?: receiptType
 }
 
+export enum STAKE_PURPOSE_ENUM {
+  validator,
+  guardian,
+  elite_edge_node
+}
+registerEnumType(STAKE_PURPOSE_ENUM, {
+  name: 'STAKE_PURPOSE_ENUM'
+})
+
+@ObjectType()
+export class HolderType {
+  @Field()
+  address: string
+
+  @Field(() => TokenType)
+  coins: TokenType
+}
+
 @ObjectType()
 export class GetTransactionModel {
   @Field()
@@ -327,6 +346,12 @@ export class GetTransactionModel {
 
   @Field(() => receiptType, { nullable: true })
   receipt?: receiptType
+
+  @Field(() => STAKE_PURPOSE_ENUM, { nullable: true })
+  purpose?: STAKE_PURPOSE_ENUM
+
+  @Field(() => HolderType, { nullable: true })
+  holder?: HolderType
 }
 
 @ObjectType()
