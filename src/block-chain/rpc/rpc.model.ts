@@ -286,6 +286,12 @@ export class transactionRawType {
 
   @Field({ nullable: true })
   duration?: string
+
+  @Field(() => STAKE_PURPOSE_ENUM, { nullable: true })
+  purpose?: STAKE_PURPOSE_ENUM
+
+  @Field(() => HolderType, { nullable: true })
+  holder?: HolderType
 }
 
 @ObjectType()
@@ -346,12 +352,6 @@ export class GetTransactionModel {
 
   @Field(() => receiptType, { nullable: true })
   receipt?: receiptType
-
-  @Field(() => STAKE_PURPOSE_ENUM, { nullable: true })
-  purpose?: STAKE_PURPOSE_ENUM
-
-  @Field(() => HolderType, { nullable: true })
-  holder?: HolderType
 }
 
 @ObjectType()
