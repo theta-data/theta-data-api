@@ -42,13 +42,17 @@ export class NftResolver {
   @ResolveField(() => PaginatedNftBalance)
   async Balance(
     @Args('wallet_address') walletAddress: string,
+    @Args('search', { nullable: true }) search: string,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number,
     @Args('after', { nullable: true }) after: string
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftService.getNftByWalletAddress(
       walletAddress.toLowerCase(),
       take,
-      after
+      after,
+      skip,
+      search
     )
     let endCursor = ''
     if (res.length > 0) {
@@ -60,7 +64,8 @@ export class NftResolver {
       endCursor: endCursor,
       hasNextPage: hasNextPage,
       nodes: res,
-      totalCount: totalNumber
+      totalCount: totalNumber,
+      skip: skip
     }
   }
 
@@ -104,7 +109,7 @@ export class NftResolver {
     )
     let endCursor = ''
     if (res.length > 0) {
-      console.log(res[res.length - 1].create_date)
+      console.log(res[res.length - 1].id)
       endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
     }
     return {
@@ -124,12 +129,14 @@ export class NftResolver {
   async NftOwners(
     @Args('smart_contract_address') contractAddress: string,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number,
     @Args('after', { nullable: true }) after: string
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftService.getNftsBySmartContractAddress(
       contractAddress.toLowerCase(),
       take,
-      after
+      after,
+      skip
     )
     let endCursor = ''
     if (res.length > 0) {
@@ -140,6 +147,7 @@ export class NftResolver {
       endCursor: endCursor,
       hasNextPage: hasNextPage,
       nodes: res,
+      skip: skip,
       totalCount: totalNumber
     }
   }
@@ -147,23 +155,26 @@ export class NftResolver {
   @ResolveField(() => PaginatedNftTransferRecord)
   async ContractNftTransfers(
     @Args('smart_contract_address') contractAddress: string,
+    @Args('token_id', { type: () => Int, nullable: true }) tokenId: number,
     @Args('take', { type: () => Int, defaultValue: 10 }) take: number,
-    @Args('after', { nullable: true }) after: string
+    @Args('after', { nullable: true }) after: string,
+    @Args('skip', { type: () => Int, defaultValue: 0 }) skip: number
   ) {
     const [hasNextPage, totalNumber, res] = await this.nftService.getNftTransfersForSmartContract(
       contractAddress.toLowerCase(),
+      tokenId,
       take,
-      after
+      after,
+      skip
     )
     let endCursor = ''
     if (res.length > 0) {
-      // this.console.log();
-      // console.log(res[res.length - 1].create_date)
-      endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
+      endCursor = Buffer.from(res[res.length - 1].timestamp.toString()).toString('base64')
     }
     return {
       endCursor: endCursor,
       hasNextPage: hasNextPage,
+      skip: skip,
       nodes: res,
       totalCount: totalNumber
     }
@@ -176,11 +187,4 @@ export class NftResolver {
   ) {
     return await this.nftService.getNftByTokenId(tokenId, contractAddress.toLowerCase())
   }
-
-  // @ResolveField(() => NftMetaType)
-  // async Meta(@Args('smart_contract_address') contractAddress: string): Promise<NftMetaType> {
-  //   // const uniqueHolder = await this.nftService.uniqueHolders(contractAddress.toLowerCase())
-  //   const [totalAmount, uniqueHolder] = await this.nftService.totalAmount(contractAddress)
-  //   return { unique_holder: uniqueHolder, total: totalAmount }
-  // }
 }

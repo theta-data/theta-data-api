@@ -11,6 +11,7 @@ export interface IPaginatedType<T> {
   nodes: T[]
   totalCount: number
   hasNextPage: boolean
+  skip: number
   endCursor: string
 }
 
@@ -37,6 +38,9 @@ export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
 
     @Field()
     hasNextPage: boolean
+
+    @Field((type) => Int)
+    skip: number
 
     @Field()
     endCursor: string

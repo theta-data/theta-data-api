@@ -1,3 +1,4 @@
+import { LatestStakeInfoEntity } from './../stake/latest-stake-info.entity'
 import { CACHE_MANAGER, Inject, Injectable, Logger } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
@@ -9,6 +10,13 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
 import { WalletEntity } from './wallet.entity'
 import { ActiveWalletsEntity } from './active-wallets.entity'
+import { STAKE_NODE_TYPE_ENUM } from '../stake/stake.entity'
+import {
+  THETA_EENP_INTERFACE,
+  THETA_GCP_INTERFACE,
+  THETA_VCP_INTERFACE
+} from 'theta-ts-sdk/dist/types/interface'
+import { json } from 'stream/consumers'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -20,6 +28,9 @@ export class WalletService {
 
     @InjectRepository(WalletEntity, 'wallet')
     private walletRepository: Repository<WalletEntity>,
+
+    @InjectRepository(LatestStakeInfoEntity, 'stake')
+    private latestStakeInfoRepository: Repository<LatestStakeInfoEntity>,
 
     @InjectRepository(ActiveWalletsEntity, 'wallet')
     private activeWalletsRepository: Repository<ActiveWalletsEntity>,
@@ -74,7 +85,12 @@ export class WalletService {
     const gcpStake: Array<StakeBalanceType> = []
     const eenpStake: Array<StakeBalanceType> = []
     const vcpStake: Array<StakeBalanceType> = []
-    const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(latestBlockHeight)
+    // const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(latestBlockHeight)
+    const gcpRes = await this.latestStakeInfoRepository.findOne({
+      node_type: STAKE_NODE_TYPE_ENUM.guardian
+    })
+    const gcpList: THETA_GCP_INTERFACE = JSON.parse(gcpRes.holder)
+
     const thetaMarketInfo = await this.marketInfo.getThetaMarketInfo()
     const thetaFuelMarketInfo = await this.marketInfo.getThetaFuelMarketInfo()
     const usdRate = await this.getUsdRate()
@@ -105,7 +121,11 @@ export class WalletService {
       })
     })
 
-    const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(latestBlockHeight)
+    // const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(latestBlockHeight)
+    const eenpRes = await this.latestStakeInfoRepository.findOne({
+      node_type: STAKE_NODE_TYPE_ENUM.edge_cache
+    })
+    const eenpList: THETA_EENP_INTERFACE = JSON.parse(eenpRes.holder)
 
     eenpList.result.BlockHashEenpPairs[0].EENs.forEach((een) => {
       een.Stakes.forEach((stake) => {
@@ -133,7 +153,11 @@ export class WalletService {
       })
     })
 
-    const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(latestBlockHeight)
+    // const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(latestBlockHeight)
+    const vaRes = await this.latestStakeInfoRepository.findOne({
+      node_type: STAKE_NODE_TYPE_ENUM.validator
+    })
+    const validatorList: THETA_VCP_INTERFACE = JSON.parse(vaRes.holder)
 
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((vcp) => {
       vcp.Stakes.forEach((stake) => {

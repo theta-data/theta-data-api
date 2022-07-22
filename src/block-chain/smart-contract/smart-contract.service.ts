@@ -1,15 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { SmartContractEntity, SmartContractProtocolEnum } from './smart-contract.entity'
-import {
-  FindCondition,
-  FindManyOptions,
-  FindOneOptions,
-  getConnection,
-  Like,
-  MoreThan,
-  Repository
-} from 'typeorm'
+import { FindManyOptions, Like, MoreThan, Repository } from 'typeorm'
 import { SmartContractCallRecordEntity } from './smart-contract-call-record.entity'
 import { RankByEnum } from './smart-contract.model'
 import { NftService } from './nft/nft.service'
@@ -91,58 +83,6 @@ export class SmartContractService {
     return await this.smartContractRecordRepository.find()
   }
 
-  // async updateSmartContractRecord(
-  //   timestamp: string,
-  //   contractAddress: string,
-  //   data: string,
-  //   receipt: string,
-  //   height: number,
-  //   tansactionHash: string
-  // ) {
-  //   try {
-  //     await this.smartContractRepository.query(
-  //       `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
-  //     )
-  //   } catch (e) {
-  //     this.logger.debug('insert smart contract error')
-  //     this.logger.error(e)
-  //   }
-
-  //   const smartContract = await this.smartContractRepository.findOne({
-  //     contract_address: contractAddress
-  //   })
-  //   // this.logger.debug('timestamp:' + timestamp)
-  //   const smartContractRecord = new SmartContractCallRecordEntity()
-  //   smartContractRecord.timestamp = Number(timestamp)
-  //   smartContractRecord.data = data
-  //   smartContractRecord.receipt = receipt
-  //   smartContractRecord.height = height
-  //   smartContractRecord.transaction_hash = tansactionHash
-  //   smartContractRecord.contract_id = smartContract.id
-  //   await this.smartContractRecordRepository.save(smartContractRecord)
-  //   let afftectedNum = 0
-  //   if (smartContract.verified && smartContract.protocol === SmartContractProtocolEnum.tnt721) {
-  //     const connection = getConnection('nft').createQueryRunner()
-  //     await connection.connect()
-  //     await connection.startTransaction()
-  //     try {
-  //       const res = await this.nftService.updateNftRecord(
-  //         connection,
-  //         smartContractRecord,
-  //         smartContract
-  //       )
-  //       if (res) afftectedNum++
-  //     } catch (e) {
-  //       this.logger.debug(e)
-  //       await connection.rollbackTransaction()
-  //     } finally {
-  //       await connection.release()
-  //     }
-  //   }
-
-  //   // }
-  // }
-
   async getOrAddSmartContract(contractAddress: string, height: number) {
     await this.smartContractRepository.query(
       `INSERT INTO smart_contract_entity(contract_address,height) VALUES ('${contractAddress}',${height})  ON CONFLICT (contract_address) DO UPDATE set call_times=call_times+1;`
@@ -203,14 +143,6 @@ export class SmartContractService {
       var input = {
         language: 'Solidity',
         settings: {
-          // evmVersion: 'byzantium',
-          // optimizer: {
-          //   // disabled by default
-          //   enabled: true,
-          //   // Optimize for how many times you intend to run the code.
-          //   // Lower values will optimize more for initial deployment cost, higher values will optimize more for high-frequency usage.
-          //   runs: 750
-          // },
           optimizer: {
             enabled: optimizer,
             runs: optimizerRuns
@@ -564,11 +496,14 @@ export class SmartContractService {
         }
       }
     }
-    // return contract
-    // } catch (e) {
-    //   this.logger.error('Error in catch:' + e)
-    //   return false
-    //   // return contract
-    // }
+  }
+
+  async getContractByAddress(address: string) {
+    const contract = await this.smartContractRepository.findOne({
+      where: {
+        contract_address: address
+      }
+    })
+    return contract
   }
 }

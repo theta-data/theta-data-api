@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from '@nestjs/graphql'
+import { GraphQLFloat } from 'graphql'
 import {
   Column,
   CreateDateColumn,
@@ -13,9 +14,10 @@ import {
 @Entity()
 @Unique(['smart_contract_address', 'token_id', 'timestamp'])
 @Index(['smart_contract_address'])
-// @Index(['token_id'])
+@Index(['from'])
+@Index(['to'])
 export class NftTransferRecordEntity {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn()
   id!: number
 
   @Field()
@@ -38,12 +40,24 @@ export class NftTransferRecordEntity {
   @Column({ type: 'int' })
   token_id: number
 
+  @Field(() => GraphQLFloat)
+  @Column({ type: 'float', default: 0 })
+  payment_token_amount: number
+
+  @Field(() => GraphQLFloat)
+  @Column({ type: 'float', default: 0 })
+  tdrop_mined: number
+
   @Field(() => Int)
   @Column({
     type: 'int',
     default: 0
   })
   height: number
+
+  @Field()
+  @Column({ default: '' })
+  transaction_hash: string
 
   @Field(() => Int)
   @Column({ type: 'int' })

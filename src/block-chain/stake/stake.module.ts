@@ -1,3 +1,4 @@
+import { LatestStakeInfoEntity } from './latest-stake-info.entity'
 import { CacheModule, Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { StakeEntity } from './stake.entity'
@@ -15,7 +16,10 @@ import { CommonModule } from 'src/common/common.module'
   imports: [
     WalletModule,
     MarketModule,
-    TypeOrmModule.forFeature([StakeEntity, StakeStatisticsEntity, StakeRewardEntity], 'stake'),
+    TypeOrmModule.forFeature(
+      [StakeEntity, StakeStatisticsEntity, StakeRewardEntity, LatestStakeInfoEntity],
+      'stake'
+    ),
     TypeOrmModule.forFeature([WalletEntity], 'wallet'),
 
     CacheModule.register(),

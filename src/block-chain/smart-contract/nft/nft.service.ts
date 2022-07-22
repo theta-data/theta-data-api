@@ -18,6 +18,7 @@ import { NftBalanceEntity } from './nft-balance.entity'
 import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
+import BigNumber from 'bignumber.js'
 
 @Injectable()
 export class NftService {
@@ -75,14 +76,15 @@ export class NftService {
         const res = await this.updateNftRecord(
           connection,
           smartContractConnection,
-          record,
-          contract
+          record
+          // contract
         )
         if (res) afftectedNum++
       }
       await connection.commitTransaction()
       await smartContractConnection.commitTransaction()
     } catch (e) {
+      console.error(e)
       this.logger.debug(e)
       await connection.rollbackTransaction()
       await smartContractConnection.rollbackTransaction()
@@ -97,8 +99,7 @@ export class NftService {
   async parseRecordByContractAddressWithConnection(
     nftConnection: QueryRunner,
     smartContractConnection: QueryRunner,
-    contract: SmartContractEntity,
-    height: number = 0
+    contract: SmartContractEntity
   ): Promise<number> {
     this.logger.debug('start parese record')
     if (!contract.verified) {
@@ -128,9 +129,8 @@ export class NftService {
       const res = await this.updateNftRecord(
         nftConnection,
         smartContractConnection,
-        record,
-        contract,
-        height
+        record
+        // contract
       )
       if (res) afftectedNum++
     }
@@ -149,29 +149,19 @@ export class NftService {
   async updateNftRecord(
     nftConnection: QueryRunner,
     smartContractConnection: QueryRunner,
-    record: SmartContractCallRecordEntity,
-    contract: SmartContractEntity,
-    height: number = 0
+    record: SmartContractCallRecordEntity
   ) {
     const receipt = JSON.parse(record.receipt)
     if (receipt.Logs.length == 0) {
       this.logger.debug('receipt:' + JSON.stringify(receipt))
       return
     }
-    this.logger.debug(JSON.stringify(receipt))
-    let contractList: {
+    const contractList: {
       [prop: string]: {
         contract: SmartContractEntity
         logs: Array<any>
       }
     } = {}
-    // let contractLogs: any = []
-    if (contract.protocol === SmartContractProtocolEnum.tnt721) {
-      contractList[contract.contract_address] = {
-        contract: contract,
-        logs: []
-      }
-    }
 
     for (const log of receipt.Logs) {
       if (log.data == '') {
@@ -185,12 +175,7 @@ export class NftService {
         const tempContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
           contract_address: log.address
         })
-        if (
-          !tempContract ||
-          !tempContract.verified ||
-          tempContract.protocol != SmartContractProtocolEnum.tnt721
-        )
-          continue
+        if (!tempContract || !tempContract.verified) continue
         contractList[log.address] = {
           contract: tempContract,
           logs: [log]
@@ -198,20 +183,20 @@ export class NftService {
       }
     }
     const contractDecodeList = Object.values(contractList)
-    // this.logger.debug(JSON.stringify(contractDecodeList))
     for (const contract of contractDecodeList) {
-      const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
-      for (const log of logInfo) {
-        // const address = log.address
+      // if(contract.contract)
 
+      const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
+      // this.logger.debug(JSON.stringify(logInfo))
+      for (const log of logInfo) {
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
-          // try {
           this.logger.debug(
             JSON.stringify({
               from: log.decode.result.from.toLowerCase(),
               to: log.decode.result.to.toLowerCase(),
               token_id: Number(log.decode.result.tokenId),
-              smart_contract_address: log.address
+              smart_contract_address: log.address,
+              transaction_hash: record.transaction_hash
             })
           )
           const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
@@ -227,29 +212,38 @@ export class NftService {
             token_id: Number(log.decode.result.tokenId),
             smart_contract_address: log.address.toLowerCase(),
             timestamp: record.timestamp
-            // from: log.decode.result.from.toLowerCase(),
-            // to: log.decode.result.to.toLowerCase()
           })
-          if (!transferRecord)
-            await nftConnection.manager.insert(
-              NftTransferRecordEntity,
-              {
-                from: log.decode.result.from.toLowerCase(),
-                to: log.decode.result.to.toLowerCase(),
-                token_id: Number(log.decode.result.tokenId),
-                smart_contract_address: log.address.toLowerCase(),
-                height: record.height,
-                name: contract.contract.name,
-                timestamp: record.timestamp
-              }
-              // ['smart_contract_address', 'token_id', 'timestamp']
+          if (!transferRecord) {
+            this.logger.debug(
+              'insert nft transfer record:' +
+                JSON.stringify({
+                  from: log.decode.result.from.toLowerCase(),
+                  to: log.decode.result.to.toLowerCase(),
+                  token_id: Number(log.decode.result.tokenId),
+                  smart_contract_address: log.address.toLowerCase(),
+                  height: record.height,
+                  name: contract.contract.name,
+                  timestamp: record.timestamp
+                })
             )
+            await nftConnection.manager.insert(NftTransferRecordEntity, {
+              from: log.decode.result.from.toLowerCase(),
+              to: log.decode.result.to.toLowerCase(),
+              token_id: Number(log.decode.result.tokenId),
+              smart_contract_address: log.address.toLowerCase(),
+              height: record.height,
+              name: logContract.name,
+              transaction_hash: record.transaction_hash,
+              timestamp: record.timestamp
+            })
+          }
+
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
             smart_contract_address: log.address.toLowerCase(),
             token_id: Number(log.decode.result.tokenId)
           })
           if (balance) {
-            const latesRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+            const latestRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
               where: {
                 smart_contract_address: log.address.toLowerCase(),
                 token_id: Number(log.decode.result.tokenId)
@@ -264,12 +258,11 @@ export class NftService {
                 id: balance.id
               },
               {
-                owner: latesRecord.to,
-                from: latesRecord.from
+                owner: latestRecord.to,
+                from: latestRecord.from
               }
             )
           } else {
-            // let name = ''
             let imgUri = ''
             let detail = ''
             let tokenUri = ''
@@ -320,7 +313,81 @@ export class NftService {
               base_token_uri: baseTokenUri
             })
           }
-          return true
+          // return true
+        }
+
+        if (
+          (log.decode.eventName === 'NFTTraded' &&
+            log.decode.result.nftTokenID &&
+            log.decode.result.nftTokenAddress) ||
+          (log.decode.eventName === 'MarketItemSale' &&
+            log.decode.result.isSold == 'true' &&
+            log.decode.result.tokenId &&
+            log.decode.result.nftContract)
+        ) {
+          this.logger.debug('parse nft trade:' + record.transaction_hash)
+          this.logger.debug(JSON.stringify(log.decode.result))
+          const nftTokenId = log.decode.result.nftTokenID
+            ? Number(log.decode.result.nftTokenID)
+            : Number(log.decode.result.tokenId)
+          const nftContractAddress = log.decode.result.nftTokenAddress
+            ? log.decode.result.nftTokenAddress.toLowerCase()
+            : log.decode.result.nftContract.toLowerCase()
+          const paymentTokenAmount = log.decode.result.paymentTokenAmount
+            ? log.decode.result.paymentTokenAmount
+            : log.decode.result.price
+          const tdropMined = log.decode.result.tdropMined ? Number(log.decode.result.tdropMined) : 0
+          const buyer = log.decode.result.buyer
+            ? log.decode.result.buyer.toLowerCase()
+            : log.decode.result.owner.toLowerCase()
+          const seller = log.decode.result.seller.toLowerCase()
+
+          const logContract = await smartContractConnection.manager.findOne(SmartContractEntity, {
+            contract_address: nftContractAddress
+          })
+          if (
+            !logContract ||
+            !logContract.verified ||
+            logContract.protocol !== SmartContractProtocolEnum.tnt721
+          )
+            continue
+          this.logger.debug('nft traded: ' + JSON.stringify(log.decode.result))
+          const searchCondition = {
+            token_id: nftTokenId,
+            smart_contract_address: nftContractAddress,
+            timestamp: record.timestamp
+          }
+          this.logger.debug('search condition: ' + JSON.stringify(searchCondition))
+
+          const tradeRecord = await nftConnection.manager.findOne<NftTransferRecordEntity>(
+            NftTransferRecordEntity,
+            searchCondition
+          )
+          if (tradeRecord) {
+            this.logger.debug('get nft trade record:' + JSON.stringify(tradeRecord))
+            tradeRecord.payment_token_amount = Number(
+              new BigNumber(paymentTokenAmount).dividedBy('1e18').toFixed()
+            )
+            tradeRecord.tdrop_mined = Number(new BigNumber(tdropMined).dividedBy('1e18').toFixed())
+            const res = await nftConnection.manager.save(NftTransferRecordEntity, tradeRecord)
+            this.logger.debug('nft traded updated: ' + JSON.stringify(res))
+          } else {
+            this.logger.debug('no nft trade record:' + JSON.stringify(log.decode))
+            await nftConnection.manager.insert(NftTransferRecordEntity, {
+              from: seller,
+              to: buyer,
+              token_id: nftTokenId,
+              smart_contract_address: nftContractAddress,
+              height: record.height,
+              name: logContract.name,
+              transaction_hash: record.transaction_hash,
+              timestamp: record.timestamp,
+              payment_token_amount: Number(
+                new BigNumber(paymentTokenAmount).dividedBy('1e18').toFixed()
+              ),
+              tdrop_mined: Number(new BigNumber(tdropMined).dividedBy('1e18').toFixed())
+            })
+          }
         }
       }
     }
@@ -381,7 +448,9 @@ export class NftService {
   async getNftByWalletAddress(
     address: string,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip: number = 0,
+    search: string | undefined = null
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     this.logger.debug('address: ' + address)
     const condition: FindManyOptions<NftBalanceEntity> = {
@@ -389,20 +458,26 @@ export class NftService {
         owner: address
       },
       take: take + 1,
+      skip: skip,
       order: {
         // id: 'ASC',
         id: 'DESC'
       }
+    }
+    if (search) {
+      condition.where['name'] = Like(`%${search}%`)
     }
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
       condition.where['id'] = LessThan(id)
     }
-
-    const totalNft = await this.nftBalanceRepository.count({
+    const totalCondition = {
       owner: address
-    })
+    }
+    if (search) totalCondition['name'] = Like(`%${search}%`)
+    this.logger.debug('total count condition', JSON.stringify(totalCondition))
+    const totalNft = await this.nftBalanceRepository.count(totalCondition)
     let nftList = await this.nftBalanceRepository.find(condition)
     let hasNextPage = false
     if (nftList.length > take) {
@@ -416,13 +491,15 @@ export class NftService {
   async getNftsBySmartContractAddress(
     address: string,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip: number = 0
   ): Promise<[boolean, number, Array<NftBalanceEntity>]> {
     const condition: FindManyOptions<NftBalanceEntity> = {
       where: {
         smart_contract_address: address,
         owner: Not('0x0000000000000000000000000000000000000000')
       },
+      skip: skip,
       take: take + 1,
       order: {
         id: 'ASC'
@@ -448,26 +525,34 @@ export class NftService {
 
   async getNftTransfersForSmartContract(
     contractAddress: string,
+    tokenId: number | undefined,
     take: number = 20,
-    after: string | undefined
+    after: string | undefined,
+    skip = 0
   ): Promise<[boolean, number, Array<NftTransferRecordEntity>]> {
     const condition: FindManyOptions<NftTransferRecordEntity> = {
       where: { smart_contract_address: contractAddress },
       take: take + 1,
+      skip: skip,
       order: {
-        id: 'ASC'
+        timestamp: 'DESC'
       }
     }
+    if (tokenId) condition.where['token_id'] = tokenId
+    this.logger.debug(JSON.stringify(condition))
     if (after) {
       const id = Buffer.from(after, 'base64').toString('ascii')
       this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      condition.where['timestamp'] = LessThan(id)
     }
-    const totalRecord = await this.nftTransferRecordRepository.count({
+    const countCondition = {
       where: {
         smart_contract_address: contractAddress
       }
-    })
+    }
+    if (tokenId) countCondition.where['token_id'] = tokenId
+    countCondition
+    const totalRecord = await this.nftTransferRecordRepository.count(countCondition)
     let recordList = await this.nftTransferRecordRepository.find(condition)
     let hasNextPage = false
     if (recordList.length > take) {
@@ -499,7 +584,8 @@ export class NftService {
     if (after) {
       const id = Number(Buffer.from(after, 'base64').toString('ascii'))
       this.logger.debug('decode from base64:' + id)
-      condition.where['id'] = MoreThan(id)
+      condition.where[0].id = MoreThan(id)
+      condition.where[1].id = MoreThan(id)
     }
     const totalRecord = await this.nftTransferRecordRepository.count({
       where: [
@@ -561,10 +647,12 @@ export class NftService {
   }
 
   async getNftByTokenId(tokenId: number, contractAddress: string) {
-    const nft = await this.nftBalanceRepository.findOne({
+    const searchCondition = {
       token_id: tokenId,
       smart_contract_address: contractAddress
-    })
+    }
+    this.logger.debug('search condtion get nft by token id', JSON.stringify(searchCondition))
+    const nft = await this.nftBalanceRepository.findOne(searchCondition)
     this.logger.debug(JSON.stringify(nft))
     if (!nft) return undefined
     return (await this.checkSources([nft]))[0]
@@ -681,5 +769,11 @@ export class NftService {
     }
     return [hasNextPage, totalNft, nftList]
     // return
+  }
+
+  public async getNftTransferRecordsByTxHash(txHash) {
+    return await this.nftTransferRecordRepository.find({
+      transaction_hash: txHash
+    })
   }
 }
