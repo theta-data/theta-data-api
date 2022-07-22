@@ -19,6 +19,15 @@ registerEnumType(STAKE_PURPOSE_ENUM, {
 })
 
 @ObjectType()
+export class TokenType {
+  @Field()
+  thetawei: string // "994999990000000000000000000",
+
+  @Field()
+  tfuelwei: string //"4999999979999999000000000000"
+}
+
+@ObjectType()
 export class HolderType {
   @Field()
   address: string
@@ -37,15 +46,6 @@ export class GetVersionModel {
 
   @Field({ description: 'the build timestamp' })
   timestamp: string //'Tue Feb 19 23:31:32 UTC 2019'
-}
-
-@ObjectType()
-export class TokenType {
-  @Field()
-  thetawei: string // "994999990000000000000000000",
-
-  @Field()
-  tfuelwei: string //"4999999979999999000000000000"
 }
 
 @ObjectType()
