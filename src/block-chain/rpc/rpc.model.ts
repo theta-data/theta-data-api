@@ -247,6 +247,9 @@ export class transactionRawType {
   @Field({ nullable: true })
   gas_price?: string
 
+  @Field({ nullable: true })
+  gas_used?: string
+
   @Field((type) => proposerType, { nullable: true })
   from?: proposerType
 
