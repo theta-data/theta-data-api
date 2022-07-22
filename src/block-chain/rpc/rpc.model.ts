@@ -9,6 +9,24 @@ import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
 import { BlockHashStakeRewardDistributionRuleSetPairsModel } from './rpc-stake-reward-distribution-by-height.model'
 
+export enum STAKE_PURPOSE_ENUM {
+  validator,
+  guardian,
+  elite_edge_node
+}
+registerEnumType(STAKE_PURPOSE_ENUM, {
+  name: 'STAKE_PURPOSE_ENUM'
+})
+
+@ObjectType()
+export class HolderType {
+  @Field()
+  address: string
+
+  @Field(() => TokenType)
+  coins: TokenType
+}
+
 @ObjectType()
 export class GetVersionModel {
   @Field({ description: 'the version number' })
@@ -310,24 +328,6 @@ export class transactionType {
 
   @Field(() => receiptType, { nullable: true })
   receipt?: receiptType
-}
-
-export enum STAKE_PURPOSE_ENUM {
-  validator,
-  guardian,
-  elite_edge_node
-}
-registerEnumType(STAKE_PURPOSE_ENUM, {
-  name: 'STAKE_PURPOSE_ENUM'
-})
-
-@ObjectType()
-export class HolderType {
-  @Field()
-  address: string
-
-  @Field(() => TokenType)
-  coins: TokenType
 }
 
 @ObjectType()
