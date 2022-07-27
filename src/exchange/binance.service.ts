@@ -70,9 +70,9 @@ export class BinanceService implements EXCHANGE_INTERFACE {
       method: 'get'
     }
     let res = await axios.request(opt)
-    // const last24H = res.data.slice(-24)
+    const period = res.data.slice(-72)
     const dataToReturn = []
-    res.data.forEach((item) => {
+    period.forEach((item) => {
       dataToReturn.push({
         time: item[0],
         price: item[2]
