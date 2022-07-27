@@ -78,8 +78,10 @@ export class TxService {
         obj[date].theta_fuel_burnt_by_transfers += hourData.theta_fuel_burnt_by_transfers
       }
     })
+    const result = Object.values(obj)
+    result.pop()
 
-    return Object.values(obj)
+    return result
   }
 
   public async getThetaByHour(timezoneOffset, hours: number = 24 * 7) {
