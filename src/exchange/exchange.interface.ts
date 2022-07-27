@@ -23,7 +23,7 @@ export interface TRADING_EXCHANGE_BINANCE_CONFIG {
 }
 
 export interface K_LINE_INTERFACE {
-  time: number
+  time: string
   price: number //High price of the period
 }
 
