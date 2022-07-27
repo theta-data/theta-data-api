@@ -128,16 +128,20 @@ export class StakeService {
         block_height: 'DESC'
       }
     })
-    const stakeInfo = await this.stakeStatisticsRepository.find({
-      block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 30)
-    })
-    const stakeToReturn = [stakeInfo[0]]
-    for (let i = 1; i < stakeInfo.length; i++) {
-      if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
-        stakeToReturn.push(stakeInfo[i])
+    if (latestStakeInfo) {
+      const stakeInfo = await this.stakeStatisticsRepository.find({
+        block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 30)
+      })
+      const stakeToReturn = [stakeInfo[0]]
+      for (let i = 1; i < stakeInfo.length; i++) {
+        if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
+          stakeToReturn.push(stakeInfo[i])
+        }
       }
+      return stakeToReturn
+    } else {
+      return []
     }
-    return stakeToReturn
   }
 
   async updateGcpStatus(address: string, time: number) {
