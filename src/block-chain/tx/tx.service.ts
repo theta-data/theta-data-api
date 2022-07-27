@@ -29,7 +29,7 @@ export class TxService {
     } = {}
     hours.forEach((hourData) => {
       const dateObj = moment(hourData.timestamp * 1000).subtract(
-        -new Date().getTimezoneOffset() - Number(timezoneOffset),
+        -new Date().getTimezoneOffset() + Number(timezoneOffset),
         'minutes'
       )
       let date = dateObj.format('YYYY_MM_DD')
