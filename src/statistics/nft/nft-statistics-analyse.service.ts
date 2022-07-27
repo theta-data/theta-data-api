@@ -1,3 +1,4 @@
+import { TokenMarketInformationType } from './../../market/market.model'
 import { Injectable, Logger } from '@nestjs/common'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
@@ -21,7 +22,7 @@ export class NftStatisticsAnalyseService {
   private nftConnection: QueryRunner
   private nftStatisticsConnection: QueryRunner
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'nft-statistics/record.height'
-  private tfuelPrice: CMC_PRICE_INFORMATION
+  private tfuelPrice: TokenMarketInformationType
 
   constructor(private utilsService: UtilsService, private marketService: MarketService) {}
 
