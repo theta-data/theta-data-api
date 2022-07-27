@@ -1,32 +1,48 @@
+import { TokenMarketInformationType } from './market.model'
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
 import { CMC_PRICE_INFORMATION } from 'theta-ts-sdk/dist/types/interface'
+import { BinanceService } from 'src/exchange/binance.service'
 
 @Injectable()
 export class MarketService {
-  constructor(@Inject(CACHE_MANAGER) private cacheManager: Cache) {
-    thetaTsSdk.cmc.setKey('57a40db8-5488-4ed4-ab75-152fec2ed608')
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private exchangeService: BinanceService
+  ) {
+    // thetaTsSdk.cmc.setKey('57a40db8-5488-4ed4-ab75-152fec2ed608')
   }
-  public async getThetaMarketInfo(): Promise<CMC_PRICE_INFORMATION> {
+  public async getThetaMarketInfo(): Promise<TokenMarketInformationType> {
     const key = 'theta-market-info'
     if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
-    const res = await thetaTsSdk.cmc.getInformation()
-    if (res.theta.price) {
-      await this.cacheManager.set(key, res.theta, { ttl: 60 * 60 })
+    const res = await this.exchangeService.tickerPriceChange('THETAUSDT')
+    const kline = await this.exchangeService.kLine('THETAUSDT')
+    const marketInfo = {
+      name: 'THETA',
+      price: Number(res.lastPrice),
+      volume_24h: Number(res.priceChangePercent),
+      price_change_percent: Number(res.priceChangePercent),
+      kline: kline
     }
-    return res.theta
+    await this.cacheManager.set(key, marketInfo, { ttl: 60 * 60 })
+    return marketInfo
   }
 
-  public async getThetaFuelMarketInfo(): Promise<CMC_PRICE_INFORMATION> {
+  public async getThetaFuelMarketInfo(): Promise<TokenMarketInformationType> {
     const key = 'tfuel-market-info'
-    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
-    console.log('get cmc price')
-    const res = await thetaTsSdk.cmc.getInformation()
-    console.log('cmc', res)
-    if (res.tfuel.price) {
-      await this.cacheManager.set(key, res.tfuel, { ttl: 60 * 60 })
+    const res = await this.exchangeService.tickerPriceChange('TFUELUSDT')
+    const kline = await this.exchangeService.kLine('TFUELUSDT')
+    const marketInfo = {
+      name: 'TFUEL',
+      price: Number(res.lastPrice),
+      volume_24h: Number(res.priceChangePercent),
+      price_change_percent: Number(res.priceChangePercent),
+      kline: kline
     }
-    return res.tfuel
+
+    await this.cacheManager.set(key, marketInfo, { ttl: 60 * 60 })
+
+    return marketInfo
   }
 }
