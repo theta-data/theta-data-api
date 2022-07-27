@@ -129,7 +129,7 @@ export class StakeService {
       }
     })
     const stakeInfo = await this.stakeStatisticsRepository.find({
-      block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 7)
+      block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 30)
     })
     const stakeToReturn = [stakeInfo[0]]
     for (let i = 1; i < stakeInfo.length; i++) {
