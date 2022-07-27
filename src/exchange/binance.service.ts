@@ -65,7 +65,7 @@ export class BinanceService implements EXCHANGE_INTERFACE {
         this.baseArr[Math.floor(Math.random() * this.baseArr.length)] +
         'v3/klines' +
         params +
-        '&interval=1h',
+        '&interval=5m',
       timeout: default_options.recvWindow,
       method: 'get'
     }
