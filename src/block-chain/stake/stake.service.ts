@@ -133,7 +133,7 @@ export class StakeService {
     })
     const stakeToReturn = [stakeInfo[0]]
     for (let i = 1; i < stakeInfo.length; i++) {
-      if (latestStakeInfo.block_height - stakeInfo[i].block_height == 13800) {
+      if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
         stakeToReturn.push(stakeInfo[i])
       }
     }
