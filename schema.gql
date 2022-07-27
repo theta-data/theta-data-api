@@ -228,6 +228,16 @@ type BlockHashStakeRewardDistributionRuleSetPairsModel {
   BlockHashStakeRewardDistributionRuleSetPairs: [StakeRewardDistributionRuleSetType!]!
 }
 
+type TokenType {
+  thetawei: String!
+  tfuelwei: String!
+}
+
+type HolderType {
+  address: String!
+  coins: TokenType!
+}
+
 type GetVersionModel {
   """the version number"""
   version: String!
@@ -237,11 +247,6 @@ type GetVersionModel {
 
   """the build timestamp"""
   timestamp: String!
-}
-
-type TokenType {
-  thetawei: String!
-  tfuelwei: String!
 }
 
 type receiptType {
@@ -385,6 +390,7 @@ type transactionRawType {
   inputs: [inputOutputType]
   gas_limit: String
   gas_price: String
+  gas_used: String
   from: proposerType
   to: proposerType
   data: String
@@ -397,6 +403,14 @@ type transactionRawType {
   collateral: TokenType
   resource_ids: [String!]
   duration: String
+  purpose: STAKE_PURPOSE_ENUM
+  holder: HolderType
+}
+
+enum STAKE_PURPOSE_ENUM {
+  validator
+  guardian
+  elite_edge_node
 }
 
 type transactionType {
@@ -508,6 +522,7 @@ type ExplorerSearchModelType {
 }
 
 enum SEARCH_TYPE_ENUM {
+  none
   block
   transaction
   account
@@ -586,6 +601,24 @@ type ThetaTxNumByDateModel {
   smart_contract_transaction: Int!
   latest_block_height: Int!
   timestamp: Int!
+}
+
+type KlineObj {
+  time: Int!
+  price: Float!
+}
+
+type TokenMarketInformationType {
+  name: String!
+  price: Float!
+  volume_24h: Float!
+  price_change_percent: Float!
+  kline: [KlineObj!]!
+}
+
+type MarketInformationType {
+  Theta: TokenMarketInformationType!
+  ThetaFuel: TokenMarketInformationType!
 }
 
 type WalletModel {
@@ -678,21 +711,6 @@ type StakeRewardModel {
   last_7_days: TokenBalanceType
 }
 
-type TokenMarketInformationType {
-  name: String!
-  price: Float!
-  volume_24h: Float!
-  market_cap: Float!
-  total_supply: Float!
-  circulating_supply: Float!
-  last_updated: String!
-}
-
-type MarketInformationType {
-  Theta: TokenMarketInformationType!
-  ThetaFuel: TokenMarketInformationType!
-}
-
 type LoggerEntity {
   query: String!
   hash: String!
@@ -744,10 +762,10 @@ type NftDetailByDate {
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
+  MarketInformation: MarketInformationType!
 
   """Return to statistics related to token pledges"""
   StakeStatistics: StakeStatisticsEntity
-  MarketInformation: MarketInformationType!
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!

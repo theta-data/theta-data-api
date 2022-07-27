@@ -1,3 +1,4 @@
+import { MarketModule } from 'src/market/market.module'
 import { CacheModule, Module } from '@nestjs/common'
 import { WalletResolver } from './wallet.resolver'
 import { WalletService } from './wallets.service'
@@ -14,9 +15,10 @@ import { LatestStakeInfoEntity } from '../stake/latest-stake-info.entity'
     CacheModule.register(),
     TypeOrmModule.forFeature([WalletEntity, ActiveWalletsEntity], 'wallet'),
     TypeOrmModule.forFeature([LatestStakeInfoEntity], 'stake'),
-    CommonModule
+    CommonModule,
+    MarketModule
   ],
-  providers: [WalletResolver, WalletService, MarketService, WalletsAnalyseService],
+  providers: [WalletResolver, WalletService, WalletsAnalyseService],
   exports: [WalletService]
 })
 export class WalletModule {}

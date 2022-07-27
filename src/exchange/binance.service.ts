@@ -28,7 +28,10 @@ const default_options = {
 export class BinanceService implements EXCHANGE_INTERFACE {
   APISECRET = ''
   APIKEY = ''
-  constructor(private logger: Logger) {}
+  logger: Logger
+  constructor() {
+    this.logger = new Logger('BinanceService')
+  }
 
   base = 'https://api.binance.com/api/'
   baseArr = [
