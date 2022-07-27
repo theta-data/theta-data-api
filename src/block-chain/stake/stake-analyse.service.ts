@@ -1,15 +1,12 @@
 import { LatestStakeInfoEntity } from './latest-stake-info.entity'
-import { CACHE_MANAGER, Inject, Injectable, Logger, SerializeOptions } from '@nestjs/common'
+import { Injectable, Logger, SerializeOptions } from '@nestjs/common'
 import { getConnection, LessThan, MoreThan, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
 import { thetaTsSdk } from 'theta-ts-sdk'
-import { Cache } from 'cache-manager'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../../block-chain/stake/stake-statistics.entity'
 import { StakeRewardEntity } from '../../block-chain/stake/stake-reward.entity'
-import { Interval } from '@nestjs/schedule'
-import { LoggerService } from 'src/common/logger.service'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { UtilsService } from 'src/common/utils.service'
 import { STAKE_NODE_TYPE_ENUM } from './stake.entity'
@@ -29,7 +26,6 @@ export class StakeAnalyseService {
     // private loggerService: LoggerService,
     private utilsService: UtilsService
   ) {
-    // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
     this.logger.debug(config.get('THETA_NODE_HOST'))
   }
 
@@ -175,6 +171,7 @@ export class StakeAnalyseService {
       if (Number(block.height) % 100 !== 1) {
         return
       }
+      this.logger.debug(block.height + ' start update check point')
       const vaRes = await this.updateValidator(block)
       if (!vaRes) return
       const [vaTotalNodeNum, vaEffectiveNodeNum, vaTotalThetaWei, vaEffectiveThetaWei] = vaRes
@@ -194,40 +191,40 @@ export class StakeAnalyseService {
         block_height: Number(block.height)
       })
       if (!res) {
-        this.logger.debug(
-          'total guardian stake:' + parseInt(guTotalThetaWei.dividedBy('1e27').toFixed())
-        )
+        const stakeStatisticsInfo = {
+          block_height: Number(block.height),
+
+          total_elite_edge_node_number: eenpTotalNodeNum,
+          effective_elite_edge_node_number: eenpEffectiveNodeNum,
+          total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
+          effective_elite_edge_node_stake_amount: parseInt(
+            eenpEffectiveTfWei.dividedBy('1e18').toFixed()
+          ),
+          theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
+          timestamp: Number(block.timestamp),
+
+          total_guardian_node_number: guTotalNodeNum,
+          effective_guardian_node_number: guEffectiveNodeNum,
+          total_guardian_stake_amount: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
+          effective_guardian_stake_amount: Number(guEffectiveThetaWei.dividedBy('1e18').toFixed()),
+
+          theta_stake_ratio: Number(
+            guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
+          ),
+
+          total_validator_node_number: vaTotalNodeNum,
+          effective_validator_node_number: vaEffectiveNodeNum,
+          effective_validator_stake_amount: parseInt(
+            vaEffectiveThetaWei.dividedBy('1e18').toFixed()
+          ),
+          total_validator_stake_amount: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
+        }
+        this.logger.debug('insert stake statistics info', JSON.stringify(stakeStatisticsInfo))
         try {
-          return await this.stakeConnection.manager.insert(StakeStatisticsEntity, {
-            block_height: Number(block.height),
-
-            total_elite_edge_node_number: eenpTotalNodeNum,
-            effective_elite_edge_node_number: eenpEffectiveNodeNum,
-            total_edge_node_stake_amount: parseInt(eenpTotalTfWei.dividedBy('1e18').toFixed()),
-            effective_elite_edge_node_stake_amount: parseInt(
-              eenpEffectiveTfWei.dividedBy('1e18').toFixed()
-            ),
-            theta_fuel_stake_ratio: Number(eenpTotalTfWei.dividedBy('5.399646029e27').toFixed()),
-            timestamp: Number(block.timestamp),
-
-            total_guardian_node_number: guTotalNodeNum,
-            effective_guardian_node_number: guEffectiveNodeNum,
-            total_guardian_stake_amount: parseInt(guTotalThetaWei.dividedBy('1e18').toFixed()),
-            effective_guardian_stake_amount: Number(
-              guEffectiveThetaWei.dividedBy('1e18').toFixed()
-            ),
-
-            theta_stake_ratio: Number(
-              guTotalThetaWei.plus(vaTotalThetaWei).dividedBy('1e27').toFixed()
-            ),
-
-            total_validator_node_number: vaTotalNodeNum,
-            effective_validator_node_number: vaEffectiveNodeNum,
-            effective_validator_stake_amount: parseInt(
-              vaEffectiveThetaWei.dividedBy('1e18').toFixed()
-            ),
-            total_validator_stake_amount: parseInt(vaTotalThetaWei.dividedBy('1e18').toFixed())
-          })
+          return await this.stakeConnection.manager.insert(
+            StakeStatisticsEntity,
+            stakeStatisticsInfo
+          )
         } catch (e) {
           this.logger.debug('insert stake statistics error')
           console.log(e)
