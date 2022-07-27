@@ -70,7 +70,6 @@ export class BinanceService implements EXCHANGE_INTERFACE {
       method: 'get'
     }
     let res = await axios.request(opt)
-    // const period = res.data.slice(-72)
     const dataToReturn = []
     res.data.forEach((item) => {
       dataToReturn.push({

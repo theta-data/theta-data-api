@@ -1,7 +1,7 @@
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { InjectRepository } from '@nestjs/typeorm'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
-import { MoreThan, Repository } from 'typeorm'
+import { MoreThan, MoreThanOrEqual, Repository } from 'typeorm'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Injectable, Logger } from '@nestjs/common'
 import { StakeRewardEntity } from './stake-reward.entity'
@@ -123,11 +123,21 @@ export class StakeService {
   }
 
   async getLatestStakeStatics() {
-    return await this.stakeStatisticsRepository.findOne({
+    const latestStakeInfo = await this.stakeStatisticsRepository.findOne({
       order: {
         block_height: 'DESC'
       }
     })
+    const stakeInfo = await this.stakeStatisticsRepository.find({
+      block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 7)
+    })
+    const stakeToReturn = [stakeInfo[0]]
+    for (let i = 1; i < stakeInfo.length; i++) {
+      if (stakeInfo[i].block_height - stakeInfo[i - 1].block_height == 13800) {
+        stakeToReturn.push(stakeInfo[i])
+      }
+    }
+    return stakeToReturn
   }
 
   async updateGcpStatus(address: string, time: number) {
