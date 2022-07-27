@@ -765,7 +765,7 @@ type Query {
   MarketInformation: MarketInformationType!
 
   """Return to statistics related to token pledges"""
-  StakeStatistics: StakeStatisticsEntity
+  StakeStatistics: [StakeStatisticsEntity!]
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
