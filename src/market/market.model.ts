@@ -2,8 +2,8 @@ import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
 
 @ObjectType()
 export class KlineObj {
-  @Field(() => Int)
-  time: number
+  @Field()
+  time: string
 
   @Field(() => Float)
   price: number
