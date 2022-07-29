@@ -36,8 +36,8 @@ export class WalletsAnalyseService {
       )
       height = lastfinalizedHeight - 1000
 
-      if (config.get('STAKE_ANALYSE_START_HEIGHT')) {
-        height = config.get('STAKE_ANALYSE_START_HEIGHT')
+      if (config.get('WALLET.START_HEIGHT')) {
+        height = config.get('WALLET.START_HEIGHT')
       }
       const recordHeight = this.utilsService.getRecordHeight(this.heightConfigFile)
       height = recordHeight > height ? recordHeight : height

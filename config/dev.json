@@ -50,5 +50,7 @@
   },
   "STAKE": {},
   "TX": {},
-  "WALLET": {}
+  "WALLET": {
+    "START_HEIGHT": 8000000
+  }
 }
