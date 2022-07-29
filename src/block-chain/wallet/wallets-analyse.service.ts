@@ -99,40 +99,80 @@ export class WalletsAnalyseService {
     ).unix()
 
     const wallets = {}
-    const smartContractToDeal: { [index: string]: SmartContractEntity } = {}
     for (const transaction of block.transactions) {
       if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
         for (const wallet of transaction.raw.inputs) {
-          if (!wallets[wallet.address.toLowerCase()]) {
-            wallets[wallet.address.toLowerCase()] = {
-              address: wallet.address.toLowerCase(),
-              latest_active_time: Number(block.timestamp)
-            }
-          } else {
-            wallets[wallet.address.toLowerCase()]['latest_active_time'] = Number(block.timestamp)
-          }
+          this.updateWallets(wallets, wallet.address, transaction.hash, Number(block.timestamp))
         }
       }
 
       if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
         for (const wallet of transaction.raw.outputs) {
-          if (!wallets[wallet.address.toLowerCase()]) {
-            wallets[wallet.address.toLowerCase()] = {
-              address: wallet.address.toLowerCase(),
-              latest_active_time: Number(block.timestamp)
-            }
-          } else {
-            wallets[wallet.address.toLowerCase()]['latest_active_time'] = Number(block.timestamp)
-          }
+          this.updateWallets(wallets, wallet.address, transaction.hash, Number(block.timestamp))
         }
       }
+      if (transaction.raw.from) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.from.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.to) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.to.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.source) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.source.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.proposer) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.proposer.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
     }
-    const walletsToUpdate = Object.values(wallets)
-    for (let i = 0; i < walletsToUpdate.length; i += 900) {
+    const walletsToUpdate: Array<{
+      address: string
+      latest_active_time: number
+      hashs: Array<string>
+    }> = Object.values(wallets)
+    for (let i = 0; i < walletsToUpdate.length; i++) {
       this.logger.debug('start upsert wallet')
-      await this.walletConnection.manager.upsert(WalletEntity, walletsToUpdate.slice(i, i + 900), [
-        'address'
-      ])
+      const wallet = await this.walletConnection.manager.findOne(WalletEntity, {
+        where: {
+          address: walletsToUpdate[i].address
+        }
+      })
+      if (!wallet) {
+        await this.walletConnection.manager.insert(WalletEntity, {
+          address: walletsToUpdate[i].address,
+          latest_active_time: walletsToUpdate[i].latest_active_time,
+          txs_hash_list: JSON.stringify(walletsToUpdate[i].hashs)
+        })
+      } else {
+        wallet.latest_active_time = walletsToUpdate[i].latest_active_time
+        const hashList = JSON.parse(wallet.txs_hash_list)
+        for (const hash of walletsToUpdate[i].hashs) {
+          if (!hashList.includes(hash)) {
+            hashList.push(hash)
+          }
+        }
+        wallet.txs_hash_list = JSON.stringify(hashList)
+        await this.walletConnection.manager.save(wallet)
+      }
     }
     this.logger.debug(height + ' end upsert wallets')
     this.logger.debug(height + ' end update theta tx num by hours')
@@ -140,6 +180,21 @@ export class WalletsAnalyseService {
     this.logger.debug(height + ' end update analyse')
     this.counter--
     this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
+  }
+
+  async updateWallets(wallets: {}, address: string, hash: string, timestamp: number) {
+    if (!wallets[address.toLowerCase()]) {
+      wallets[address.toLowerCase()] = {
+        address: address.toLowerCase(),
+        latest_active_time: timestamp,
+        hashs: [hash]
+      }
+    } else {
+      wallets[address.toLowerCase()]['latest_active_time'] = Number(timestamp)
+      if (!wallets[address.toLowerCase()]['hashs'].includes(hash)) {
+        wallets[address.toLowerCase()]['hashs'].push(hash)
+      }
+    }
   }
 
   async snapShotActiveWallets(timestamp: number) {
