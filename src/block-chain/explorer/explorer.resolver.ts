@@ -112,6 +112,16 @@ export class ExplorerResolver {
         search_type: SEARCH_TYPE_ENUM.transaction
       }
     }
+
+    const account = await this.explorerService.getAccount(search)
+    if (account) {
+      const accountInfo = await this.rpcService.getAccount(search)
+      return {
+        account: accountInfo,
+        search_type: SEARCH_TYPE_ENUM.account
+      }
+    }
+
     return {
       search_type: SEARCH_TYPE_ENUM.none
     }

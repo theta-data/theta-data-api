@@ -80,8 +80,8 @@ export class WalletService {
   }
 
   async getStakeInfoByAddress(address: string) {
-    const latestBlockHeight = (await thetaTsSdk.blockchain.getStatus()).result
-      .latest_finalized_block_height
+    // const latestBlockHeight = (await thetaTsSdk.blockchain.getStatus()).result
+    //   .latest_finalized_block_height
     const gcpStake: Array<StakeBalanceType> = []
     const eenpStake: Array<StakeBalanceType> = []
     const vcpStake: Array<StakeBalanceType> = []
@@ -274,22 +274,17 @@ export class WalletService {
       this.logger.error('update wallet fail')
       this.logger.error(e)
     }
-
-    // console.log(record)
-    // if (record) {
-    //   record.latest_active_time = timestamp
-    //   await this.walletRepository.save(record)
-    // } else {
-    //   let walletEntity = new WalletEntity()
-    //   walletEntity.address = address
-    //   walletEntity.latest_active_time = timestamp
-    //   await this.walletRepository.save(walletEntity)
-    // }
   }
 
   public async getActiveWallet(startTime) {
     return await this.activeWalletsRepository.find({
       snapshot_time: MoreThan(startTime)
+    })
+  }
+
+  public async getWalletByAddress(address: string) {
+    return await this.walletRepository.findOne({
+      address: address
     })
   }
 }

@@ -1,10 +1,11 @@
+import { WalletService } from './../wallet/wallets.service'
 import { BLOCK_COUNT_KEY, TRANSACTION_COUNT_KEY } from './const'
 import { CountEntity } from './count.entity'
 import { TransactionEntity } from './transaction.entity'
 import { BlokcListEntity } from './block-list.entity'
 import { Injectable, Logger } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { FindManyOptions, LessThan, Repository } from 'typeorm'
+import { FindManyOptions, In, LessThan, Repository } from 'typeorm'
 
 @Injectable()
 export class ExplorerService {
@@ -17,7 +18,8 @@ export class ExplorerService {
     private transactionRepository: Repository<TransactionEntity>,
 
     @InjectRepository(CountEntity, 'explorer')
-    private countRepository: Repository<CountEntity>
+    private countRepository: Repository<CountEntity>,
+    private walletService: WalletService
   ) {}
 
   public async getBlockList(
@@ -106,5 +108,38 @@ export class ExplorerService {
     return await this.transactionRepository.findOne({
       where: { tx_hash: hash }
     })
+  }
+
+  public async getAccount(walletAddress: string) {
+    return await this.walletService.getWalletByAddress(walletAddress)
+  }
+
+  public async getAccountTransactions(walletAddress: string, take: number, skip: number) {
+    const wallet = await this.walletService.getWalletByAddress(walletAddress)
+    if (!wallet) return null
+    const txs = JSON.parse(wallet.txs_hash_list)
+    if (txs.length <= take) {
+      const txnObjects = await this.transactionRepository.find({
+        where: { tx_hash: In(txs) }
+      })
+      return {
+        wallet: wallet,
+        txs: txnObjects,
+        total: txs.length
+        // currPage: 1
+      }
+    } else {
+      const start = skip
+      const end = skip + take
+      const txnObjects = await this.transactionRepository.find({
+        where: { tx_hash: In(txs.slice(start, end)) }
+      })
+      return {
+        wallet: wallet,
+        txs: txnObjects,
+        total: txs.length
+        // currPage: pageNum
+      }
+    }
   }
 }
