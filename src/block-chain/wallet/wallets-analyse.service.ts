@@ -3,7 +3,6 @@ import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { LoggerService } from 'src/common/logger.service'
-import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
 import { WalletEntity } from 'src/block-chain/wallet/wallet.entity'
 import { UtilsService } from 'src/common/utils.service'
 
@@ -94,9 +93,6 @@ export class WalletsAnalyseService {
     this.logger.debug(block.height + ' start insert')
 
     const height = Number(block.height)
-    const timestamp = moment(
-      moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
-    ).unix()
 
     const wallets = {}
     for (const transaction of block.transactions) {
@@ -175,11 +171,9 @@ export class WalletsAnalyseService {
       }
     }
     this.logger.debug(height + ' end upsert wallets')
-    this.logger.debug(height + ' end update theta tx num by hours')
     await this.snapShotActiveWallets(Number(block.timestamp))
     this.logger.debug(height + ' end update analyse')
     this.counter--
-    this.loggerService.timeMonitor('counter:' + this.counter, this.startTimestamp)
   }
 
   async updateWallets(wallets: {}, address: string, hash: string, timestamp: number) {
