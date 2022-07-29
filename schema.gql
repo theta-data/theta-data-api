@@ -2,6 +2,69 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type KlineObj {
+  time: String!
+  price: Float!
+}
+
+type TokenMarketInformationType {
+  name: String!
+  price: Float!
+  volume_24h: Float!
+  price_change_percent: Float!
+  kline: [KlineObj!]!
+}
+
+type MarketInformationType {
+  Theta: TokenMarketInformationType!
+  ThetaFuel: TokenMarketInformationType!
+}
+
+type WalletModel {
+  Balance(wallet_address: String!): BalanceModel!
+}
+
+type FiatCurrencyType {
+  usd: Float!
+  cny: Float!
+  eur: Float!
+}
+
+type TokenBalanceType {
+  amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type StakeBalanceType {
+  node_address: String!
+  amount: Float!
+  withdrawn: Boolean!
+  return_height: String!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type TotalBalanceType {
+  theta_amount: Float!
+  theta_fuel_amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type BalanceModel {
+  theta: TokenBalanceType!
+  theta_fuel: TokenBalanceType!
+  stake_to_guardian: [StakeBalanceType!]
+  stake_to_elite_node: [StakeBalanceType!]
+  stake_to_validator_node: [StakeBalanceType!]
+  total: TotalBalanceType!
+}
+
+type Stake {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
+}
+
 type SmartContractEntity {
   """Address of the smart contract"""
   contract_address: String!
@@ -266,7 +329,7 @@ type receiptLogType {
 
 type GetAccountModel {
   """ the current sequence number of the account"""
-  sequence: String!
+  sequence: Float!
 
   """the native token balance"""
   coins: TokenType!
@@ -558,13 +621,6 @@ type ThetaTxNumByHoursEntity {
   timestamp: String!
 }
 
-type Stake {
-  source: String!
-  amount: String!
-  withdrawn: Boolean!
-  return_height: String!
-}
-
 type ThetaTransactionStatisticsType {
   ByDate(
     """
@@ -601,62 +657,6 @@ type ThetaTxNumByDateModel {
   smart_contract_transaction: Int!
   latest_block_height: Int!
   timestamp: Int!
-}
-
-type KlineObj {
-  time: String!
-  price: Float!
-}
-
-type TokenMarketInformationType {
-  name: String!
-  price: Float!
-  volume_24h: Float!
-  price_change_percent: Float!
-  kline: [KlineObj!]!
-}
-
-type MarketInformationType {
-  Theta: TokenMarketInformationType!
-  ThetaFuel: TokenMarketInformationType!
-}
-
-type WalletModel {
-  Balance(wallet_address: String!): BalanceModel!
-}
-
-type FiatCurrencyType {
-  usd: Float!
-  cny: Float!
-  eur: Float!
-}
-
-type TokenBalanceType {
-  amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type StakeBalanceType {
-  node_address: String!
-  amount: Float!
-  withdrawn: Boolean!
-  return_height: String!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type TotalBalanceType {
-  theta_amount: Float!
-  theta_fuel_amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type BalanceModel {
-  theta: TokenBalanceType!
-  theta_fuel: TokenBalanceType!
-  stake_to_guardian: [StakeBalanceType!]
-  stake_to_elite_node: [StakeBalanceType!]
-  stake_to_validator_node: [StakeBalanceType!]
-  total: TotalBalanceType!
 }
 
 """Return to statistics related to token pledges"""
