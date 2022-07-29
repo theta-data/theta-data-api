@@ -1,3 +1,4 @@
+import { WalletModule } from './../wallet/wallet.module'
 import { NftModule } from 'src/block-chain/smart-contract/nft/nft.module'
 import { SmartContractModule } from 'src/block-chain/smart-contract/smart-contract.module'
 import { CountEntity } from './count.entity'
@@ -17,7 +18,8 @@ import { RpcModule } from '../rpc/rpc.module'
     CommonModule,
     RpcModule,
     SmartContractModule,
-    NftModule
+    NftModule,
+    WalletModule
   ],
   providers: [ExplorerAnalyseService, ExplorerResolver, ExplorerService],
   exports: []

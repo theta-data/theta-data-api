@@ -84,7 +84,7 @@ export class receiptLogType {
 @ObjectType()
 export class GetAccountModel {
   @Field({ description: ' the current sequence number of the account' })
-  sequence: string // "1",
+  sequence: number // "1",
 
   @Field({ description: 'the native token balance' })
   coins: TokenType
@@ -93,7 +93,7 @@ export class GetAccountModel {
     description:
       'fund reserved for micropayment through the off-chain resource-oriented payment pool'
   })
-  reserved_funds: []
+  reserved_funds: Array<number>
 
   @Field({ description: '' })
   last_updated_block_height: string //'0'
