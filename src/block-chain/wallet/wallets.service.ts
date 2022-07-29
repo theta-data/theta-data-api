@@ -284,7 +284,7 @@ export class WalletService {
 
   public async getWalletByAddress(address: string) {
     return await this.walletRepository.findOne({
-      address: address
+      address: address.toLowerCase()
     })
   }
 }

@@ -111,7 +111,7 @@ export class ExplorerService {
   }
 
   public async getAccount(walletAddress: string) {
-    return await this.walletService.getWalletByAddress(walletAddress)
+    return await this.walletService.getWalletByAddress(walletAddress.toLowerCase())
   }
 
   public async getAccountTransactions(walletAddress: string, take: number, skip: number) {
