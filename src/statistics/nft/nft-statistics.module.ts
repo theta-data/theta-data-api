@@ -17,6 +17,6 @@ import { NftStatisticsService } from './nft-statistics.service'
     MarketModule
   ],
   providers: [NftStatisticsAnalyseService, NftStatisticsResolver, NftStatisticsService],
-  exports: []
+  exports: [NftStatisticsService]
 })
 export class NftStatisticsModule {}
