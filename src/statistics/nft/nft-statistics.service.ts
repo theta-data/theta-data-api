@@ -3,7 +3,7 @@ import { registerEnumType } from '@nestjs/graphql'
 import { InjectRepository } from '@nestjs/typeorm'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { MarketService } from 'src/market/market.service'
-import { FindManyOptions, LessThan, MoreThan, Repository } from 'typeorm'
+import { FindManyOptions, LessThan, Like, MoreThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 import { NftDetailByDate, NftDetailType } from './nft-statistics.model'
 
@@ -39,13 +39,17 @@ export class NftStatisticsService {
     orderBy: NftStatisticsOrderByType = NftStatisticsOrderByType.last_24_h_users,
     take: number = 20,
     after: string | undefined,
-    skip = 0
+    skip = 0,
+    search: string = ''
   ): Promise<[boolean, number, Array<NftStatisticsEntity>]> {
     const condition: FindManyOptions<NftStatisticsEntity> = {
       where: {},
       take: take + 1,
       skip: skip,
       order: {}
+    }
+    if (search) {
+      condition.where['name'] = Like('%' + search + '%')
     }
     switch (orderBy) {
       case NftStatisticsOrderByType.last_24_h_users:
