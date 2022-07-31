@@ -345,4 +345,10 @@ export class NftStatisticsService {
       img_uri: nftDetail.img_uri
     }
   }
+
+  public async isNftExist(name: string) {
+    return await this.nftStatisticsRepository.findOne({
+      name: Like(`%${name}%`)
+    })
+  }
 }

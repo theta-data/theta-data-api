@@ -15,7 +15,8 @@ export enum SEARCH_TYPE_ENUM {
   none,
   block,
   transaction,
-  account
+  account,
+  nft
 }
 registerEnumType(SEARCH_TYPE_ENUM, {
   name: 'SEARCH_TYPE_ENUM'
