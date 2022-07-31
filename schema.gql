@@ -2,6 +2,32 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type NftBalanceEntity {
+  smart_contract_address: String!
+  owner: String!
+  from: String!
+  contract_uri: String!
+  base_token_uri: String!
+  token_uri: String!
+  name: String!
+  img_uri: String!
+  detail: String!
+  token_id: Int!
+}
+
+type NftTransferRecordEntity {
+  smart_contract_address: String!
+  from: String!
+  name: String!
+  to: String!
+  token_id: Int!
+  payment_token_amount: Float!
+  tdrop_mined: Float!
+  height: Int!
+  transaction_hash: String!
+  timestamp: Int!
+}
+
 type KlineObj {
   time: String!
   price: Float!
@@ -18,6 +44,89 @@ type TokenMarketInformationType {
 type MarketInformationType {
   Theta: TokenMarketInformationType!
   ThetaFuel: TokenMarketInformationType!
+}
+
+type SmartContractEntity {
+  """Address of the smart contract"""
+  contract_address: String!
+  verified: Boolean!
+  protocol: Int!
+  abi: String
+  source_code: String
+  byte_code: String
+  verification_date: Int!
+  compiler_version: String
+  optimizer: String
+  optimizerRuns: Int!
+  name: String
+  function_hash: String
+  constructor_arguments: String
+
+  """Total number of smart contract calls"""
+  call_times: Int!
+
+  """Number of smart contract calls in the last 7 days"""
+  last_seven_days_call_times: Int!
+
+  """Number of smart contract calls in the last 24 hours"""
+  last_24h_call_times: Int!
+
+  """call times update timestamp"""
+  call_times_update_timestamp: Int!
+
+  """verification check timestamp"""
+  verification_check_timestamp: Int!
+  contract_uri: String!
+  contract_uri_detail: String!
+  latest_record_parse_height: Int!
+}
+
+type ContactEntity {
+  first_name: String!
+  last_name: String!
+  email: String!
+  content: String!
+}
+
+type NftStatisticsEntity {
+  smart_contract_address: String!
+  name: String!
+  img_uri: String
+  contract_uri: String!
+  contract_uri_detail: String!
+  last_24_h_transactions: Int!
+  last_24_h_volume: Int!
+  last_24_h_users: Int!
+  last_7_days_transactions: Int!
+  last_7_days_volume: Int!
+  last_7_days_users: Int!
+  last_30_days_transactions: Int!
+  last_30_days_volume: Int!
+  last_30_days_users: Int!
+}
+
+type PaginatedNftStatistics {
+  nodes: [NftStatisticsEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type NftDetailType {
+  contract_uri_detail: String
+  name: String
+  img_uri: String
+  by_24_hours: [NftDetailByDate!]!
+  by_7_days: [NftDetailByDate!]!
+  by_30_days: [NftDetailByDate!]!
+}
+
+type NftDetailByDate {
+  date: Int!
+  volume: Float!
+  transactions: Int!
+  users: Int!
 }
 
 type WalletModel {
@@ -63,67 +172,6 @@ type Stake {
   amount: String!
   withdrawn: Boolean!
   return_height: String!
-}
-
-type SmartContractEntity {
-  """Address of the smart contract"""
-  contract_address: String!
-  verified: Boolean!
-  protocol: Int!
-  abi: String
-  source_code: String
-  byte_code: String
-  verification_date: Int!
-  compiler_version: String
-  optimizer: String
-  optimizerRuns: Int!
-  name: String
-  function_hash: String
-  constructor_arguments: String
-
-  """Total number of smart contract calls"""
-  call_times: Int!
-
-  """Number of smart contract calls in the last 7 days"""
-  last_seven_days_call_times: Int!
-
-  """Number of smart contract calls in the last 24 hours"""
-  last_24h_call_times: Int!
-
-  """call times update timestamp"""
-  call_times_update_timestamp: Int!
-
-  """verification check timestamp"""
-  verification_check_timestamp: Int!
-  contract_uri: String!
-  contract_uri_detail: String!
-  latest_record_parse_height: Int!
-}
-
-type NftBalanceEntity {
-  smart_contract_address: String!
-  owner: String!
-  from: String!
-  contract_uri: String!
-  base_token_uri: String!
-  token_uri: String!
-  name: String!
-  img_uri: String!
-  detail: String!
-  token_id: Int!
-}
-
-type NftTransferRecordEntity {
-  smart_contract_address: String!
-  from: String!
-  name: String!
-  to: String!
-  token_id: Int!
-  payment_token_amount: Float!
-  tdrop_mined: Float!
-  height: Int!
-  transaction_hash: String!
-  timestamp: Int!
 }
 
 type NftType {
@@ -212,13 +260,6 @@ type BlokcListEntity {
   timestamp: Int!
   tfuel_burnt: Float!
   txns: Int!
-}
-
-type ContactEntity {
-  first_name: String!
-  last_name: String!
-  email: String!
-  content: String!
 }
 
 type CandidateStakeType {
@@ -589,6 +630,7 @@ enum SEARCH_TYPE_ENUM {
   block
   transaction
   account
+  nft
 }
 
 type ExplorerModelType {
@@ -718,47 +760,6 @@ type LoggerEntity {
   update_date: Float!
 }
 
-type NftStatisticsEntity {
-  smart_contract_address: String!
-  name: String!
-  img_uri: String
-  contract_uri: String!
-  contract_uri_detail: String!
-  last_24_h_transactions: Int!
-  last_24_h_volume: Int!
-  last_24_h_users: Int!
-  last_7_days_transactions: Int!
-  last_7_days_volume: Int!
-  last_7_days_users: Int!
-  last_30_days_transactions: Int!
-  last_30_days_volume: Int!
-  last_30_days_users: Int!
-}
-
-type PaginatedNftStatistics {
-  nodes: [NftStatisticsEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type NftDetailType {
-  contract_uri_detail: String
-  name: String
-  img_uri: String
-  by_24_hours: [NftDetailByDate!]!
-  by_7_days: [NftDetailByDate!]!
-  by_30_days: [NftDetailByDate!]!
-}
-
-type NftDetailByDate {
-  date: Int!
-  volume: Float!
-  transactions: Int!
-  users: Int!
-}
-
 type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
@@ -770,7 +771,7 @@ type Query {
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
-  NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftStatistics!
+  NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, skip: Int = 0, search: String, after: String): PaginatedNftStatistics!
   NftDetail(contract_address: String!): NftDetailType!
   Explorer: ExplorerModelType!
 }

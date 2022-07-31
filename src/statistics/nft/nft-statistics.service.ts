@@ -3,7 +3,7 @@ import { registerEnumType } from '@nestjs/graphql'
 import { InjectRepository } from '@nestjs/typeorm'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { MarketService } from 'src/market/market.service'
-import { FindManyOptions, LessThan, Like, MoreThan, Repository } from 'typeorm'
+import { FindCondition, FindManyOptions, LessThan, Like, MoreThan, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 import { NftDetailByDate, NftDetailType } from './nft-statistics.model'
 
@@ -120,7 +120,11 @@ export class NftStatisticsService {
           break
       }
     }
-    const totalNft = await this.nftStatisticsRepository.count()
+    const totalNftCondition: FindCondition<NftStatisticsEntity> = {}
+    if (search) {
+      totalNftCondition['name'] = Like('%' + search + '%')
+    }
+    const totalNft = await this.nftStatisticsRepository.count(totalNftCondition)
     let nftList = await this.nftStatisticsRepository.find(condition)
     let hasNextPage = false
     if (nftList.length > take) {
