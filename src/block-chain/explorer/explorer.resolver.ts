@@ -1,3 +1,4 @@
+import { NftStatisticsService } from './../../statistics/nft/nft-statistics.service'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
@@ -23,7 +24,8 @@ export class ExplorerResolver {
     private rpcService: RpcService,
     private utilService: UtilsService,
     private smartContractService: SmartContractService,
-    private nftService: NftService
+    private nftService: NftService,
+    private nftStatisticsService: NftStatisticsService
   ) {}
 
   @Query(() => ExplorerModelType)
@@ -119,6 +121,12 @@ export class ExplorerResolver {
       return {
         account: accountInfo,
         search_type: SEARCH_TYPE_ENUM.account
+      }
+    }
+
+    if (await this.nftStatisticsService.isNftExist(search)) {
+      return {
+        search_type: SEARCH_TYPE_ENUM.nft
       }
     }
 
