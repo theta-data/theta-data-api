@@ -744,7 +744,6 @@ type StakeStatisticsEntity {
 
   """Block time for performing pledge statistics"""
   timestamp: Int!
-  stake_reward(wallet_address: String!): StakeRewardModel
 }
 
 type StakeRewardModel {
@@ -767,6 +766,7 @@ type Query {
 
   """Return to statistics related to token pledges"""
   StakeStatistics: [StakeStatisticsEntity!]
+  stake_reward(wallet_address: String!): StakeRewardModel
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
