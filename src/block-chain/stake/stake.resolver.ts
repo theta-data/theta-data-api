@@ -26,7 +26,7 @@ export class StakeResolver {
     return await this.stakeService.getLatestStakeStatics()
   }
 
-  @Query(() => StakeRewardModel, { name: 'stake_reward', nullable: true })
+  @Query(() => StakeRewardModel)
   async StakeReward(
     @Info() info,
     @Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string
