@@ -128,6 +128,7 @@ export class StakeService {
         block_height: 'DESC'
       }
     })
+    this.logger.debug('latest block height:' + latestStakeInfo.block_height)
     if (latestStakeInfo) {
       const stakeInfo = await this.stakeStatisticsRepository.find({
         block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 30)

@@ -112,24 +112,13 @@ export class StakeAnalyseService {
       moment(Number(block.timestamp) * 1000).format('YYYY-MM-DD HH:00:00')
     ).unix()
 
-    // if (
-    //   Number(block.height) % 100 === 1 &&
-    //   latestFinalizedBlockHeight - Number(block.height) < 5000
-    // ) {
-    //   this.logger.debug('update checkpoint')
     await this.updateCheckPoint(block)
-    // await this.clearCallTimeByPeriod()
-    // } else {
-    //   this.logger.debug(height + ' no need to calculate checkpoint block')
-    // }
 
-    const wallets = {}
-    const smartContractToDeal: { [index: string]: SmartContractEntity } = {}
     for (const transaction of block.transactions) {
       switch (transaction.type) {
         case THETA_TRANSACTION_TYPE_ENUM.coinbase:
           // if (latestFinalizedBlockHeight - height < 30 * 15000) {
-          const stakeRewardStart = moment().unix()
+          // const stakeRewardStart = moment().unix()
           const transacitonToBeUpserted = []
           for (const output of transaction.raw.outputs) {
             // this.logger.debug('upsert coinbae transaction')
