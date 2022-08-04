@@ -42,8 +42,8 @@ export class StakeAnalyseService {
       )
       height = lastfinalizedHeight - 1000
 
-      if (config.get('STAKE_ANALYSE_START_HEIGHT')) {
-        height = config.get('STAKE_ANALYSE_START_HEIGHT')
+      if (config.get('STAKE.START_HEIGHT')) {
+        height = config.get('STAKE.START_HEIGHT')
       }
       const recordHeight = this.utilsService.getRecordHeight(this.heightConfigFile)
       height = recordHeight > height ? recordHeight : height
@@ -54,7 +54,7 @@ export class StakeAnalyseService {
       }
       // await this.
       let endHeight = lastfinalizedHeight
-      const analyseNumber = config.get('ANALYSE_NUMBER')
+      const analyseNumber = config.get('STAKE.ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
         endHeight = height + analyseNumber
       }
@@ -158,6 +158,7 @@ export class StakeAnalyseService {
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
     try {
       if (Number(block.height) % 100 !== 1) {
+        this.logger.debug(block.height + ': not checkpoint block')
         return
       }
       this.logger.debug(block.height + ' start update check point')
@@ -232,21 +233,39 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
+    this.logger.debug('start get va list')
     const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.height)
+    this.logger.debug('end get va list')
     if (!validatorList.result || !validatorList.result.BlockHashVcpPairs) {
       this.logger.error('no validator BlockHashVcpPairs')
       return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
-    await this.stakeConnection.manager.upsert(
-      LatestStakeInfoEntity,
-      {
+    const latestVa = await this.stakeConnection.manager.findOne(LatestStakeInfoEntity, {
+      node_type: STAKE_NODE_TYPE_ENUM.validator
+    })
+    if (!latestVa) {
+      await this.stakeConnection.manager.insert(LatestStakeInfoEntity, {
         height: Number(block.height),
         node_type: STAKE_NODE_TYPE_ENUM.validator,
         holder: JSON.stringify(validatorList)
-      },
-      ['node_type']
-    )
+      })
+    } else {
+      await this.stakeConnection.manager.update(
+        LatestStakeInfoEntity,
+        {
+          node_type: STAKE_NODE_TYPE_ENUM.validator
+        },
+        {
+          height: Number(block.height),
+          node_type: STAKE_NODE_TYPE_ENUM.validator,
+          holder: JSON.stringify(validatorList)
+        }
+      )
+    }
+
+    // ['node_type']
+    // )
     validatorList.result.BlockHashVcpPairs[0].Vcp.SortedCandidates.forEach((node) => {
       totalNodeNum++
       node.Stakes.forEach((stake) => {
@@ -270,22 +289,35 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
-
+    this.logger.debug('start get gn list')
     const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.height)
+    this.logger.debug('end get gn list')
     if (!gcpList.result || !gcpList.result.BlockHashGcpPairs) {
       this.logger.error('no guardian BlockHashVcpPairs')
       return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
-    await this.stakeConnection.manager.upsert(
-      LatestStakeInfoEntity,
-      {
+    const latestGn = await this.stakeConnection.manager.findOne(LatestStakeInfoEntity, {
+      node_type: STAKE_NODE_TYPE_ENUM.guardian
+    })
+    if (!latestGn) {
+      await this.stakeConnection.manager.insert(LatestStakeInfoEntity, {
         height: Number(block.height),
         node_type: STAKE_NODE_TYPE_ENUM.guardian,
         holder: JSON.stringify(gcpList)
-      },
-      ['node_type']
-    )
+      })
+    } else {
+      await this.stakeConnection.manager.update(
+        LatestStakeInfoEntity,
+        { node_type: STAKE_NODE_TYPE_ENUM.guardian },
+        {
+          height: Number(block.height),
+          node_type: STAKE_NODE_TYPE_ENUM.guardian,
+          holder: JSON.stringify(gcpList)
+        }
+      )
+    }
+
     for (const guardian of gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians) {
       totalNodeNum++
       guardian.Stakes.forEach((stake) => {
@@ -303,6 +335,7 @@ export class StakeAnalyseService {
         effectiveNodeNum++
       }
     }
+    this.logger.debug('end gn analyse')
     return [totalNodeNum, effectiveNodeNum, totalThetaWei, effectiveThetaWei]
   }
 
@@ -313,22 +346,36 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalTfuelWei = new BigNumber(0),
       effectiveTfuelWei = new BigNumber(0)
+    this.logger.debug('start get een list')
     const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.height)
+    this.logger.debug('end get een list')
     if (!eenpList.result || !eenpList.result.BlockHashEenpPairs) {
       this.logger.error('no guardian BlockHashVcpPairs')
       return false
       // return false
       // throw new Error('no validator BlockHashVcpPairs')
     }
-    await this.stakeConnection.manager.upsert(
-      LatestStakeInfoEntity,
-      {
+    const een = await this.stakeConnection.manager.findOne(LatestStakeInfoEntity, {
+      node_type: STAKE_NODE_TYPE_ENUM.edge_cache
+    })
+    if (!een) {
+      await this.stakeConnection.manager.insert(LatestStakeInfoEntity, {
         height: Number(block.height),
         node_type: STAKE_NODE_TYPE_ENUM.edge_cache,
         holder: JSON.stringify(eenpList)
-      },
-      ['node_type']
-    )
+      })
+    } else {
+      await this.stakeConnection.manager.update(
+        LatestStakeInfoEntity,
+        { node_type: STAKE_NODE_TYPE_ENUM.edge_cache },
+        {
+          height: Number(block.height),
+          node_type: STAKE_NODE_TYPE_ENUM.edge_cache,
+          holder: JSON.stringify(eenpList)
+        }
+      )
+    }
+
     eenpList.result.BlockHashEenpPairs[0].EENs.forEach((eenp) => {
       totalNodeNum++
       let isEffectiveNode = false
