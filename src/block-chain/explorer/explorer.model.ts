@@ -1,9 +1,11 @@
+import { NftStatisticsEntity } from './../../statistics/nft/nft-statistics.entity'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { Field, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { Paginated } from 'src/common/common.model'
 import { BlockModel, GetAccountModel, GetTransactionModel } from '../rpc/rpc.model'
 import { BlokcListEntity } from './block-list.entity'
 import { TransactionEntity } from './transaction.entity'
+import { GraphQLBoolean, GraphQLInt } from 'graphql'
 
 @ObjectType()
 export class PaginatedBlockList extends Paginated(BlokcListEntity) {}
@@ -37,6 +39,15 @@ export class ExplorerSearchModelType {
 
   @Field(() => BlockModel, { nullable: true })
   block?: BlockModel
+
+  @Field(() => [NftStatisticsEntity], { nullable: true })
+  nft_statistics?: Array<NftStatisticsEntity>
+
+  @Field(() => GraphQLBoolean, { nullable: true })
+  has_next_page?: boolean
+
+  @Field(() => GraphQLInt)
+  total?: number
 
   @Field(() => GetAccountModel, { nullable: true })
   account?: GetAccountModel

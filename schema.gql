@@ -621,6 +621,9 @@ type ExplorerSearchModelType {
   transaction_nft_records: [NftTransferRecordEntity!]
   search_type: SEARCH_TYPE_ENUM
   block: BlockModel
+  nft_statistics: [NftStatisticsEntity!]
+  has_next_page: Boolean
+  total: Int!
   account: GetAccountModel
   block_extend: BlokcListEntity
 }
@@ -766,7 +769,7 @@ type Query {
 
   """Return to statistics related to token pledges"""
   StakeStatistics: [StakeStatisticsEntity!]
-  stake_reward(wallet_address: String!): StakeRewardModel
+  StakeReward(wallet_address: String!): StakeRewardModel!
   ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!

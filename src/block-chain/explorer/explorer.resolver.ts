@@ -1,4 +1,7 @@
-import { NftStatisticsService } from './../../statistics/nft/nft-statistics.service'
+import {
+  NftStatisticsOrderByType,
+  NftStatisticsService
+} from './../../statistics/nft/nft-statistics.service'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
@@ -124,9 +127,19 @@ export class ExplorerResolver {
       }
     }
 
-    if (await this.nftStatisticsService.isNftExist(search)) {
+    const [hasNextPage, totalNum, nftList] = await this.nftStatisticsService.getNft(
+      NftStatisticsOrderByType.last_24_h_volume,
+      100,
+      undefined,
+      0,
+      search
+    )
+    if (nftList.length > 0) {
       return {
-        search_type: SEARCH_TYPE_ENUM.nft
+        search_type: SEARCH_TYPE_ENUM.nft,
+        nft_statistics: nftList,
+        has_next_page: hasNextPage,
+        total: totalNum
       }
     }
 
