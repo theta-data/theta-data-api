@@ -131,15 +131,21 @@ export class StakeService {
     this.logger.debug('latest block height:' + latestStakeInfo.block_height)
     if (latestStakeInfo) {
       const stakeInfo = await this.stakeStatisticsRepository.find({
-        block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 30)
-      })
-      const stakeToReturn = [stakeInfo[0]]
-      for (let i = 1; i < stakeInfo.length; i++) {
-        if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
-          stakeToReturn.push(stakeInfo[i])
+        where: {
+          block_height: MoreThanOrEqual(latestStakeInfo.block_height - 13800 * 7)
+        },
+        order: {
+          block_height: 'ASC'
         }
-      }
-      return stakeToReturn
+      })
+      return stakeInfo
+      // const stakeToReturn = [stakeInfo[0]]
+      // for (let i = 1; i < stakeInfo.length; i++) {
+      //   if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
+      //     stakeToReturn.push(stakeInfo[i])
+      //   }
+      // }
+      // return stakeToReturn
     } else {
       return []
     }

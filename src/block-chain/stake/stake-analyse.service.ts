@@ -42,8 +42,8 @@ export class StakeAnalyseService {
       )
       height = lastfinalizedHeight - 1000
 
-      if (config.get('STAKE_ANALYSE_START_HEIGHT')) {
-        height = config.get('STAKE_ANALYSE_START_HEIGHT')
+      if (config.get('STAKE.START_HEIGHT')) {
+        height = config.get('STAKE.START_HEIGHT')
       }
       const recordHeight = this.utilsService.getRecordHeight(this.heightConfigFile)
       height = recordHeight > height ? recordHeight : height
@@ -54,7 +54,7 @@ export class StakeAnalyseService {
       }
       // await this.
       let endHeight = lastfinalizedHeight
-      const analyseNumber = config.get('ANALYSE_NUMBER')
+      const analyseNumber = config.get('STAKE.ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
         endHeight = height + analyseNumber
       }
@@ -158,6 +158,7 @@ export class StakeAnalyseService {
   async updateCheckPoint(block: THETA_BLOCK_INTERFACE) {
     try {
       if (Number(block.height) % 100 !== 1) {
+        this.logger.debug(block.height + ': not checkpoint block')
         return
       }
       this.logger.debug(block.height + ' start update check point')
@@ -232,7 +233,9 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
+    this.logger.debug('start get va list')
     const validatorList = await thetaTsSdk.blockchain.getVcpByHeight(block.height)
+    this.logger.debug('end get va list')
     if (!validatorList.result || !validatorList.result.BlockHashVcpPairs) {
       this.logger.error('no validator BlockHashVcpPairs')
       return false
@@ -270,8 +273,9 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalThetaWei = new BigNumber(0),
       effectiveThetaWei = new BigNumber(0)
-
+    this.logger.debug('start get gn list')
     const gcpList = await thetaTsSdk.blockchain.getGcpByHeight(block.height)
+    this.logger.debug('end get gn list')
     if (!gcpList.result || !gcpList.result.BlockHashGcpPairs) {
       this.logger.error('no guardian BlockHashVcpPairs')
       return false
@@ -303,6 +307,7 @@ export class StakeAnalyseService {
         effectiveNodeNum++
       }
     }
+    this.logger.debug('end gn analyse')
     return [totalNodeNum, effectiveNodeNum, totalThetaWei, effectiveThetaWei]
   }
 
@@ -313,7 +318,9 @@ export class StakeAnalyseService {
       effectiveNodeNum = 0,
       totalTfuelWei = new BigNumber(0),
       effectiveTfuelWei = new BigNumber(0)
+    this.logger.debug('start get een list')
     const eenpList = await thetaTsSdk.blockchain.getEenpByHeight(block.height)
+    this.logger.debug('end get een list')
     if (!eenpList.result || !eenpList.result.BlockHashEenpPairs) {
       this.logger.error('no guardian BlockHashVcpPairs')
       return false
