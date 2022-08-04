@@ -208,7 +208,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().substract(1, 'days').format())
+        update_date: LessThan(moment().subtract(1, 'days').format())
       },
       {
         last_24_h_volume: 0,
@@ -220,7 +220,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().substract(7, 'days').format())
+        update_date: LessThan(moment().subtract(7, 'days').format())
       },
       {
         last_7_days_volume: 0,
@@ -232,7 +232,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().substract(30, 'days').format())
+        update_date: LessThan(moment().subtract(30, 'days').format())
       },
       {
         last_30_days_volume: 0,
