@@ -128,7 +128,7 @@ export class ExplorerResolver {
     }
 
     const [hasNextPage, totalNum, nftList] = await this.nftStatisticsService.getNft(
-      NftStatisticsOrderByType.last_24_h_volume,
+      NftStatisticsOrderByType.last_24_h_users,
       100,
       undefined,
       0,
@@ -138,7 +138,6 @@ export class ExplorerResolver {
       return {
         search_type: SEARCH_TYPE_ENUM.nft,
         nft_statistics: nftList,
-        has_next_page: hasNextPage,
         total: totalNum
       }
     }
