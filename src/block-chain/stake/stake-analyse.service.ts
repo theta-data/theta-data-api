@@ -17,7 +17,7 @@ export class StakeAnalyseService {
   private readonly logger = new Logger('analyse service')
   analyseKey = 'under_analyse'
   private counter = 0
-  private startTimestamp = 0
+  // private startTimestamp = 0
 
   private stakeConnection: QueryRunner
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'stake/record.height'
@@ -59,7 +59,7 @@ export class StakeAnalyseService {
         endHeight = height + analyseNumber
       }
       this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
-      this.startTimestamp = moment().unix()
+      // this.startTimestamp = moment().unix()
       const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
         height.toString(),
         endHeight.toString()
@@ -215,12 +215,12 @@ export class StakeAnalyseService {
             stakeStatisticsInfo
           )
         } catch (e) {
-          this.logger.debug('insert stake statistics error')
+          this.logger.error('insert stake statistics error:' + JSON.stringify(e))
           console.log(e)
         }
       }
     } catch (e) {
-      this.logger.debug('updateCheckPoint error')
+      this.logger.error('updateCheckPoint error:' + JSON.stringify(e))
       console.log(e)
     }
   }
