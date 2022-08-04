@@ -43,10 +43,7 @@ export class ExplorerSearchModelType {
   @Field(() => [NftStatisticsEntity], { nullable: true })
   nft_statistics?: Array<NftStatisticsEntity>
 
-  @Field(() => GraphQLBoolean, { nullable: true })
-  has_next_page?: boolean
-
-  @Field(() => GraphQLInt)
+  @Field(() => GraphQLInt, { nullable: true })
   total?: number
 
   @Field(() => GetAccountModel, { nullable: true })
