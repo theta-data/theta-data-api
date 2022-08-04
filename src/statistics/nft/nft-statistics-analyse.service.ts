@@ -7,7 +7,7 @@ import { UtilsService } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
 import { CMC_PRICE_INFORMATION } from 'theta-ts-sdk/dist/types/interface'
-import { getConnection, MoreThan, QueryRunner, Repository } from 'typeorm'
+import { getConnection, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')
 const fs = require('fs')
@@ -68,6 +68,7 @@ export class NftStatisticsAnalyseService {
       }
       await Promise.all(promiseArr)
       this.logger.debug('start update calltimes by period')
+      await this.setZero()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -201,5 +202,43 @@ export class NftStatisticsAnalyseService {
       nft.last_30_days_volume = Math.floor(volume30D)
       await this.nftStatisticsConnection.manager.save(nft)
     }
+  }
+
+  async setZero() {
+    await this.nftStatisticsConnection.manager.update(
+      NftStatisticsEntity,
+      {
+        update_date: LessThan(moment().substract(1, 'days').format())
+      },
+      {
+        last_24_h_volume: 0,
+        last_24_h_users: 0,
+        last_24_h_transactions: 0
+      }
+    )
+
+    await this.nftStatisticsConnection.manager.update(
+      NftStatisticsEntity,
+      {
+        update_date: LessThan(moment().substract(7, 'days').format())
+      },
+      {
+        last_7_days_volume: 0,
+        last_7_days_users: 0,
+        last_7_days_transactions: 0
+      }
+    )
+
+    await this.nftStatisticsConnection.manager.update(
+      NftStatisticsEntity,
+      {
+        update_date: LessThan(moment().substract(30, 'days').format())
+      },
+      {
+        last_30_days_volume: 0,
+        last_30_days_users: 0,
+        last_30_days_transactions: 0
+      }
+    )
   }
 }
