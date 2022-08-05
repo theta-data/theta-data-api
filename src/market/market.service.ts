@@ -44,4 +44,9 @@ export class MarketService {
     await this.cacheManager.set(key, marketInfo, { ttl: 60 })
     return marketInfo
   }
+
+  public async getPrice(ticker: string): Promise<number> {
+    const res = await this.exchangeService.tickerPriceChange(ticker.toUpperCase() + 'USDT')
+    return Number(res.lastPrice)
+  }
 }

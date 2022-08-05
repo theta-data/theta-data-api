@@ -48,7 +48,7 @@ export class WalletService {
       ),
       fiat_currency_value: {
         usd:
-          (await this.marketInfo.getThetaMarketInfo()).price *
+          (await this.marketInfo.getPrice('theta')) *
           Number(new BigNumber(accountBalance.result.coins.thetawei).dividedBy('1e18').toFixed()),
         cny: 0,
         eur: 0
@@ -63,7 +63,7 @@ export class WalletService {
       ),
       fiat_currency_value: {
         usd:
-          (await this.marketInfo.getThetaFuelMarketInfo()).price *
+          (await this.marketInfo.getPrice('tfuel')) *
           Number(new BigNumber(accountBalance.result.coins.tfuelwei).dividedBy('1e18').toFixed()),
         cny: 0,
         eur: 0
@@ -91,8 +91,11 @@ export class WalletService {
     })
     const gcpList: THETA_GCP_INTERFACE = JSON.parse(gcpRes.holder)
 
-    const thetaMarketInfo = await this.marketInfo.getThetaMarketInfo()
-    const thetaFuelMarketInfo = await this.marketInfo.getThetaFuelMarketInfo()
+    // const thetaMarketInfo = await this.marketInfo.getThetaMarketInfo()
+    // const thetaFuelMarketInfo = await this.marketInfo.getThetaFuelMarketInfo()
+    const thetaPrice = await this.marketInfo.getPrice('theta')
+    const tfuelPrice = await this.marketInfo.getPrice('tfuel')
+
     const usdRate = await this.getUsdRate()
 
     gcpList.result.BlockHashGcpPairs[0].Gcp.SortedGuardians.forEach((guardian) => {
@@ -104,16 +107,14 @@ export class WalletService {
             withdrawn: stake.withdrawn,
             return_height: stake.return_height,
             fiat_currency_value: {
-              usd:
-                Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price,
+              usd: Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) * thetaPrice,
               cny:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price *
+                tfuelPrice *
                 usdRate.CNY,
               eur:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price *
+                thetaPrice *
                 usdRate.EUR
             }
           })
@@ -136,16 +137,14 @@ export class WalletService {
             withdrawn: stake.withdrawn,
             return_height: stake.return_height,
             fiat_currency_value: {
-              usd:
-                Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaFuelMarketInfo.price,
+              usd: Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) * tfuelPrice,
               cny:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaFuelMarketInfo.price *
+                tfuelPrice *
                 usdRate.CNY,
               eur:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaFuelMarketInfo.price *
+                tfuelPrice *
                 usdRate.EUR
             }
           })
@@ -168,16 +167,14 @@ export class WalletService {
             withdrawn: stake.withdrawn,
             return_height: stake.return_height,
             fiat_currency_value: {
-              usd:
-                Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price,
+              usd: Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) * thetaPrice,
               cny:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price *
+                thetaPrice *
                 usdRate.CNY,
               eur:
                 Number(new BigNumber(stake.amount).dividedBy('1e18').toFixed()) *
-                thetaMarketInfo.price *
+                thetaPrice *
                 usdRate.EUR
             }
           })
