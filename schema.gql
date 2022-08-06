@@ -622,8 +622,7 @@ type ExplorerSearchModelType {
   search_type: SEARCH_TYPE_ENUM
   block: BlockModel
   nft_statistics: [NftStatisticsEntity!]
-  has_next_page: Boolean
-  total: Int!
+  total: Int
   account: GetAccountModel
   block_extend: BlokcListEntity
 }

@@ -3,8 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { STAKE_NODE_TYPE_ENUM, StakeEntity } from './stake.entity'
 import { MoreThan, MoreThanOrEqual, Repository } from 'typeorm'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, Logger, CACHE_MANAGER, Inject } from '@nestjs/common'
 import { StakeRewardEntity } from './stake-reward.entity'
+// import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
+import { Cache } from 'cache-manager'
+
 const moment = require('moment')
 const config = require('config')
 
@@ -16,7 +19,8 @@ export class StakeService {
     @InjectRepository(StakeStatisticsEntity, 'stake')
     private stakeStatisticsRepository: Repository<StakeStatisticsEntity>,
     @InjectRepository(StakeRewardEntity, 'stake')
-    private stakeRewardRepository: Repository<StakeRewardEntity>
+    private stakeRewardRepository: Repository<StakeRewardEntity>,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {
     // thetaTsSdk.blockchain.setUrl(config.get('THETA_NODE_HOST'))
   }
@@ -123,6 +127,8 @@ export class StakeService {
   }
 
   async getLatestStakeStatics() {
+    const key = 'latest-stake-info-key'
+    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const latestStakeInfo = await this.stakeStatisticsRepository.findOne({
       order: {
         block_height: 'DESC'
@@ -138,14 +144,8 @@ export class StakeService {
           block_height: 'ASC'
         }
       })
+      await this.cacheManager.set(key, stakeInfo, { ttl: 60 * 5 })
       return stakeInfo
-      // const stakeToReturn = [stakeInfo[0]]
-      // for (let i = 1; i < stakeInfo.length; i++) {
-      //   if ((latestStakeInfo.block_height - stakeInfo[i].block_height) % 13800 == 0) {
-      //     stakeToReturn.push(stakeInfo[i])
-      //   }
-      // }
-      // return stakeToReturn
     } else {
       return []
     }
