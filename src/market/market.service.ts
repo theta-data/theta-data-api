@@ -15,7 +15,7 @@ export class MarketService {
   }
   public async getThetaMarketInfo(): Promise<TokenMarketInformationType> {
     const key = 'theta-market-info'
-    // if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
+    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const res = await this.exchangeService.tickerPriceChange('THETAUSDT')
     const kline = await this.exchangeService.kLine('THETAUSDT')
     const marketInfo = {
@@ -25,12 +25,13 @@ export class MarketService {
       price_change_percent: Number(res.priceChangePercent),
       kline: kline
     }
-    await this.cacheManager.set(key, marketInfo, { ttl: 60 })
+    await this.cacheManager.set(key, marketInfo, { ttl: 60 * 5 })
     return marketInfo
   }
 
   public async getThetaFuelMarketInfo(): Promise<TokenMarketInformationType> {
     const key = 'tfuel-market-info'
+    if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const res = await this.exchangeService.tickerPriceChange('TFUELUSDT')
     const kline = await this.exchangeService.kLine('TFUELUSDT')
     const marketInfo = {
@@ -41,7 +42,7 @@ export class MarketService {
       kline: kline
     }
 
-    await this.cacheManager.set(key, marketInfo, { ttl: 60 })
+    await this.cacheManager.set(key, marketInfo, { ttl: 60 * 5 })
     return marketInfo
   }
 
