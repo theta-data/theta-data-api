@@ -247,12 +247,12 @@ export class NftStatisticsAnalyseService {
   async updateNftsImgUri() {
     // this.logger.debug(JSON.stringify(nftLogoConfig))
     for (const config of nftLogoConfig) {
-      if (!config.smart_contract_address || !config.img_uri) continue
+      if (config.length < 2) continue
       const nft = await this.nftStatisticsConnection.manager.findOne(NftStatisticsEntity, {
-        smart_contract_address: config.smart_contract_address.toLowerCase()
+        smart_contract_address: config[0].toLowerCase()
       })
-      if (nft && nft.img_uri != config.img_uri) {
-        nft.img_uri = config.img_uri
+      if (nft && nft.img_uri != config[1]) {
+        nft.img_uri = config[1]
         await this.nftStatisticsConnection.manager.save(nft)
       }
     }
