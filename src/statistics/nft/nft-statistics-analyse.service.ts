@@ -12,6 +12,7 @@ import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
+const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
 
 @Injectable()
 export class NftStatisticsAnalyseService {
@@ -69,6 +70,7 @@ export class NftStatisticsAnalyseService {
       await Promise.all(promiseArr)
       this.logger.debug('start update calltimes by period')
       await this.setZero()
+      await this.updateNftsImgUri()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -240,5 +242,19 @@ export class NftStatisticsAnalyseService {
         last_30_days_transactions: 0
       }
     )
+  }
+
+  async updateNftsImgUri() {
+    // this.logger.debug(JSON.stringify(nftLogoConfig))
+    for (const config of nftLogoConfig) {
+      if (!config.smart_contract_address || config.img_uri) continue
+      const nft = await this.nftStatisticsConnection.manager.findOne(NftStatisticsEntity, {
+        smart_contract_address: config.smart_contract_address.toLowerCase()
+      })
+      if (nft && nft.img_uri != config.img_uri) {
+        nft.img_uri = config.img_uri
+        await this.nftStatisticsConnection.manager.save(nft)
+      }
+    }
   }
 }
