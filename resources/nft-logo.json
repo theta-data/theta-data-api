@@ -1,7 +1,38 @@
 [
-  {
-    "smart_contract_address": "0xc148a7c6c02bc1962786b99a81107d3e11406ca7",
-    "img_uri": "https://user-assets-thetadrop.imgix.net/user_bgm7p40hby1ugsgxqr1k8yak4ff/phone2.png?w=290"
-  },
-  {}
+  [
+    "0xc148a7c6c02bc1962786b99a81107d3e11406ca7",
+    "https://user-assets-thetadrop.imgix.net/user_bgm7p40hby1ugsgxqr1k8yak4ff/phone2.png?w=290"
+  ],
+  [
+    "0x83b1b0c031960d2372fcc43a70b5874396dbf6bd",
+    "https://user-assets-thetadrop.imgix.net/user_c6vckj1zg2qcb3i8bsi2q2w3i88/challenges/Frost%20Ninja%20Pug.png?w=290"
+  ],
+  [
+    "0x7d2057d844df74f7a8853056b7496c37fddc7fb7",
+    "https://user-assets-thetadrop.imgix.net/user_39tkm4wbs5kggbddtie3yqbnd3n/drop_kk60hu316uvk25bcziajpab6b38/NFTs/Warrior_NFT_thumbnail.png?w=290"
+  ],
+  [
+    "0x0cfaaceed352ad7b0835e3d96a8c80ff58b6f19a",
+    "https://user-assets-thetadrop.imgix.net/user_446i201m6304j1ts23d48cwuyxq/drop_83q1qm5rqr9qwt4xwm3ugrhcmyi/zilla3.png?w=290"
+  ],
+  [
+    "0xebc380add0a361622c604ef9024c9f5a34350916",
+    "https://user-assets-thetadrop.imgix.net/user_bc8zg5bxxfjwhemismbq2uuv7dm/IFC-Item_Image.jpg?w=290"
+  ],
+  [
+    "0x67aa74fb571c382f3ef455d8ba77e687d9fe8f28",
+    "https://user-assets-thetadrop.imgix.net/user_rzgh9jwdchn0qatzfqkef0218xf/drop_nqn9g9rvy37540syriu21etxc79/type.jpg?w=290"
+  ],
+  [
+    "0xb8153c0e8ed32943e60630bfd8ccdfb1e32e43d4",
+    "https://user-assets-thetadrop.imgix.net/user_5bh9gz3gh77wj2df2v8g7mf5gug/partner/generative_item_b.png?w=290"
+  ],
+  [
+    "0x910b2cfcbd43c1a39c1f454a0f244c3f6f420742",
+    "https://user-assets-thetadrop.imgix.net/user_c6vckj1zg2qcb3i8bsi2q2w3i88/drop_b9hq5h6p64ajtaucvhnxx7xwtt1/New/TfuelPug.png?w=290"
+  ],
+  [
+    "0x4dc089607c829f5947ad52a0cbd1cca8e51a7fcc",
+    "https://user-assets-thetadrop.imgix.net/user_s0u4btbk83gs0n5ni7f4j9vfh9q/drop_airdrop1234567890/CK_Nanochip_2048px.png?w=290"
+  ]
 ]
