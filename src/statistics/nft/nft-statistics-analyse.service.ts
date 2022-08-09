@@ -247,7 +247,7 @@ export class NftStatisticsAnalyseService {
   async updateNftsImgUri() {
     // this.logger.debug(JSON.stringify(nftLogoConfig))
     for (const config of nftLogoConfig) {
-      if (!config.smart_contract_address || config.img_uri) continue
+      if (!config.smart_contract_address || !config.img_uri) continue
       const nft = await this.nftStatisticsConnection.manager.findOne(NftStatisticsEntity, {
         smart_contract_address: config.smart_contract_address.toLowerCase()
       })
