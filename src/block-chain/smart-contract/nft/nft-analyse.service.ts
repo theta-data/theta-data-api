@@ -5,6 +5,7 @@ import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
 const fs = require('fs')
+
 @Injectable()
 export class NftAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -19,6 +20,7 @@ export class NftAnalyseService {
   public async analyseData() {
     try {
       this.logger.debug('start analyse nft data')
+      // this.logger.debug(logoConfig)
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
 

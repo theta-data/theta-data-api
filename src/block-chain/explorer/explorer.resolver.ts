@@ -49,7 +49,6 @@ export class ExplorerResolver {
     )
     let endCursor = ''
     if (res.length > 0) {
-      // this.console.log();
       console.log(res[res.length - 1].height.toString())
       endCursor = Buffer.from(res[res.length - 1].height.toString()).toString('base64')
     }
