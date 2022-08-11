@@ -65,7 +65,7 @@ export class NftStatisticsService {
         condition.order.last_24_h_transactions = 'DESC'
         break
       case NftStatisticsOrderByType.last_7_days_transactions:
-        condition.order.last_30_days_transactions = 'DESC'
+        condition.order.last_7_days_transactions = 'DESC'
         break
       case NftStatisticsOrderByType.last_30_days_transactions:
         condition.order.last_30_days_transactions = 'DESC'
