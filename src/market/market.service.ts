@@ -1,4 +1,4 @@
-import { TokenMarketInformationType } from './market.model'
+import { KLINE_INTERVAL, TokenMarketInformationType, TOKEN_PAIR_TYPE } from './market.model'
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
 import { Cache } from 'cache-manager'
@@ -49,5 +49,9 @@ export class MarketService {
   public async getPrice(ticker: string): Promise<number> {
     const res = await this.exchangeService.tickerPriceChange(ticker.toUpperCase() + 'USDT')
     return Number(res.lastPrice)
+  }
+
+  public async getKline(pair: TOKEN_PAIR_TYPE, interval: KLINE_INTERVAL) {
+    return await this.exchangeService.kLine(pair, interval)
   }
 }
