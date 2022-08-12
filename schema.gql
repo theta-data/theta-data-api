@@ -44,6 +44,30 @@ type TokenMarketInformationType {
 type MarketInformationType {
   Theta: TokenMarketInformationType!
   ThetaFuel: TokenMarketInformationType!
+  Kline(token_type: TOKEN_PAIR_TYPE!, interval: KLINE_INTERVAL!): [KlineObj!]!
+}
+
+enum TOKEN_PAIR_TYPE {
+  thetaUsdt
+  tfuelUSdt
+}
+
+enum KLINE_INTERVAL {
+  _1m
+  _3m
+  _5m
+  _15m
+  _30m
+  _1h
+  _2h
+  _4h
+  _6h
+  _8h
+  _12h
+  _1d
+  _3d
+  _1w
+  _1M
 }
 
 type SmartContractEntity {

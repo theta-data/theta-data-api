@@ -1,5 +1,5 @@
 import { Args, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { KLINE_INTERVAL, MarketInformationType, TOKEN_PAIR_TYPE } from './market.model'
+import { KlineObj, KLINE_INTERVAL, MarketInformationType, TOKEN_PAIR_TYPE } from './market.model'
 // import { thetaTsSdk } from 'theta-ts-sdk'
 import { CACHE_MANAGER, Inject } from '@nestjs/common'
 import { Cache } from 'cache-manager'
@@ -28,7 +28,7 @@ export class MarketResolver {
     return this.marketService.getThetaFuelMarketInfo()
   }
 
-  @ResolveField()
+  @ResolveField(() => [KlineObj])
   async Kline(
     @Args('token_type', { type: () => TOKEN_PAIR_TYPE }) tokenType,
     @Args('interval', { type: () => KLINE_INTERVAL }) klineInterval
