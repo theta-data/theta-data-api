@@ -58,14 +58,15 @@ export class BinanceService implements EXCHANGE_INTERFACE {
     return { price: Number(res.data.price) }
   }
 
-  async kLine(pair: string): Promise<Array<K_LINE_INTERFACE>> {
+  async kLine(pair: string, interval = '5m'): Promise<Array<K_LINE_INTERFACE>> {
     const params = typeof pair === 'string' ? '?symbol=' + pair.toUpperCase() : ''
     let opt = {
       url:
         this.baseArr[Math.floor(Math.random() * this.baseArr.length)] +
         'v3/klines' +
         params +
-        '&interval=5m',
+        '&interval=' +
+        interval,
       timeout: default_options.recvWindow,
       method: 'get'
     }
