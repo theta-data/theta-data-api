@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { MoreThan, Repository } from 'typeorm'
 import { WalletService } from '../wallet/wallets.service'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
-import { ThetaTxNumByDateModel } from './theta-tx.model'
+import { ThetaTxNumByDateModel, TX_GET_DATA_AMOUNT } from './theta-tx.model'
 const moment = require('moment')
 
 @Injectable()
@@ -14,8 +14,11 @@ export class TxService {
     private walletService: WalletService
   ) {}
 
-  public async getThetaDataByDate(timezoneOffset: string) {
-    const startTimeStamp = moment().subtract(14, 'days').unix()
+  public async getThetaDataByDate(
+    timezoneOffset: string,
+    days: TX_GET_DATA_AMOUNT = TX_GET_DATA_AMOUNT._2week
+  ) {
+    const startTimeStamp = moment().subtract(days, 'days').unix()
     let hours = await this.thetaTxNumRepository.find({
       order: { timestamp: 'DESC' },
       where: {
@@ -84,9 +87,12 @@ export class TxService {
     return result
   }
 
-  public async getThetaByHour(timezoneOffset, hours: number = 24 * 7) {
+  public async getThetaByHour(
+    timezoneOffset,
+    amount: TX_GET_DATA_AMOUNT = TX_GET_DATA_AMOUNT._2week
+  ) {
     const startTime = moment()
-      .subtract(hours, 'hours')
+      .subtract(amount * 24, 'hours')
       .subtract(-new Date().getTimezoneOffset() - Number(timezoneOffset), 'minutes')
       .unix()
     const res = await this.thetaTxNumRepository.find({

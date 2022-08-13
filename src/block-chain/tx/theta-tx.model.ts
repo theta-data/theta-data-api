@@ -1,4 +1,4 @@
-import { Field, Float, Int, ObjectType } from '@nestjs/graphql'
+import { Field, Float, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
 import { ThetaTxNumByHoursEntity } from './theta-tx-num-by-hours.entity'
 
 @ObjectType()
@@ -72,3 +72,16 @@ export class ThetaTxNumByDateModel {
   @Field(() => Int)
   timestamp: number
 }
+
+export enum TX_GET_DATA_AMOUNT {
+  _2week = 14,
+  _1month = 31,
+  _3month = 93,
+  _6month = 186,
+  _1year = 366,
+  _2year = 732
+}
+registerEnumType(TX_GET_DATA_AMOUNT, {
+  name: 'TX_GET_DATA_AMOUNT',
+  description: 'TX_GET_DATA_AMOUNT'
+})

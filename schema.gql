@@ -695,13 +695,25 @@ type ThetaTransactionStatisticsType {
     the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
     """
     timezoneOffset: Int = 0
+    amount: TX_GET_DATA_AMOUNT = _2week
   ): [ThetaTxNumByDateModel!]!
   ByHour(
     """
     the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
     """
     timezoneOffset: Int = 0
+    amount: TX_GET_DATA_AMOUNT = _2week
   ): [ThetaTxNumByHoursEntity!]!
+}
+
+"""TX_GET_DATA_AMOUNT"""
+enum TX_GET_DATA_AMOUNT {
+  _2week
+  _1month
+  _3month
+  _6month
+  _1year
+  _2year
 }
 
 type ThetaTxNumByDateModel {
