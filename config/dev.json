@@ -53,7 +53,11 @@
     "ANALYSE_INTERVAL": 1000,
     "START_HEIGHT": 16515100
   },
-  "TX": {},
+  "TX": {
+    "ANALYSE_NUMBER": 10,
+    "ANALYSE_INTERVAL": 1000,
+    "START_HEIGHT": 8000000
+  },
   "WALLET": {
     "START_HEIGHT": 8000000
   }
