@@ -145,8 +145,9 @@ export class WalletsAnalyseService {
       latest_active_time: number
       hashs: Array<string>
     }> = Object.values(wallets)
+    this.logger.debug('wallets length: ' + walletsToUpdate.length)
     for (let i = 0; i < walletsToUpdate.length; i++) {
-      this.logger.debug('start upsert wallet')
+      // this.logger.debug('start upsert wallet')
       const wallet = await this.walletConnection.manager.findOne(WalletEntity, {
         where: {
           address: walletsToUpdate[i].address

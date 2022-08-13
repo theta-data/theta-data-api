@@ -34,8 +34,8 @@ export class TxAnalyseService {
       )
       height = lastfinalizedHeight - 1000
 
-      if (config.get('STAKE_ANALYSE_START_HEIGHT')) {
-        height = config.get('STAKE_ANALYSE_START_HEIGHT')
+      if (config.get('TX.START_HEIGHT')) {
+        height = config.get('TX.START_HEIGHT')
       }
       const recordHeight = this.utilsService.getRecordHeight(this.heightConfigFile)
       height = recordHeight > height ? recordHeight : height
@@ -47,7 +47,7 @@ export class TxAnalyseService {
       }
       // await this.
       let endHeight = lastfinalizedHeight
-      const analyseNumber = config.get('ANALYSE_NUMBER')
+      const analyseNumber = config.get('TX.ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
         endHeight = height + analyseNumber
       }

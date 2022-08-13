@@ -16,9 +16,7 @@ import {
   THETA_GCP_INTERFACE,
   THETA_VCP_INTERFACE
 } from 'theta-ts-sdk/dist/types/interface'
-import { json } from 'stream/consumers'
-const config = require('config')
-const moment = require('moment')
+
 @Injectable()
 export class WalletService {
   logger = new Logger()
