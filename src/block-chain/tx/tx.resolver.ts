@@ -1,6 +1,6 @@
 import { Args, Int, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import { TxService } from './tx.service'
-import { ThetaTransactionStatisticsType } from './theta-tx.model'
+import { ThetaTransactionStatisticsType, TX_GET_DATA_AMOUNT } from './theta-tx.model'
 
 @Resolver((of) => ThetaTransactionStatisticsType)
 export class TxResolver {
@@ -21,9 +21,14 @@ export class TxResolver {
         'the timezone difference in minutes, between the UTC and the current local time.' +
         'Such as PDT time is utc-07, should pass -420'
     })
-    timezoneOffset: string
+    timezoneOffset: string,
+    @Args('amount', {
+      type: () => TX_GET_DATA_AMOUNT,
+      defaultValue: TX_GET_DATA_AMOUNT._2week
+    })
+    amount: TX_GET_DATA_AMOUNT
   ) {
-    return await this.txService.getThetaDataByDate(timezoneOffset)
+    return await this.txService.getThetaDataByDate(timezoneOffset, amount)
   }
 
   @ResolveField()
@@ -36,8 +41,13 @@ export class TxResolver {
         'the timezone difference in minutes, between the UTC and the current local time.' +
         'Such as PDT time is utc-07, should pass -420'
     })
-    timezoneOffset: string
+    timezoneOffset: string,
+    @Args('amount', {
+      type: () => TX_GET_DATA_AMOUNT,
+      defaultValue: TX_GET_DATA_AMOUNT._2week
+    })
+    amount: TX_GET_DATA_AMOUNT
   ) {
-    return await this.txService.getThetaByHour(timezoneOffset)
+    return await this.txService.getThetaByHour(timezoneOffset, amount)
   }
 }
