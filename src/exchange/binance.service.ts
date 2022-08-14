@@ -66,7 +66,8 @@ export class BinanceService implements EXCHANGE_INTERFACE {
         'v3/klines' +
         params +
         '&interval=' +
-        interval,
+        interval +
+        '&limit=1000',
       timeout: default_options.recvWindow,
       method: 'get'
     }
