@@ -177,6 +177,93 @@ export class WalletsAnalyseService {
     this.counter--
   }
 
+  async dealBlocks(blocks: Array<THETA_BLOCK_INTERFACE>) {
+    // this.logger.debug(block.height + ' start insert, timestamp:' + block.timestamp)
+
+    const height = Number(block.height)
+
+    const wallets = {}
+    for (const transaction of block.transactions) {
+      if (transaction.raw.inputs && transaction.raw.inputs.length > 0) {
+        for (const wallet of transaction.raw.inputs) {
+          this.updateWallets(wallets, wallet.address, transaction.hash, Number(block.timestamp))
+        }
+      }
+
+      if (transaction.raw.outputs && transaction.raw.outputs.length > 0) {
+        for (const wallet of transaction.raw.outputs) {
+          this.updateWallets(wallets, wallet.address, transaction.hash, Number(block.timestamp))
+        }
+      }
+      if (transaction.raw.from) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.from.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.to) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.to.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.source) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.source.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+      if (transaction.raw.proposer) {
+        this.updateWallets(
+          wallets,
+          transaction.raw.proposer.address,
+          transaction.hash,
+          Number(block.timestamp)
+        )
+      }
+    }
+    const walletsToUpdate: Array<{
+      address: string
+      latest_active_time: number
+      hashs: Array<string>
+    }> = Object.values(wallets)
+    this.logger.debug('wallets length: ' + walletsToUpdate.length)
+    for (let i = 0; i < walletsToUpdate.length; i++) {
+      // this.logger.debug('start upsert wallet')
+      const wallet = await this.walletConnection.manager.findOne(WalletEntity, {
+        where: {
+          address: walletsToUpdate[i].address
+        }
+      })
+      if (!wallet) {
+        await this.walletConnection.manager.insert(WalletEntity, {
+          address: walletsToUpdate[i].address,
+          latest_active_time: walletsToUpdate[i].latest_active_time,
+          txs_hash_list: JSON.stringify(walletsToUpdate[i].hashs)
+        })
+      } else {
+        wallet.latest_active_time = walletsToUpdate[i].latest_active_time
+        const hashList = JSON.parse(wallet.txs_hash_list)
+        for (const hash of walletsToUpdate[i].hashs) {
+          if (!hashList.includes(hash)) {
+            hashList.push(hash)
+          }
+        }
+        wallet.txs_hash_list = JSON.stringify(hashList)
+        await this.walletConnection.manager.save(wallet)
+      }
+    }
+    this.logger.debug(height + ' end upsert wallets')
+    await this.snapShotActiveWallets(Number(block.timestamp))
+    this.logger.debug(height + ' end update analyse')
+    this.counter--
+  }
   async updateWallets(wallets: {}, address: string, hash: string, timestamp: number) {
     if (!wallets[address.toLowerCase()]) {
       wallets[address.toLowerCase()] = {
