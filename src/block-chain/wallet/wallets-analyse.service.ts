@@ -53,12 +53,15 @@ export class WalletsAnalyseService {
         endHeight = height + analyseNumber
       }
       this.logger.debug('start height: ' + height + '; end height: ' + endHeight)
+
       //   this.startTimestamp = moment().unix()
       const blockList = await thetaTsSdk.blockchain.getBlockSByRange(
         height.toString(),
         endHeight.toString()
       )
+      const actualEndHeight = Number(blockList.result[blockList.result.length - 1].height)
       this.logger.debug('block list length:' + blockList.result.length)
+      this.logger.debug('actual end height:' + actualEndHeight)
       this.counter = blockList.result.length
       this.logger.debug('init counter', this.counter)
       const blockArr = {}
@@ -89,10 +92,7 @@ export class WalletsAnalyseService {
       await this.walletConnection.commitTransaction()
       this.logger.debug('commit success')
       if (blockList.result.length > 0) {
-        this.utilsService.updateRecordHeight(
-          this.heightConfigFile,
-          Number(blockList.result[blockList.result.length - 1].height)
-        )
+        this.utilsService.updateRecordHeight(this.heightConfigFile, actualEndHeight)
       }
     } catch (e) {
       // console.log(e)
