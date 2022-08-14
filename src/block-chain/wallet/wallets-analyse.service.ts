@@ -48,7 +48,7 @@ export class WalletsAnalyseService {
       }
       // await this.
       let endHeight = lastfinalizedHeight
-      const analyseNumber = config.get('ANALYSE_NUMBER')
+      const analyseNumber = config.get('WALLET.ANALYSE_NUMBER')
       if (lastfinalizedHeight - height > analyseNumber) {
         endHeight = height + analyseNumber
       }
