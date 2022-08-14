@@ -281,6 +281,7 @@ export class WalletsAnalyseService {
         wallet.txs_hash_list = JSON.stringify(hashList)
         await this.walletConnection.manager.save(wallet)
       }
+      this.logger.debug('wallet ' + i + ' end upsert wallet')
     }
     this.logger.debug('start snapshot active wallets')
     // this.logger.debug(height + ' end upsert wallets')
