@@ -34,10 +34,10 @@ export class TxResolver {
     })
     amount: TX_GET_DATA_AMOUNT
   ) {
-    if (this.cacheManager.get('tx-by-date_' + amount)) return this.cacheManager.get('tx-by-date')
+    // if (this.cacheManager.get('tx-by-date_' + amount)) return this.cacheManager.get('tx-by-date')
     const res = await this.txService.getThetaDataByDate(timezoneOffset, amount)
     // if(amount == TX_GET_DATA_AMOUNT._2year)
-    this.cacheManager.set('tx-by-date_' + amount, res, { ttl: 60 * 60 * 12 })
+    // this.cacheManager.set('tx-by-date_' + amount, res, { ttl: 60 * 60 * 12 })
     return res
   }
 
