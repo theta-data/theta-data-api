@@ -34,7 +34,7 @@ export class MarketResolver {
     @Args('interval', { type: () => KLINE_INTERVAL }) klineInterval
   ) {
     const cacheKey = 'kline_' + tokenType + klineInterval
-    if (await this.cacheManager.get(cacheKey)) return await this.cacheManager.get('kline')
+    if (await this.cacheManager.get(cacheKey)) return await this.cacheManager.get(cacheKey)
     const res = await this.marketService.getKline(tokenType, klineInterval)
     await this.cacheManager.set('kline_' + tokenType + klineInterval, res, { ttl: 60 * 60 * 6 })
     return res
