@@ -42,7 +42,8 @@
   },
   "NFT_STATISTICS": {
     "ANALYSE_NUMBER": 5000,
-    "ANALYSE_INTERVAL": 1000
+    "ANALYSE_INTERVAL": 1000,
+    "STATIC_PATH": "/home/ubuntu/theta-data/static/nft_img/"
   },
   "EXPLORER": {
     "ANALYSE_NUMBER": 1000,
