@@ -36,7 +36,9 @@ export class TxResolver {
   ) {
     if (this.cacheManager.get('tx-by-date')) return this.cacheManager.get('tx-by-date')
     const res = await this.txService.getThetaDataByDate(timezoneOffset, amount)
+    // if(amount == TX_GET_DATA_AMOUNT._2year)
     this.cacheManager.set('theta-tx-by-date', res, { ttl: 60 * 60 * 12 })
+    return res
   }
 
   @ResolveField()
