@@ -44,7 +44,7 @@
     "config": "^3.3.7",
     "ethers": "^5.5.4",
     "fs": "^0.0.1-security",
-    "got": "^12.3.1",
+    "got": "^11.8.3",
     "graphql": "^16.3.0",
     "graphql-fields-list": "^2.2.4",
     "js-sha3": "^0.8.0",

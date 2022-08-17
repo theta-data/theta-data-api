@@ -13,7 +13,10 @@ const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
-
+const stream = require('stream')
+const url = require('url')
+const { promisify } = require('util')
+const got = require('got')
 @Injectable()
 export class NftStatisticsAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -262,11 +265,9 @@ export class NftStatisticsAnalyseService {
   }
 
   async downloadImage(urlPath: string): Promise<string | null> {
-    const stream = require('stream')
-    const url = require('url')
-    const { promisify } = require('util')
     const pipeline = promisify(stream.pipeline)
-    const got: any = await import('got')
+    // const got: any = await import('got')
+    // got.default()
     var path = require('path')
     var parsed = url.parse(urlPath)
     const imgStorePath =
