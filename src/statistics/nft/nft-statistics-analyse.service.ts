@@ -280,7 +280,7 @@ export class NftStatisticsAnalyseService {
     console.log(path.basename(parsed.pathname))
     if (!fs.existsSync(imgStorePath)) {
       try {
-        await pipeline(got.stream(url), fs.createWriteStream(imgStorePath))
+        await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
       } catch (e) {
         console.error(e)
         return null
