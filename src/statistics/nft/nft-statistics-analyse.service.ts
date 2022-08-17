@@ -13,7 +13,10 @@ const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
-
+const stream = require('stream')
+const url = require('url')
+const { promisify } = require('util')
+const got = require('got')
 @Injectable()
 export class NftStatisticsAnalyseService {
   private readonly logger = new Logger('analyse service')
@@ -262,23 +265,26 @@ export class NftStatisticsAnalyseService {
   }
 
   async downloadImage(urlPath: string): Promise<string | null> {
-    const stream = require('stream')
-    const url = require('url')
-    const { promisify } = require('util')
+    if (!urlPath) return null
     const pipeline = promisify(stream.pipeline)
-    const got: any = await import('got')
+    // const got: any = await import('got')
+    // got.default()
     var path = require('path')
     var parsed = url.parse(urlPath)
-    const imgStorePath =
-      config.get('NFT_STATISTICS.STATIC_PATH') +
-      '/' +
-      url.hostname.replace(/\./g, '-') +
-      parsed.pathname
+    const imgPath =
+      config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
+    const imgStorePath = imgPath + parsed.pathname
+    const pathArr = imgStorePath.split('/')
+    pathArr.pop()
+
+    if (!fs.existsSync(pathArr.join('/'))) {
+      fs.mkdirSync(pathArr.join('/'), { recursive: true })
+    }
 
     console.log(path.basename(parsed.pathname))
     if (!fs.existsSync(imgStorePath)) {
       try {
-        await pipeline(got.stream(url), fs.createWriteStream(imgStorePath))
+        await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
       } catch (e) {
         console.error(e)
         return null
