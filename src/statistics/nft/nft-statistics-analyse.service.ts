@@ -71,6 +71,7 @@ export class NftStatisticsAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.setZero()
       await this.updateNftsImgUri()
+      await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -178,8 +179,8 @@ export class NftStatisticsAnalyseService {
         nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
         if (smartContract.contract_uri_detail) {
           const contractDetail = JSON.parse(smartContract.contract_uri_detail)
-          // nftStatistics.img_uri = contractDetail.image
-          nftStatistics.img_uri = await this.downloadImage(contractDetail.image)
+          nftStatistics.img_uri = contractDetail.image
+          await this.downloadImage(contractDetail.image)
         }
       }
       nftStatistics.name = smartContract.name
@@ -260,7 +261,7 @@ export class NftStatisticsAnalyseService {
     }
   }
 
-  async downloadImage(urlPath: string) {
+  async downloadImage(urlPath: string): Promise<string | null> {
     const stream = require('stream')
     const url = require('url')
     const { promisify } = require('util')
@@ -268,15 +269,31 @@ export class NftStatisticsAnalyseService {
     const got: any = await import('got')
     var path = require('path')
     var parsed = url.parse(urlPath)
+    const imgStorePath =
+      config.get('NFT_STATISTICS.STATIC_PATH') +
+      '/' +
+      url.hostname.replace(/\./g, '-') +
+      parsed.pathname
+
     console.log(path.basename(parsed.pathname))
-    await pipeline(
-      got.stream(url),
-      fs.createWriteStream(
-        config.get('NFT_STATISTICS.STATIC_PATH') +
-          this.utilsService.getRandomStr(8) +
-          parsed.pathname
-      )
-    )
-    return parsed.pathname
+    if (!fs.existsSync(imgStorePath)) {
+      try {
+        await pipeline(got.stream(url), fs.createWriteStream(imgStorePath))
+      } catch (e) {
+        console.error(e)
+        return null
+      }
+    } else {
+      return imgStorePath
+    }
+  }
+
+  async downloadAllImg() {
+    const nfts = await this.nftStatisticsConnection.manager.find(NftStatisticsEntity)
+    for (const nft of nfts) {
+      if (nft.img_uri) {
+        await this.downloadImage(nft.img_uri)
+      }
+    }
   }
 }
