@@ -274,8 +274,11 @@ export class NftStatisticsAnalyseService {
     const imgPath =
       config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
     const imgStorePath = imgPath + parsed.pathname
-    if (!fs.existsSync(imgStorePath)) {
-      fs.mkdirSync(imgStorePath, { recursive: true })
+    const pathArr = imgStorePath.split('/')
+    pathArr.pop()
+
+    if (!fs.existsSync(pathArr.join('/'))) {
+      fs.mkdirSync(pathArr.join('/'), { recursive: true })
     }
 
     console.log(path.basename(parsed.pathname))
