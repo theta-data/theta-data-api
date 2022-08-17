@@ -276,6 +276,9 @@ export class NftStatisticsAnalyseService {
       '/' +
       parsed.hostname.replace(/\./g, '-') +
       parsed.pathname
+    if (!fs.existsSync(imgStorePath)) {
+      fs.mkdirSync(imgStorePath, { recursive: true })
+    }
 
     console.log(path.basename(parsed.pathname))
     if (!fs.existsSync(imgStorePath)) {
