@@ -298,7 +298,8 @@ export class NftStatisticsAnalyseService {
     const nfts = await this.nftStatisticsConnection.manager.find(NftStatisticsEntity)
     for (const nft of nfts) {
       if (nft.img_uri) {
-        await this.downloadImage(nft.img_uri)
+        nft.img_uri = await this.downloadImage(nft.img_uri)
+        await this.nftStatisticsConnection.manager.save(nft)
       }
     }
   }
