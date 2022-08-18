@@ -290,12 +290,13 @@ export class NftStatisticsAnalyseService {
     if (!fs.existsSync(imgStorePath)) {
       try {
         await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
+        return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
       } catch (e) {
         console.error(e)
         return null
       }
     } else {
-      return imgStorePath
+      return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
     }
   }
 
