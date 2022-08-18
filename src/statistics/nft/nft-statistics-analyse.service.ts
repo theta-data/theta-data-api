@@ -276,6 +276,9 @@ export class NftStatisticsAnalyseService {
     if (!parsed.hostname) {
       return urlPath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
     }
+    if (!parsed.pathname.includes(['gif', 'png', 'jpg', 'jpeg'])) {
+      return null
+    }
     const imgPath =
       config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
     const imgStorePath = imgPath + parsed.pathname
