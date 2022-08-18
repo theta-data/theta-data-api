@@ -265,12 +265,17 @@ export class NftStatisticsAnalyseService {
   }
 
   async downloadImage(urlPath: string): Promise<string | null> {
+    this.logger.debug('url path: ' + urlPath)
     if (!urlPath) return null
     const pipeline = promisify(stream.pipeline)
     // const got: any = await import('got')
     // got.default()
     var path = require('path')
     var parsed = url.parse(urlPath)
+    // if(!pa)
+    if (!parsed.hostname) {
+      return urlPath
+    }
     const imgPath =
       config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
     const imgStorePath = imgPath + parsed.pathname
@@ -298,7 +303,8 @@ export class NftStatisticsAnalyseService {
     const nfts = await this.nftStatisticsConnection.manager.find(NftStatisticsEntity)
     for (const nft of nfts) {
       if (nft.img_uri) {
-        await this.downloadImage(nft.img_uri)
+        nft.img_uri = await this.downloadImage(nft.img_uri)
+        await this.nftStatisticsConnection.manager.save(nft)
       }
     }
   }
