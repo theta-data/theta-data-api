@@ -265,12 +265,17 @@ export class NftStatisticsAnalyseService {
   }
 
   async downloadImage(urlPath: string): Promise<string | null> {
+    this.logger.debug('url path: ' + urlPath)
     if (!urlPath) return null
     const pipeline = promisify(stream.pipeline)
     // const got: any = await import('got')
     // got.default()
     var path = require('path')
     var parsed = url.parse(urlPath)
+    // if(!pa)
+    if (!parsed.hostname) {
+      return urlPath
+    }
     const imgPath =
       config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
     const imgStorePath = imgPath + parsed.pathname
