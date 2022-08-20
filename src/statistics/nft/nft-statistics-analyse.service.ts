@@ -74,7 +74,7 @@ export class NftStatisticsAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.setZero()
       await this.updateNftsImgUri()
-      await this.downloadAllImg()
+      // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -258,7 +258,7 @@ export class NftStatisticsAnalyseService {
         smart_contract_address: config[0].toLowerCase()
       })
       if (nft && nft.img_uri != config[1]) {
-        nft.img_uri = config[1]
+        nft.img_uri = await this.downloadImage(config[1])
         await this.nftStatisticsConnection.manager.save(nft)
       }
     }
