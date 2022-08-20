@@ -74,7 +74,7 @@ export class NftStatisticsAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.setZero()
       await this.updateNftsImgUri()
-      // await this.downloadAllImg()
+      await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -257,7 +257,7 @@ export class NftStatisticsAnalyseService {
       const nft = await this.nftStatisticsConnection.manager.findOne(NftStatisticsEntity, {
         smart_contract_address: config[0].toLowerCase()
       })
-      if (nft && nft.img_uri != config[1]) {
+      if (nft) {
         nft.img_uri = await this.downloadImage(config[1])
         await this.nftStatisticsConnection.manager.save(nft)
       }
@@ -276,7 +276,13 @@ export class NftStatisticsAnalyseService {
     if (!parsed.hostname) {
       return urlPath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
     }
-    if (!parsed.pathname.includes(['gif', 'png', 'jpg', 'jpeg'])) {
+    // const ext = ['gif', 'png', 'jpg', 'jpeg']
+    if (
+      !parsed.pathname.includes('gif') &&
+      !parsed.pathname.includes('png') &&
+      !parsed.pathname.includes('jpg') &&
+      !parsed.pathname.includes('jpeg')
+    ) {
       return null
     }
     const imgPath =
