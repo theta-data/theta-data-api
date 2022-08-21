@@ -31,7 +31,8 @@
   ],
   "NFT": {
     "ANALYSE_NUMBER": 2,
-    "ANALYSE_INTERVAL": 20000
+    "ANALYSE_INTERVAL": 20000,
+    "STATIC_PATH": "../static/"
   },
   "SMART_CONTRACT": {
     "ANALYSE_NUMBER": 200,
