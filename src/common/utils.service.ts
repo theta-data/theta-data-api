@@ -4,7 +4,11 @@ import { ethers } from 'ethers'
 // import { Logger } from 'ethers/lib/utils'
 import { thetaTsSdk } from 'theta-ts-sdk'
 const config = require('config')
-
+const fs = require('fs')
+const stream = require('stream')
+const url = require('url')
+const { promisify } = require('util')
+const got = require('got')
 export interface LOG_DECODE_INTERFACE {
   address: string
   data: string
@@ -228,5 +232,49 @@ export class UtilsService {
       result += characters.charAt(Math.floor(Math.random() * charactersLength))
     }
     return result
+  }
+
+  async downloadImage(urlPath: string, storePath: string): Promise<string | null> {
+    this.logger.debug('url path: ' + urlPath)
+    if (!urlPath) return null
+    const pipeline = promisify(stream.pipeline)
+    // const got: any = await import('got')
+    // got.default()
+    var path = require('path')
+    var parsed = url.parse(urlPath)
+    // if(!pa)
+    if (!parsed.hostname) {
+      return urlPath.replace(storePath, '')
+    }
+    // const ext = ['gif', 'png', 'jpg', 'jpeg']
+    if (
+      !parsed.pathname.includes('gif') &&
+      !parsed.pathname.includes('png') &&
+      !parsed.pathname.includes('jpg') &&
+      !parsed.pathname.includes('jpeg')
+    ) {
+      return null
+    }
+    const imgPath = storePath + '/' + parsed.hostname.replace(/\./g, '-')
+    const imgStorePath = imgPath + parsed.pathname
+    const pathArr = imgStorePath.split('/')
+    pathArr.pop()
+
+    if (!fs.existsSync(pathArr.join('/'))) {
+      fs.mkdirSync(pathArr.join('/'), { recursive: true })
+    }
+
+    console.log(path.basename(parsed.pathname))
+    if (!fs.existsSync(imgStorePath)) {
+      try {
+        await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
+        return imgStorePath.replace(storePath, '')
+      } catch (e) {
+        console.error(e)
+        return null
+      }
+    } else {
+      return imgStorePath.replace(storePath, '')
+    }
   }
 }

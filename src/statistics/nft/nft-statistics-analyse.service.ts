@@ -75,7 +75,7 @@ export class NftStatisticsAnalyseService {
       await this.setZero()
       await this.updateNftsImgUri()
 
-      await this.downloadAllImg()
+      // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
