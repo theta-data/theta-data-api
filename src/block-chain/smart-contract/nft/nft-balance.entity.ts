@@ -53,7 +53,7 @@ export class NftBalanceEntity {
   name: string
 
   @Field()
-  @Column({ default: '' })
+  @Column({ default: '', nullable: true })
   img_uri: string
 
   @Field()
