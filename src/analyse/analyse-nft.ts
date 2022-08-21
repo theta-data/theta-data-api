@@ -7,13 +7,12 @@ const config = require('config')
 async function bootstrap() {
   let i = 0
   while (1) {
-    i++
     const app = await NestFactory.createApplicationContext(AppModule)
     const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
-
     await service.analyseData(i)
     await new Promise((resolve) => setTimeout(resolve, config.get('NFT.ANALYSE_INTERVAL')))
     app.close()
+    i++
   }
 }
 bootstrap()
