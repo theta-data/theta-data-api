@@ -58,7 +58,7 @@ export class NftAnalyseService {
       }
 
       this.logger.debug('start update calltimes by period')
-      await this.downloadAllImg(i)
+      await this.downloadAllImg(loop)
       await this.nftConnection.commitTransaction()
       if (contractRecordList.length > 0) {
         this.logger.debug(
@@ -82,16 +82,16 @@ export class NftAnalyseService {
     }
   }
 
-  async downloadAllImg(i: number) {
+  async downloadAllImg(loop: number) {
     const total = await this.nftConnection.manager.count(NftBalanceEntity)
     const pageSize = 5000
     const pageCount = Math.ceil(total / pageSize)
-    if (i > pageCount) {
+    if (loop > pageCount) {
       return
     }
     // for (let i = 0; i < pageCount; i++) {
     const list = await this.nftConnection.manager.find(NftBalanceEntity, {
-      skip: i * pageSize,
+      skip: loop * pageSize,
       take: pageSize,
       order: {
         id: 'DESC'
