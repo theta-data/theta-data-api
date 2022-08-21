@@ -18,7 +18,7 @@ export class NftAnalyseService {
 
   constructor(private nftService: NftService, private utilsService: UtilsService) {}
 
-  public async analyseData() {
+  public async analyseData(loop: number) {
     try {
       this.logger.debug('start analyse nft data')
       // this.logger.debug(logoConfig)
@@ -58,7 +58,7 @@ export class NftAnalyseService {
       }
 
       this.logger.debug('start update calltimes by period')
-      await this.downloadAllImg()
+      await this.downloadAllImg(i)
       await this.nftConnection.commitTransaction()
       if (contractRecordList.length > 0) {
         this.logger.debug(
@@ -82,24 +82,30 @@ export class NftAnalyseService {
     }
   }
 
-  async downloadAllImg() {
+  async downloadAllImg(i: number) {
     const total = await this.nftConnection.manager.count(NftBalanceEntity)
     const pageSize = 5000
     const pageCount = Math.ceil(total / pageSize)
-    for (let i = 0; i < pageCount; i++) {
-      const list = await this.nftConnection.manager.find(NftBalanceEntity, {
-        skip: i * pageSize,
-        take: pageSize
-      })
-      for (const item of list) {
-        item.img_uri = await this.utilsService.downloadImage(
-          item.img_uri,
-          config.get('NFT.STATIC_PATH')
-        )
-        this.logger.debug(item.img_uri)
-        await this.nftConnection.manager.save(item)
-      }
+    if (i > pageCount) {
+      return
     }
+    // for (let i = 0; i < pageCount; i++) {
+    const list = await this.nftConnection.manager.find(NftBalanceEntity, {
+      skip: i * pageSize,
+      take: pageSize,
+      order: {
+        id: 'DESC'
+      }
+    })
+    for (const item of list) {
+      item.img_uri = await this.utilsService.downloadImage(
+        item.img_uri,
+        config.get('NFT.STATIC_PATH')
+      )
+      this.logger.debug(item.img_uri)
+      await this.nftConnection.manager.save(item)
+    }
+    // }
     // const nfts = await this.nftConnection.manager.find(NftBalanceEntity)
   }
 }
