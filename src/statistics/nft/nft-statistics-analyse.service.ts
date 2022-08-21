@@ -75,7 +75,7 @@ export class NftStatisticsAnalyseService {
       await this.setZero()
       await this.updateNftsImgUri()
 
-      // await this.downloadAllImg()
+      await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -268,6 +268,14 @@ export class NftStatisticsAnalyseService {
   async downloadImage(urlPath: string): Promise<string | null> {
     this.logger.debug('url path: ' + urlPath)
     if (!urlPath) return null
+    if (
+      !urlPath.includes('gif') &&
+      !urlPath.includes('png') &&
+      !urlPath.includes('jpg') &&
+      !urlPath.includes('jpeg')
+    ) {
+      return null
+    }
     const pipeline = promisify(stream.pipeline)
     // const got: any = await import('got')
     // got.default()
@@ -278,14 +286,7 @@ export class NftStatisticsAnalyseService {
       return urlPath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
     }
     // const ext = ['gif', 'png', 'jpg', 'jpeg']
-    if (
-      !parsed.pathname.includes('gif') &&
-      !parsed.pathname.includes('png') &&
-      !parsed.pathname.includes('jpg') &&
-      !parsed.pathname.includes('jpeg')
-    ) {
-      return null
-    }
+
     const imgPath =
       config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
     const imgStorePath = imgPath + parsed.pathname
