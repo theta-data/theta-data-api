@@ -1,10 +1,40 @@
-import { Field, Int, ObjectType } from '@nestjs/graphql'
-import { THETA_BLOCK_STATUS_ENUM, THETA_TX_TYPE_ENUM } from '../tx/theta.enum'
-import { GraphQLBoolean, GraphQLInt, GraphQLString } from 'graphql'
+import { RankByEnum } from './../smart-contract/smart-contract.model'
+import { THETA_TRANSACTION_TYPE_ENUM } from './../tx/theta.enum'
+// import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
+import { Field, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
+import { THETA_BLOCK_STATUS_ENUM } from '../tx/theta.enum'
+import { GraphQLBoolean, GraphQLInt, GraphQLString, Token } from 'graphql'
 import { GetVcpByHeightModel } from './rpc-vcp.model'
 import { GetGcpByHeightModel } from './rpc-gcp.model'
 import { GetEenpByHeightModel } from './rpc-eenp.model'
 import { BlockHashStakeRewardDistributionRuleSetPairsModel } from './rpc-stake-reward-distribution-by-height.model'
+
+export enum STAKE_PURPOSE_ENUM {
+  validator,
+  guardian,
+  elite_edge_node
+}
+registerEnumType(STAKE_PURPOSE_ENUM, {
+  name: 'STAKE_PURPOSE_ENUM'
+})
+
+@ObjectType()
+export class TokenType {
+  @Field()
+  thetawei: string // "994999990000000000000000000",
+
+  @Field()
+  tfuelwei: string //"4999999979999999000000000000"
+}
+
+@ObjectType()
+export class HolderType {
+  @Field()
+  address: string
+
+  @Field(() => TokenType)
+  coins: TokenType
+}
 
 @ObjectType()
 export class GetVersionModel {
@@ -16,15 +46,6 @@ export class GetVersionModel {
 
   @Field({ description: 'the build timestamp' })
   timestamp: string //'Tue Feb 19 23:31:32 UTC 2019'
-}
-
-@ObjectType()
-export class TokenType {
-  @Field()
-  thetawei: string // "994999990000000000000000000",
-
-  @Field()
-  tfuelwei: string //"4999999979999999000000000000"
 }
 
 @ObjectType()
@@ -63,7 +84,7 @@ export class receiptLogType {
 @ObjectType()
 export class GetAccountModel {
   @Field({ description: ' the current sequence number of the account' })
-  sequence: string // "1",
+  sequence: number // "1",
 
   @Field({ description: 'the native token balance' })
   coins: TokenType
@@ -72,7 +93,7 @@ export class GetAccountModel {
     description:
       'fund reserved for micropayment through the off-chain resource-oriented payment pool'
   })
-  reserved_funds: []
+  reserved_funds: Array<number>
 
   @Field({ description: '' })
   last_updated_block_height: string //'0'
@@ -135,6 +156,20 @@ export class EliteEdgeNodeVotesType {
 
   @Field(() => [GraphQLString])
   Addresses: Array<string>
+}
+@ObjectType()
+export class SourceTargetType {
+  @Field()
+  address: string
+
+  @Field()
+  sequence: string
+
+  @Field(() => TokenType)
+  coins: TokenType
+
+  @Field()
+  signature: string
 }
 
 @ObjectType()
@@ -214,34 +249,67 @@ export class inputOutputType {
 @ObjectType()
 export class transactionRawType {
   @Field(() => proposerType, { nullable: true })
-  proposer: proposerType
+  proposer?: proposerType
 
   @Field(() => TokenType, { nullable: true })
-  fee: TokenType
+  fee?: TokenType
 
   @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
-  outputs: Array<inputOutputType>
+  outputs?: Array<inputOutputType>
 
   @Field(() => [inputOutputType], { nullable: 'itemsAndList' })
-  inputs: Array<inputOutputType>
+  inputs?: Array<inputOutputType>
 
   @Field({ nullable: true })
-  gas_limit: string
+  gas_limit?: string
 
   @Field({ nullable: true })
-  gas_price: string
+  gas_price?: string
+
+  @Field({ nullable: true })
+  gas_used?: string
 
   @Field((type) => proposerType, { nullable: true })
-  from: proposerType
+  from?: proposerType
 
   @Field((type) => proposerType, { nullable: true })
-  to: proposerType
+  to?: proposerType
 
   @Field({ nullable: true })
-  data: string
+  data?: string
 
   @Field({ nullable: true })
-  block_height: string
+  block_height?: string
+
+  @Field({ nullable: true })
+  payment_sequence?: string
+
+  @Field({ nullable: true })
+  reserve_sequence?: string
+
+  @Field({ nullable: true })
+  resource_id?: string
+
+  @Field(() => SourceTargetType, { nullable: true })
+  source?: SourceTargetType
+
+  @Field(() => SourceTargetType, { nullable: true })
+  target?: SourceTargetType
+
+  @Field(() => TokenType, { nullable: true })
+  collateral?: TokenType
+
+  @Field(() => [String], { nullable: true })
+  resource_ids?: Array<string>
+
+  @Field({ nullable: true })
+  duration?: string
+
+  @Field(() => STAKE_PURPOSE_ENUM, { nullable: true })
+  purpose?: STAKE_PURPOSE_ENUM
+
+  @Field(() => HolderType, { nullable: true })
+  holder?: HolderType
 }
 
 @ObjectType()
@@ -249,8 +317,8 @@ export class transactionType {
   @Field(() => transactionRawType, { nullable: true })
   raw: transactionRawType
 
-  @Field(() => THETA_TX_TYPE_ENUM)
-  type: THETA_TX_TYPE_ENUM
+  @Field(() => THETA_TRANSACTION_TYPE_ENUM)
+  type: THETA_TRANSACTION_TYPE_ENUM
 
   // @Field(() => TokenType, { nullable: true })
   // fee: TokenType
@@ -259,7 +327,7 @@ export class transactionType {
   hash: string
 
   @Field(() => receiptType, { nullable: true })
-  receipt: receiptType
+  receipt?: receiptType
 }
 
 @ObjectType()
@@ -270,8 +338,8 @@ export class GetTransactionModel {
   @Field()
   block_height: string //"3",
 
-  @Field(() => THETA_TX_TYPE_ENUM)
-  type: THETA_TX_TYPE_ENUM
+  @Field(() => THETA_TRANSACTION_TYPE_ENUM)
+  type: THETA_TRANSACTION_TYPE_ENUM
 
   @Field()
   status: string //"finalized",
@@ -283,7 +351,7 @@ export class GetTransactionModel {
   transaction: transactionRawType
 
   @Field(() => receiptType, { nullable: true })
-  receipt: receiptType
+  receipt?: receiptType
 }
 
 @ObjectType()

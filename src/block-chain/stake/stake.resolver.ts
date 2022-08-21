@@ -1,9 +1,9 @@
-import { Args, Info, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
+import { Args, Info, Query, Resolver } from '@nestjs/graphql'
 import { StakeService } from './stake.service'
 import { StakeStatisticsEntity } from './stake-statistics.entity'
 import { Logger } from '@nestjs/common'
 import { StakeRewardModel } from './stake.model'
-import { fieldsList, fieldsMap } from 'graphql-fields-list'
+import { fieldsList } from 'graphql-fields-list'
 import { GraphQLString } from 'graphql'
 import { MarketService } from '../../market/market.service'
 import { WalletService } from '../wallet/wallets.service'
@@ -18,7 +18,7 @@ export class StakeResolver {
     private walletService: WalletService
   ) {}
 
-  @Query(() => StakeStatisticsEntity, {
+  @Query(() => [StakeStatisticsEntity], {
     description: 'Return to statistics related to token pledges',
     nullable: true
   })
@@ -26,8 +26,8 @@ export class StakeResolver {
     return await this.stakeService.getLatestStakeStatics()
   }
 
-  @ResolveField(() => StakeRewardModel, { name: 'stake_reward', nullable: true })
-  async stake_reward(
+  @Query(() => StakeRewardModel)
+  async StakeReward(
     @Info() info,
     @Args('wallet_address', { type: () => GraphQLString! }) wallet_address: string
   ) {

@@ -1,4 +1,41 @@
-import { Field, Float, ObjectType } from '@nestjs/graphql'
+import { Field, Float, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
+
+@ObjectType()
+export class KlineObj {
+  @Field()
+  time: string
+
+  @Field(() => Float)
+  price: number
+}
+export enum KLINE_INTERVAL {
+  _1m = '1m',
+  _3m = '3m',
+  _5m = '5m',
+  _15m = '15m',
+  _30m = '30m',
+  _1h = '1h',
+  _2h = '2h',
+  _4h = '4h',
+  _6h = '6h',
+  _8h = '8h',
+  _12h = '12h',
+  _1d = '1d',
+  _3d = '3d',
+  _1w = '1w',
+  _1M = '1M'
+}
+registerEnumType(KLINE_INTERVAL, {
+  name: 'KLINE_INTERVAL'
+})
+
+export enum TOKEN_PAIR_TYPE {
+  thetaUsdt = 'THETAUSDT',
+  tfuelUSdt = 'TFUELUSDT'
+}
+registerEnumType(TOKEN_PAIR_TYPE, {
+  name: 'TOKEN_PAIR_TYPE'
+})
 
 @ObjectType()
 export class TokenMarketInformationType {
@@ -12,16 +49,10 @@ export class TokenMarketInformationType {
   volume_24h: number
 
   @Field(() => Float)
-  market_cap: number
+  price_change_percent: number
 
-  @Field(() => Float)
-  total_supply: number
-
-  @Field(() => Float)
-  circulating_supply: number
-
-  @Field()
-  last_updated: string
+  @Field(() => [KlineObj])
+  kline: KlineObj[]
 }
 
 @ObjectType()

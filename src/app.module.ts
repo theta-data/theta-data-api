@@ -1,3 +1,4 @@
+import { ExplorerModule } from './block-chain/explorer/explorer.module'
 import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { GraphQLModule } from '@nestjs/graphql'
@@ -9,9 +10,8 @@ import { RpcModule } from './block-chain/rpc/rpc.module'
 import { SmartContractModule } from './block-chain/smart-contract/smart-contract.module'
 import { join } from 'path'
 import { ServeStaticModule } from '@nestjs/serve-static'
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
+import { ThrottlerModule } from '@nestjs/throttler'
 import { WalletModule } from './block-chain/wallet/wallet.module'
-// import { AnalyseModule } from './analyse/analyse.module'
 import { EventEmitterModule } from '@nestjs/event-emitter'
 import { ContactModule } from './contact/contact.module'
 import { ApolloDriver } from '@nestjs/apollo'
@@ -19,6 +19,7 @@ import { APP_GUARD } from '@nestjs/core'
 import { GqlThrottlerGuard } from './guard'
 import { LoggerModule } from './logger/logger.module'
 import { LoggerMiddleware } from './logger/logger.middleware'
+import { NftStatisticsModule } from './statistics/nft/nft-statistics.module'
 const config = require('config')
 
 @Module({
@@ -39,6 +40,10 @@ const config = require('config')
       ...config.get('ORM_CONFIG'),
       database: config.get('ORM_CONFIG')['database'] + 'smart_contract/smart_contract.sqlite',
       name: 'smart_contract',
+      // prepareDatabase: (obj) => {
+      //   obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
+      //   console.log('prepare database obj', obj)
+      // },
       entities: []
     }),
     TypeOrmModule.forRoot({
@@ -71,6 +76,23 @@ const config = require('config')
       name: 'logger',
       entities: []
     }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'nft-statistics/nft-statistics.sqlite',
+      name: 'nft-statistics',
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'explorer/data.sqlite',
+      name: 'explorer',
+      // prepareDatabase: (obj) => {
+      //   obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
+      //   console.log('prepare database obj', obj)
+      // },
+
+      entities: []
+    }),
     GraphQLModule.forRoot({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
@@ -96,7 +118,9 @@ const config = require('config')
     SmartContractModule,
     WalletModule,
     ContactModule,
-    LoggerModule
+    LoggerModule,
+    NftStatisticsModule,
+    ExplorerModule
   ],
   providers: [
     {
