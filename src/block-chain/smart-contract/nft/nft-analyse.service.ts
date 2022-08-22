@@ -104,6 +104,7 @@ export class NftAnalyseService {
       )
       this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
       if (imgPath == item.img_uri) continue
+      item.img_uri = imgPath
       await this.nftConnection.manager.save(item)
     }
     // }
