@@ -98,11 +98,12 @@ export class NftAnalyseService {
       }
     })
     for (const item of list) {
-      item.img_uri = await this.utilsService.downloadImage(
+      const imgPath = await this.utilsService.downloadImage(
         item.img_uri,
         config.get('NFT.STATIC_PATH')
       )
-      this.logger.debug('loop ' + loop + ': ' + item.img_uri)
+      this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
+      if (imgPath == item.img_uri) continue
       await this.nftConnection.manager.save(item)
     }
     // }
