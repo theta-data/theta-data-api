@@ -9,6 +9,7 @@ const stream = require('stream')
 const url = require('url')
 const { promisify } = require('util')
 const got = require('got')
+const path = require('path')
 export interface LOG_DECODE_INTERFACE {
   address: string
   data: string
@@ -240,7 +241,7 @@ export class UtilsService {
     const pipeline = promisify(stream.pipeline)
     // const got: any = await import('got')
     // got.default()
-    var path = require('path')
+
     var parsed = url.parse(urlPath)
     // if(!pa)
     if (!parsed.hostname) {
