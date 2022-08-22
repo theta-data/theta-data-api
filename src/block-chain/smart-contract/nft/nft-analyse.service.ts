@@ -1,3 +1,4 @@
+import { NftBalanceEntity } from './nft-balance.entity'
 import { Injectable, Logger } from '@nestjs/common'
 import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
@@ -17,9 +18,9 @@ export class NftAnalyseService {
 
   constructor(private nftService: NftService, private utilsService: UtilsService) {}
 
-  public async analyseData() {
+  public async analyseData(loop: number) {
     try {
-      this.logger.debug('start analyse nft data')
+      this.logger.debug(loop + ' start analyse nft data')
       // this.logger.debug(logoConfig)
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
@@ -57,6 +58,10 @@ export class NftAnalyseService {
       }
 
       this.logger.debug('start update calltimes by period')
+      if (config.get('NFT.DL_ALL_NFT_IMG') && config.get('NFT.DL_ALL_NFT_IMG') == true) {
+        await this.downloadAllImg(loop)
+      }
+
       await this.nftConnection.commitTransaction()
       if (contractRecordList.length > 0) {
         this.logger.debug(
@@ -78,5 +83,35 @@ export class NftAnalyseService {
       this.logger.debug('end analyse nft data')
       this.logger.debug('release success')
     }
+  }
+
+  async downloadAllImg(loop: number) {
+    const total = await this.nftConnection.manager.count(NftBalanceEntity)
+    const pageSize = 5000
+    const pageCount = Math.ceil(total / pageSize)
+    if (loop > pageCount) {
+      return
+    }
+    // for (let i = 0; i < pageCount; i++) {
+    const list = await this.nftConnection.manager.find(NftBalanceEntity, {
+      skip: loop * pageSize,
+      take: pageSize,
+      order: {
+        id: 'DESC'
+      }
+    })
+    for (const item of list) {
+      this.logger.debug('start download ' + item.img_uri)
+      const imgPath = await this.utilsService.downloadImage(
+        item.img_uri,
+        config.get('NFT.STATIC_PATH')
+      )
+      this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
+      if (imgPath == item.img_uri) continue
+      item.img_uri = imgPath
+      await this.nftConnection.manager.save(item)
+    }
+    // }
+    // const nfts = await this.nftConnection.manager.find(NftBalanceEntity)
   }
 }
