@@ -6,7 +6,6 @@ import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contra
 import { UtilsService } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
-import { CMC_PRICE_INFORMATION } from 'theta-ts-sdk/dist/types/interface'
 import { getConnection, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 const config = require('config')

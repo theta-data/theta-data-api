@@ -58,7 +58,7 @@ export class NftAnalyseService {
       }
 
       this.logger.debug('start update calltimes by period')
-      if (config.get('NFT.DL_ALL_NFT_IMG') && config.get('NFT.DL_ALL_NFT_IMG') == true) {
+      if (config.get('NFT.DL_ALL_NFT_IMG') == true) {
         await this.downloadAllImg(loop)
       }
 
