@@ -33,7 +33,8 @@
   "NFT": {
     "ANALYSE_NUMBER": 1000,
     "ANALYSE_INTERVAL": 1000,
-    "STATIC_PATH": "/home/ubuntu/theta-data/static/nft_img/"
+    "STATIC_PATH": "/home/ubuntu/theta-data/static/nft_img/",
+    "DL_ALL_NFT_IMG": false
   },
   "SMART_CONTRACT": {
     "ANALYSE_NUMBER": 20,
