@@ -20,7 +20,7 @@ export class NftAnalyseService {
 
   public async analyseData(loop: number) {
     try {
-      this.logger.debug('start analyse nft data')
+      this.logger.debug(loop + ' start analyse nft data')
       // this.logger.debug(logoConfig)
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
@@ -102,7 +102,7 @@ export class NftAnalyseService {
         item.img_uri,
         config.get('NFT.STATIC_PATH')
       )
-      this.logger.debug(item.img_uri)
+      this.logger.debug('loop ' + loop + ': ' + item.img_uri)
       await this.nftConnection.manager.save(item)
     }
     // }
