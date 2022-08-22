@@ -75,7 +75,7 @@ export class NftStatisticsAnalyseService {
       await this.setZero()
       await this.updateNftsImgUri()
 
-      await this.downloadAllImg()
+      // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
       if (nftTransferRecordList.length > 0) {
         this.logger.debug(
@@ -100,6 +100,7 @@ export class NftStatisticsAnalyseService {
   }
 
   async nftStatistics(smartContractAddress: string) {
+    this.logger.debug('start nftStatistics:' + smartContractAddress)
     const smartContract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
       contract_address: smartContractAddress
     })
