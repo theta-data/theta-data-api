@@ -98,6 +98,7 @@ export class NftAnalyseService {
       }
     })
     for (const item of list) {
+      this.logger.debug('start download ' + item.img_uri)
       const imgPath = await this.utilsService.downloadImage(
         item.img_uri,
         config.get('NFT.STATIC_PATH')
