@@ -14,6 +14,7 @@ import {
 @Entity()
 @Unique(['smart_contract_address', 'token_id', 'timestamp'])
 @Index(['smart_contract_address'])
+@Index(['smart_contract_address', 'timestamp'])
 @Index(['from'])
 @Index(['to'])
 export class NftTransferRecordEntity {
