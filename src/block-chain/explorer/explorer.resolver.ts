@@ -117,8 +117,9 @@ export class ExplorerResolver {
       }
     }
 
-    const account = await this.explorerService.getAccount(search)
-    if (account) {
+    // const account = await this.explorerService.getAccount(search)
+    const accountInfo = await this.rpcService.getAccount(search)
+    if (accountInfo) {
       const accountInfo = await this.rpcService.getAccount(search)
       return {
         account: accountInfo,
