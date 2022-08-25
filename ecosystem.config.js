@@ -3,7 +3,7 @@ module.exports = {
     {
       name: 'theta-data-api',
       script: './dist/main.js',
-      instances: 3,
+      instances: 8,
       exec_mode: 'cluster',
       autorestart: true,
       watch: false,
