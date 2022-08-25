@@ -9,7 +9,7 @@ const fs = require('fs')
 
 @Injectable()
 export class NftAnalyseService {
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('nft analyse service')
   analyseKey = 'under_analyse'
 
   private smartContractConnection: QueryRunner

@@ -18,7 +18,7 @@ const { promisify } = require('util')
 const got = require('got')
 @Injectable()
 export class NftStatisticsAnalyseService {
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('nft statistics analyse service')
   analyseKey = 'under_analyse'
 
   private smartContractConnection: QueryRunner
