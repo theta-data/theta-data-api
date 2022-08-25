@@ -150,7 +150,8 @@ git clone https://github.com/theta-data/theta-data-api.git
 ### Installation
 
 ```bash
-cd theta-data-api && npm install
+cd theta-data-api
+npm install
 ```
 
 
