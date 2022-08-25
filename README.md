@@ -144,27 +144,27 @@ It is also worth mentioning that Theta Data only returns the data you specify in
 
 ### Clone
 ```bash
-$ git clone https://github.com/theta-data/theta-data-api.git
+git clone https://github.com/theta-data/theta-data-api.git
 ```
 
 ### Installation
 
 ```bash
-$ cd theta-data-api && npm install
+cd theta-data-api && npm install
 ```
 
 
 ### Running the analyse server
 ```bash
 # graphql api development
-$ npm run analyse
+npm run analyse
 ```
 
 ### Running the graphql api server
 
 ```bash
 # graphql api development
-$ npm run start
+npm run start
 
 ```
 
@@ -185,18 +185,18 @@ $ npm run test
 ### Build
 ```bash
 # build
-$ npm run build
+npm run build
 ```
 
 ### Run analyse server
 ```
-$ node dist/analyse/index
+node dist/analyse/index
 ```
 
 ### Run analyse server
 open another terminal
 ```
-$ node dist/main
+node dist/main
 ```
 
 ## Contact
