@@ -10,7 +10,7 @@ const config = require('config')
 const moment = require('moment')
 @Injectable()
 export class TxAnalyseService {
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('tx analyse service')
   analyseKey = 'under_analyse'
   private counter = 0
 

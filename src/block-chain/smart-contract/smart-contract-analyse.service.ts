@@ -14,7 +14,7 @@ const moment = require('moment')
 const fs = require('fs')
 @Injectable()
 export class SmartContractAnalyseService {
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('smart contract analyse service')
   analyseKey = 'under_analyse'
   private counter = 0
   private startTimestamp = 0
