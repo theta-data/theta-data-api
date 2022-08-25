@@ -14,7 +14,7 @@ const config = require('config')
 const moment = require('moment')
 @Injectable()
 export class StakeAnalyseService {
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('stake analyse service')
   analyseKey = 'under_analyse'
   private counter = 0
   // private startTimestamp = 0

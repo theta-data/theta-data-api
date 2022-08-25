@@ -17,7 +17,7 @@ const path = require('path')
 @Injectable()
 export class ExplorerAnalyseService {
   private explorerConnection: QueryRunner
-  private readonly logger = new Logger('analyse service')
+  private readonly logger = new Logger('explorer analyse service')
 
   private heightConfigFile = config.get('ORM_CONFIG')['database'] + 'explorer/record.height'
 
