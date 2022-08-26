@@ -90,6 +90,7 @@ export class NftAnalyseService {
     const pageSize = 5000
     const pageCount = Math.ceil(total / pageSize)
     if (loop > pageCount) {
+      this.logger.debug('loop ' + loop + ' page count:' + pageCount)
       return
     }
     // for (let i = 0; i < pageCount; i++) {
