@@ -12,6 +12,7 @@ const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
+const nftIgnore = JSON.parse(fs.readFileSync('resources/nft-ignore.json'))
 const stream = require('stream')
 const url = require('url')
 const { promisify } = require('util')
@@ -100,6 +101,9 @@ export class NftStatisticsAnalyseService {
 
   async nftStatistics(smartContractAddress: string) {
     this.logger.debug('start nftStatistics:' + smartContractAddress)
+    if (nftIgnore.includes(smartContractAddress)) {
+      return
+    }
     const smartContract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
       contract_address: smartContractAddress
     })
