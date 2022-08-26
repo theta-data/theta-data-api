@@ -19,6 +19,7 @@ import { NftTransferRecordEntity } from './nft-transfer-record.entity'
 import fetch from 'cross-fetch'
 import { UtilsService } from 'src/common/utils.service'
 import BigNumber from 'bignumber.js'
+const config = require('config')
 
 @Injectable()
 export class NftService {
@@ -300,6 +301,7 @@ export class NftService {
             if (hasBaseTokenUri) {
               baseTokenUri = await this.getBaseTokenUri(logContract.contract_address, abiInfo)
             }
+            imgUri = await this.utilsService.downloadImage(imgUri, config.get('NFT.STATIC_PATH'))
             await nftConnection.manager.insert(NftBalanceEntity, {
               smart_contract_address: logContract.contract_address,
               owner: log.decode.result.to.toLowerCase(),
