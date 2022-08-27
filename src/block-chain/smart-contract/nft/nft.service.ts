@@ -209,41 +209,14 @@ export class NftService {
             logContract.protocol !== SmartContractProtocolEnum.tnt721
           )
             continue
-          const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
-            token_id: Number(log.decode.result.tokenId),
-            smart_contract_address: log.address.toLowerCase(),
-            timestamp: record.timestamp
-          })
-          if (!transferRecord) {
-            this.logger.debug(
-              'insert nft transfer record:' +
-                JSON.stringify({
-                  from: log.decode.result.from.toLowerCase(),
-                  to: log.decode.result.to.toLowerCase(),
-                  token_id: Number(log.decode.result.tokenId),
-                  smart_contract_address: log.address.toLowerCase(),
-                  height: record.height,
-                  name: contract.contract.name,
-                  timestamp: record.timestamp
-                })
-            )
-            await nftConnection.manager.insert(NftTransferRecordEntity, {
-              from: log.decode.result.from.toLowerCase(),
-              to: log.decode.result.to.toLowerCase(),
-              token_id: Number(log.decode.result.tokenId),
-              smart_contract_address: log.address.toLowerCase(),
-              height: record.height,
-              name: logContract.name,
-              transaction_hash: record.transaction_hash,
-              timestamp: record.timestamp
-            })
-          }
 
           const balance = await nftConnection.manager.findOne(NftBalanceEntity, {
             smart_contract_address: log.address.toLowerCase(),
             token_id: Number(log.decode.result.tokenId)
           })
+          let imgUri = ''
           if (balance) {
+            imgUri = balance.img_uri
             const latestRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
               where: {
                 smart_contract_address: log.address.toLowerCase(),
@@ -264,7 +237,6 @@ export class NftService {
               }
             )
           } else {
-            let imgUri = ''
             let detail = ''
             let tokenUri = ''
             let baseTokenUri = ''
@@ -315,7 +287,37 @@ export class NftService {
               base_token_uri: baseTokenUri
             })
           }
-          // return true
+
+          const transferRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
+            token_id: Number(log.decode.result.tokenId),
+            smart_contract_address: log.address.toLowerCase(),
+            timestamp: record.timestamp
+          })
+          if (!transferRecord) {
+            this.logger.debug(
+              'insert nft transfer record:' +
+                JSON.stringify({
+                  from: log.decode.result.from.toLowerCase(),
+                  to: log.decode.result.to.toLowerCase(),
+                  token_id: Number(log.decode.result.tokenId),
+                  smart_contract_address: log.address.toLowerCase(),
+                  height: record.height,
+                  name: contract.contract.name,
+                  timestamp: record.timestamp
+                })
+            )
+            await nftConnection.manager.insert(NftTransferRecordEntity, {
+              from: log.decode.result.from.toLowerCase(),
+              to: log.decode.result.to.toLowerCase(),
+              token_id: Number(log.decode.result.tokenId),
+              smart_contract_address: log.address.toLowerCase(),
+              height: record.height,
+              name: logContract.name,
+              img_uri: imgUri,
+              transaction_hash: record.transaction_hash,
+              timestamp: record.timestamp
+            })
+          }
         }
 
         if (
