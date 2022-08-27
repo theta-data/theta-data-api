@@ -33,6 +33,10 @@ export class NftTransferRecordEntity {
   @Column({ default: '' })
   name: string
 
+  @Field({ nullable: true })
+  @Column({ default: '', nullable: true })
+  img_uri: string
+
   @Field()
   @Column()
   to: string

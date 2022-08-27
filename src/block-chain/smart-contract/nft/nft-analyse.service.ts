@@ -1,3 +1,4 @@
+import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { NftBalanceEntity } from './nft-balance.entity'
 import { Injectable, Logger } from '@nestjs/common'
 import { getConnection, MoreThan, QueryRunner } from 'typeorm'
@@ -108,9 +109,17 @@ export class NftAnalyseService {
         config.get('NFT.STATIC_PATH')
       )
       this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
-      if (imgPath == item.img_uri) continue
+      // if (imgPath == item.img_uri) continue
       item.img_uri = imgPath
       await this.nftConnection.manager.save(item)
+      await this.nftConnection.manager.update(
+        NftTransferRecordEntity,
+        {
+          smart_contract_address: item.smart_contract_address,
+          token_id: item.token_id
+        },
+        { img_uri: imgPath }
+      )
     }
     // }
     // const nfts = await this.nftConnection.manager.find(NftBalanceEntity)
