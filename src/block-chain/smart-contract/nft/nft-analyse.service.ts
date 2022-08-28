@@ -118,6 +118,7 @@ export class NftAnalyseService {
             throw new Error('Bad response from server')
           }
           const res: any = await httpRes.json()
+          item.detail = JSON.stringify(res)
           item.name = res.name
           item.img_uri = res.image
         } catch (e) {
