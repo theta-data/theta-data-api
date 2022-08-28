@@ -4,7 +4,7 @@ import { ThetaTransactionStatisticsType, TX_GET_DATA_AMOUNT } from './theta-tx.m
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
 
 import { Cache } from 'cache-manager'
-
+const moment = require('moment')
 @Resolver((of) => ThetaTransactionStatisticsType)
 export class TxResolver {
   constructor(
@@ -35,7 +35,18 @@ export class TxResolver {
     amount: TX_GET_DATA_AMOUNT
   ) {
     const cacheKey = 'tx-by-date_' + amount + timezoneOffset
-    if (await this.cacheManager.get(cacheKey)) return await this.cacheManager.get(cacheKey)
+    const currDate = moment()
+      .subtract(-new Date().getTimezoneOffset() + Number(timezoneOffset), 'minutes')
+      .format('DD')
+    if (await this.cacheManager.get(cacheKey)) {
+      const res: any = await this.cacheManager.get(cacheKey)
+      if (res.length > 0 && res[0]['date'] != currDate) {
+        await this.cacheManager.del(cacheKey)
+      } else {
+        return res
+      }
+      // if(res)
+    }
     const res = await this.txService.getThetaDataByDate(timezoneOffset, amount)
     // if(amount == TX_GET_DATA_AMOUNT._2year)
     await this.cacheManager.set(cacheKey, res, { ttl: 60 * 60 * 12 })
