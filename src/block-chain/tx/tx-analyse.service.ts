@@ -120,6 +120,8 @@ export class TxAnalyseService {
           coin_base_transaction++
           break
         case THETA_TRANSACTION_TYPE_ENUM.deposit_stake:
+          deposit_stake_transaction++
+          break
         case THETA_TRANSACTION_TYPE_ENUM.tx_deposit_stake_v2:
           deposit_stake_transaction++
           break
