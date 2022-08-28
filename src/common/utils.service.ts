@@ -278,4 +278,29 @@ export class UtilsService {
       return imgStorePath.replace(storePath, '')
     }
   }
+
+  async getPath(urlPath: string, storePath: string) {
+    this.logger.debug('url path: ' + urlPath)
+    if (!urlPath) return null
+    const pipeline = promisify(stream.pipeline)
+    // const got: any = await import('got')
+    // got.default()
+
+    var parsed = url.parse(urlPath)
+    // if(!pa)
+    if (!parsed.hostname) {
+      return urlPath.replace(storePath, '')
+    }
+    // const ext = ['gif', 'png', 'jpg', 'jpeg']
+    if (
+      !parsed.pathname.includes('gif') &&
+      !parsed.pathname.includes('png') &&
+      !parsed.pathname.includes('jpg') &&
+      !parsed.pathname.includes('jpeg')
+    ) {
+      return null
+    }
+    const imgPath = storePath + '/' + parsed.hostname.replace(/\./g, '-')
+    return imgPath + parsed.pathname
+  }
 }
