@@ -127,7 +127,14 @@ export class NftAnalyseService {
       } else {
         const detail = JSON.parse(item.detail)
         item.name = detail.name
-        item.img_uri = detail.image
+
+        const imgStorePath = await this.utilsService.getPath(
+          detail.image,
+          config.get('NFT.STATIC_PATH')
+        )
+        if (imgStorePath != item.img_uri) {
+          item.img_uri = detail.image
+        }
       }
       // }
       const imgPath = await this.utilsService.downloadImage(
