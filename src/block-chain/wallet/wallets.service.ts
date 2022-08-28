@@ -40,6 +40,26 @@ export class WalletService {
 
   public async getBalanceByAddress(address: string) {
     const accountBalance = await thetaTsSdk.blockchain.getAccount(address)
+    if (!accountBalance) {
+      return {
+        theta: {
+          amount: 0,
+          fiat_currency_value: {
+            usd: 0,
+            cny: 0,
+            eur: 0
+          }
+        },
+        theta_fuel: {
+          amount: 0,
+          fiat_currency_value: {
+            usd: 0,
+            cny: 0,
+            eur: 0
+          }
+        }
+      }
+    }
     const thetaBalance = {
       amount: Number(
         new BigNumber(accountBalance.result.coins.thetawei).dividedBy('1e18').toFixed()
