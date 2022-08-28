@@ -63,18 +63,20 @@ export class NftStatisticsAnalyseService {
       await this.setZero()
 
       const promiseArr = []
+      this.logger.debug('nftTransferRecordList.length: ' + nftTransferRecordList.length)
       for (const record of nftTransferRecordList) {
         if (!nftList.includes(record.smart_contract_address)) {
           nftList.push(record.smart_contract_address)
         }
       }
+      this.logger.debug('nft list length:' + nftList.length)
       for (const nft of nftList) {
         promiseArr.push(this.nftStatistics(nft))
       }
       await Promise.all(promiseArr)
       // this.logger.debug('start update calltimes by period')
 
-      await this.updateNftsImgUri()
+      // await this.updateNftsImgUri()
 
       // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
