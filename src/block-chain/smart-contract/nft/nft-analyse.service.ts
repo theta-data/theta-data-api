@@ -7,6 +7,7 @@ import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
 const fs = require('fs')
+import fetch from 'cross-fetch'
 
 @Injectable()
 export class NftAnalyseService {
