@@ -142,7 +142,7 @@ export class NftAnalyseService {
           smart_contract_address: item.smart_contract_address,
           token_id: item.token_id
         },
-        { img_uri: imgPath }
+        { img_uri: imgPath, name: item.name }
       )
     }
     // }
