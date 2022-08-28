@@ -190,6 +190,8 @@ export class NftService {
       const logInfo = this.utilsService.decodeLogs(contract.logs, JSON.parse(contract.contract.abi))
       // this.logger.debug(JSON.stringify(logInfo))
       for (const log of logInfo) {
+        let imgUri = ''
+        let name = ''
         if (log.decode.eventName === 'Transfer' && log.decode.result.tokenId) {
           this.logger.debug(
             JSON.stringify({
@@ -214,9 +216,10 @@ export class NftService {
             smart_contract_address: log.address.toLowerCase(),
             token_id: Number(log.decode.result.tokenId)
           })
-          let imgUri = ''
+
           if (balance) {
             imgUri = balance.img_uri
+            name = balance.name
             const latestRecord = await nftConnection.manager.findOne(NftTransferRecordEntity, {
               where: {
                 smart_contract_address: log.address.toLowerCase(),
@@ -242,7 +245,7 @@ export class NftService {
             let baseTokenUri = ''
             const abiInfo = JSON.parse(logContract.abi)
             const hasTokenUri = abiInfo.find((v) => v.name == 'tokenURI')
-            let name = logContract.name
+            name = logContract.name
             let contractUri = logContract.contract_uri
             if (hasTokenUri) {
               try {
@@ -312,11 +315,19 @@ export class NftService {
               token_id: Number(log.decode.result.tokenId),
               smart_contract_address: log.address.toLowerCase(),
               height: record.height,
-              name: logContract.name,
+              name: name,
               img_uri: imgUri,
               transaction_hash: record.transaction_hash,
               timestamp: record.timestamp
             })
+          } else {
+            // if (!transferRecord.img_uri) {
+            transferRecord.img_uri = imgUri
+            // }
+            // if (!transferRecord.name) {
+            transferRecord.name = name
+            // }
+            await nftConnection.manager.save(transferRecord)
           }
         }
 

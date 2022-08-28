@@ -7,6 +7,7 @@ import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
 import { UtilsService } from 'src/common/utils.service'
 const config = require('config')
 const fs = require('fs')
+import fetch from 'cross-fetch'
 
 @Injectable()
 export class NftAnalyseService {
@@ -104,8 +105,8 @@ export class NftAnalyseService {
     })
     for (const item of list) {
       this.logger.debug('start download ' + item.img_uri)
-      let img = item.img_uri
-      if (!item.img_uri && item.token_uri) {
+      // let img = item.img_uri
+      if (!item.detail) {
         try {
           const httpRes = await fetch(item.token_uri, {
             method: 'GET',
@@ -117,15 +118,22 @@ export class NftAnalyseService {
             throw new Error('Bad response from server')
           }
           const res: any = await httpRes.json()
-          // nft.name = res.name
-          img = res.image
-          // nft.detail = JSON.stringify(res)
+          item.detail = JSON.stringify(res)
+          item.name = res.name
+          item.img_uri = res.image
         } catch (e) {
           this.logger.error(e)
         }
+      } else {
+        const detail = JSON.parse(item.detail)
+        item.name = detail.name
+        item.img_uri = detail.image
       }
       // }
-      const imgPath = await this.utilsService.downloadImage(img, config.get('NFT.STATIC_PATH'))
+      const imgPath = await this.utilsService.downloadImage(
+        item.img_uri,
+        config.get('NFT.STATIC_PATH')
+      )
       this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
       // if (imgPath == item.img_uri) continue
       item.img_uri = imgPath
@@ -136,7 +144,7 @@ export class NftAnalyseService {
           smart_contract_address: item.smart_contract_address,
           token_id: item.token_id
         },
-        { img_uri: imgPath }
+        { img_uri: imgPath, name: item.name }
       )
     }
     // }
