@@ -34,18 +34,12 @@ export class TxResolver {
     })
     amount: TX_GET_DATA_AMOUNT
   ) {
-    const cacheKey = 'tx-by-date_' + amount + timezoneOffset
     const currDate = moment()
       .subtract(-new Date().getTimezoneOffset() + Number(timezoneOffset), 'minutes')
       .format('DD')
+    const cacheKey = 'tx-by-date_' + currDate + '_' + amount + '_' + timezoneOffset
     if (await this.cacheManager.get(cacheKey)) {
-      const res: any = await this.cacheManager.get(cacheKey)
-      if (res.length > 0 && res[0]['date'] != currDate) {
-        await this.cacheManager.del(cacheKey)
-      } else {
-        return res
-      }
-      // if(res)
+      return await this.cacheManager.get(cacheKey)
     }
     const res = await this.txService.getThetaDataByDate(timezoneOffset, amount)
     // if(amount == TX_GET_DATA_AMOUNT._2year)
