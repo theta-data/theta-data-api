@@ -40,7 +40,7 @@ export class WalletService {
 
   public async getBalanceByAddress(address: string) {
     const accountBalance = await thetaTsSdk.blockchain.getAccount(address)
-    if (!accountBalance) {
+    if (!accountBalance || !accountBalance.result || !accountBalance.result.coins) {
       return {
         theta: {
           amount: 0,
