@@ -60,10 +60,11 @@ export class NftStatisticsAnalyseService {
         take: config.get('NFT_STATISTICS.ANALYSE_NUMBER'),
         order: { id: 'ASC' }
       })
+      await this.setZero()
 
       const promiseArr = []
       for (const record of nftTransferRecordList) {
-        if (nftList.indexOf(record.smart_contract_address) === -1) {
+        if (!nftList.includes(record.smart_contract_address)) {
           nftList.push(record.smart_contract_address)
         }
       }
@@ -71,8 +72,8 @@ export class NftStatisticsAnalyseService {
         promiseArr.push(this.nftStatistics(nft))
       }
       await Promise.all(promiseArr)
-      this.logger.debug('start update calltimes by period')
-      await this.setZero()
+      // this.logger.debug('start update calltimes by period')
+
       await this.updateNftsImgUri()
 
       // await this.downloadAllImg()
@@ -102,12 +103,16 @@ export class NftStatisticsAnalyseService {
   async nftStatistics(smartContractAddress: string) {
     this.logger.debug('start nftStatistics:' + smartContractAddress)
     if (nftIgnore.includes(smartContractAddress)) {
+      this.logger.debug('no nedd analyse:' + smartContractAddress)
       return
     }
     const smartContract = await this.smartContractConnection.manager.findOne(SmartContractEntity, {
       contract_address: smartContractAddress
     })
-    if (!smartContract || smartContract.protocol !== SmartContractProtocolEnum.tnt721) return
+    if (!smartContract || smartContract.protocol !== SmartContractProtocolEnum.tnt721) {
+      this.logger.debug('no contract or not tnt721 protocol:' + smartContractAddress)
+      return
+    }
 
     const recordList = await this.nftConnection.manager.find(NftTransferRecordEntity, {
       smart_contract_address: smartContractAddress,
