@@ -104,28 +104,30 @@ export class NftAnalyseService {
     })
     for (const item of list) {
       this.logger.debug('start download ' + item.img_uri)
-      let img = item.img_uri
-      if (!item.img_uri && item.token_uri) {
-        try {
-          const httpRes = await fetch(item.token_uri, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          })
-          if (httpRes.status >= 400) {
-            throw new Error('Bad response from server')
+      // let img = item.img_uri
+      // if (!item.img_uri && item.token_uri) {
+      try {
+        const httpRes = await fetch(item.token_uri, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json'
           }
-          const res: any = await httpRes.json()
-          // nft.name = res.name
-          img = res.image
-          // nft.detail = JSON.stringify(res)
-        } catch (e) {
-          this.logger.error(e)
+        })
+        if (httpRes.status >= 400) {
+          throw new Error('Bad response from server')
         }
+        const res: any = await httpRes.json()
+        item.name = res.name
+        item.img_uri = res.image
+      } catch (e) {
+        this.logger.error(e)
       }
       // }
-      const imgPath = await this.utilsService.downloadImage(img, config.get('NFT.STATIC_PATH'))
+      // }
+      const imgPath = await this.utilsService.downloadImage(
+        item.img_uri,
+        config.get('NFT.STATIC_PATH')
+      )
       this.logger.debug('loop ' + loop + ': ' + item.img_uri + ' ' + imgPath)
       // if (imgPath == item.img_uri) continue
       item.img_uri = imgPath
