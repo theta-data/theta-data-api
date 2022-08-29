@@ -97,7 +97,7 @@ export class NftAnalyseService {
     }
     // for (let i = 0; i < pageCount; i++) {
     const list = await this.nftConnection.manager.find(NftBalanceEntity, {
-      skip: loop * pageSize,
+      skip: (loop + 2400) * pageSize,
       take: pageSize,
       order: {
         id: 'DESC'

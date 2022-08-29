@@ -1,4 +1,5 @@
 import { Field, Float, Int, ObjectType, registerEnumType } from '@nestjs/graphql'
+import { GraphQLInt, GraphQLString } from 'graphql'
 
 @ObjectType()
 export class KlineObj {
@@ -44,6 +45,12 @@ export class TokenMarketInformationType {
 
   @Field(() => Float)
   price: number
+
+  @Field()
+  circulating_supply: number
+
+  @Field()
+  total_supply: number
 
   @Field(() => Float)
   volume_24h: number

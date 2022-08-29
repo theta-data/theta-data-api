@@ -1,3 +1,4 @@
+import { RpcService } from './../block-chain/rpc/rpc.service'
 import { KLINE_INTERVAL, TokenMarketInformationType, TOKEN_PAIR_TYPE } from './market.model'
 import { CACHE_MANAGER, Inject, Injectable } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
@@ -9,7 +10,8 @@ import { BinanceService } from 'src/exchange/binance.service'
 export class MarketService {
   constructor(
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
-    private exchangeService: BinanceService
+    private exchangeService: BinanceService,
+    private RpcService: RpcService
   ) {
     // thetaTsSdk.cmc.setKey('57a40db8-5488-4ed4-ab75-152fec2ed608')
   }
@@ -23,7 +25,9 @@ export class MarketService {
       price: Number(res.lastPrice),
       volume_24h: Number(res.priceChangePercent),
       price_change_percent: Number(res.priceChangePercent),
-      kline: kline
+      kline: kline,
+      total_supply: 1000000000,
+      circulating_supply: 1000000000
     }
     await this.cacheManager.set(key, marketInfo, { ttl: 60 * 5 })
     return marketInfo
@@ -34,12 +38,19 @@ export class MarketService {
     if (await this.cacheManager.get(key)) return await this.cacheManager.get(key)
     const res = await this.exchangeService.tickerPriceChange('TFUELUSDT')
     const kline = await this.exchangeService.kLine('TFUELUSDT')
+    const lastfinalizedHeight = await (
+      await this.RpcService.getStatus()
+    ).latest_finalized_block_height
+    const baseTfuel = 5829173326
+    const tfuelNew = Math.floor((Number(lastfinalizedHeight) - 16856001) / 100) * 8600
     const marketInfo = {
       name: 'TFUEL',
       price: Number(res.lastPrice),
       volume_24h: Number(res.priceChangePercent),
       price_change_percent: Number(res.priceChangePercent),
-      kline: kline
+      kline: kline,
+      total_supply: baseTfuel + tfuelNew,
+      circulating_supply: baseTfuel + tfuelNew
     }
 
     await this.cacheManager.set(key, marketInfo, { ttl: 60 * 5 })
