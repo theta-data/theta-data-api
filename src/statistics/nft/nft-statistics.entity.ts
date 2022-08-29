@@ -13,6 +13,7 @@ import {
 @ObjectType()
 @Entity()
 @Unique(['smart_contract_address'])
+@Index(['update_timestamp'])
 export class NftStatisticsEntity {
   @PrimaryGeneratedColumn()
   id!: number
@@ -72,6 +73,10 @@ export class NftStatisticsEntity {
   @Field(() => GraphQLInt)
   @Column({ type: 'int' })
   last_30_days_users: number
+
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int', default: 0 })
+  update_timestamp: number
 
   @CreateDateColumn()
   create_date!: number

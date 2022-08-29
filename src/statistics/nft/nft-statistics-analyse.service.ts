@@ -132,8 +132,11 @@ export class NftStatisticsAnalyseService {
       transactionCount30D = 0
 
     // const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
-
+    let timestamp = 0
     for (const record of recordList) {
+      if (record.timestamp > timestamp) {
+        timestamp = record.timestamp
+      }
       if (record.timestamp >= moment().subtract(24, 'hours').unix()) {
         !users24H.includes(record.from) && users24H.push(record.from)
         !users24H.includes(record.to) && users24H.push(record.to)
@@ -209,6 +212,7 @@ export class NftStatisticsAnalyseService {
       nftStatistics.last_24_h_transactions = transactionCount24H
       nftStatistics.last_7_days_transactions = transactionCount7D
       nftStatistics.last_30_days_transactions = transactionCount30D
+      nftStatistics.update_timestamp = timestamp
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
       nft.last_24_h_transactions = transactionCount24H
@@ -220,6 +224,7 @@ export class NftStatisticsAnalyseService {
       nft.last_24_h_volume = Math.floor(volume24H)
       nft.last_7_days_volume = Math.floor(volume7D)
       nft.last_30_days_volume = Math.floor(volume30D)
+      nft.update_timestamp = timestamp
       await this.nftStatisticsConnection.manager.save(nft)
     }
   }
@@ -228,7 +233,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().subtract(1, 'days').format())
+        update_timestamp: LessThan(moment().subtract(1, 'days').unix())
       },
       {
         last_24_h_volume: 0,
@@ -240,7 +245,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().subtract(7, 'days').format())
+        update_timestamp: LessThan(moment().subtract(7, 'days').unix())
       },
       {
         last_7_days_volume: 0,
@@ -252,7 +257,7 @@ export class NftStatisticsAnalyseService {
     await this.nftStatisticsConnection.manager.update(
       NftStatisticsEntity,
       {
-        update_date: LessThan(moment().subtract(30, 'days').format())
+        update_timestamp: LessThan(moment().subtract(30, 'days').unix())
       },
       {
         last_30_days_volume: 0,
