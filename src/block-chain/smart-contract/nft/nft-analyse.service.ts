@@ -89,7 +89,7 @@ export class NftAnalyseService {
 
   async downloadAllImg(loop: number) {
     const total = await this.nftConnection.manager.count(NftBalanceEntity)
-    const pageSize = 1000
+    const pageSize = 100
     const pageCount = Math.ceil(total / pageSize)
     if (loop > pageCount) {
       this.logger.debug('loop ' + loop + ' page count:' + pageCount)
