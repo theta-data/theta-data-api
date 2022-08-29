@@ -89,7 +89,7 @@ export class NftAnalyseService {
 
   async downloadAllImg(loop: number) {
     const total = await this.nftConnection.manager.count(NftBalanceEntity)
-    const pageSize = 5000
+    const pageSize = 1000
     const pageCount = Math.ceil(total / pageSize)
     if (loop > pageCount) {
       this.logger.debug('loop ' + loop + ' page count:' + pageCount)
@@ -108,8 +108,12 @@ export class NftAnalyseService {
       // let img = item.img_uri
       if (!item.detail) {
         try {
+          const controller = new AbortController()
+          const timeoutId = setTimeout(() => controller.abort(), 3000)
+
           const httpRes = await fetch(item.token_uri, {
             method: 'GET',
+            signal: controller.signal,
             headers: {
               'Content-Type': 'application/json'
             }
