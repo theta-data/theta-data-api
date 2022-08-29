@@ -46,7 +46,7 @@ export class TokenMarketInformationType {
   @Field(() => Float)
   price: number
 
-  @Field(() => GraphQLString)
+  @Field()
   circulating_supply: number
 
   @Field()
