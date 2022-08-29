@@ -117,16 +117,6 @@ export class ExplorerResolver {
       }
     }
 
-    // const account = await this.explorerService.getAccount(search)
-    const accountInfo = await this.rpcService.getAccount(search)
-    if (accountInfo) {
-      const accountInfo = await this.rpcService.getAccount(search)
-      return {
-        account: accountInfo,
-        search_type: SEARCH_TYPE_ENUM.account
-      }
-    }
-
     const [hasNextPage, totalNum, nftList] = await this.nftStatisticsService.getNft(
       NftStatisticsOrderByType.last_24_h_users,
       100,
@@ -139,6 +129,15 @@ export class ExplorerResolver {
         search_type: SEARCH_TYPE_ENUM.nft,
         nft_statistics: nftList,
         total: totalNum
+      }
+    }
+    // const account = await this.explorerService.getAccount(search)
+    const accountInfo = await this.rpcService.getAccount(search)
+    if (accountInfo) {
+      const accountInfo = await this.rpcService.getAccount(search)
+      return {
+        account: accountInfo,
+        search_type: SEARCH_TYPE_ENUM.account
       }
     }
 
