@@ -13,7 +13,7 @@ import {
 @ObjectType()
 @Entity()
 @Unique(['smart_contract_address'])
-@Index(['timestamp'])
+@Index(['update_timestamp'])
 export class NftStatisticsEntity {
   @PrimaryGeneratedColumn()
   id!: number
