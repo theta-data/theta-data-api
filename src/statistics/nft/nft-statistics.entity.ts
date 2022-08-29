@@ -75,7 +75,7 @@ export class NftStatisticsEntity {
   last_30_days_users: number
 
   @Field(() => GraphQLInt)
-  @Column({ type: 'int' })
+  @Column({ type: 'int', default: 0 })
   update_timestamp: number
 
   @CreateDateColumn()
