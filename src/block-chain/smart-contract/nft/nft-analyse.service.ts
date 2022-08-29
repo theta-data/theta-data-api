@@ -108,23 +108,30 @@ export class NftAnalyseService {
       // let img = item.img_uri
       if (!item.detail) {
         try {
-          const controller = new AbortController()
-          const timeoutId = setTimeout(() => controller.abort(), 3000)
-
-          const httpRes = await fetch(item.token_uri, {
-            method: 'GET',
-            signal: controller.signal,
-            headers: {
-              'Content-Type': 'application/json'
-            }
+          await Promise.race([
+            async () => {
+              // const controller = new AbortController()
+              // const timeoutId = setTimeout(() => controller.abort(), 3000)
+              const httpRes = await fetch(item.token_uri, {
+                method: 'GET',
+                // signal: controller.signal,
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+              if (httpRes.status >= 400) {
+                throw new Error('Bad response from server')
+              }
+              const res: any = await httpRes.json()
+              item.detail = JSON.stringify(res)
+              item.name = res.name
+              item.img_uri = res.image
+            },
+            this.utilsService.timeout(2000)
+          ]).then((resp) => {
+            console.log(resp)
+            this.logger.debug('get name ' + item.name + 'img uri ' + item.img_uri)
           })
-          if (httpRes.status >= 400) {
-            throw new Error('Bad response from server')
-          }
-          const res: any = await httpRes.json()
-          item.detail = JSON.stringify(res)
-          item.name = res.name
-          item.img_uri = res.image
         } catch (e) {
           this.logger.error(e)
         }

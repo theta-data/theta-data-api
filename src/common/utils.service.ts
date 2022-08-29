@@ -303,4 +303,13 @@ export class UtilsService {
     const imgPath = storePath + '/' + parsed.hostname.replace(/\./g, '-')
     return imgPath + parsed.pathname
   }
+
+  async timeout(timeout: number) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve('timeout')
+        this.logger.debug('timeout')
+      }, timeout)
+    })
+  }
 }
