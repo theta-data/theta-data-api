@@ -126,6 +126,7 @@ export class NftAnalyseService {
               item.detail = JSON.stringify(res)
               item.name = res.name
               item.img_uri = res.image
+              this.logger.debug('end get token uri ' + item.img_uri)
             },
             this.utilsService.timeout(2000)
           ])
