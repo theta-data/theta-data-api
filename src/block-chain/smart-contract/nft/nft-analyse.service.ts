@@ -108,7 +108,7 @@ export class NftAnalyseService {
       // let img = item.img_uri
       if (!item.detail) {
         try {
-          await Promise.race([
+          const res = await Promise.race([
             async () => {
               // const controller = new AbortController()
               // const timeoutId = setTimeout(() => controller.abort(), 3000)
@@ -126,12 +126,11 @@ export class NftAnalyseService {
               item.detail = JSON.stringify(res)
               item.name = res.name
               item.img_uri = res.image
+              this.logger.debug('end get token uri ' + item.img_uri)
             },
             this.utilsService.timeout(2000)
-          ]).then((resp) => {
-            console.log(resp)
-            this.logger.debug('get name ' + item.name + 'img uri ' + item.img_uri)
-          })
+          ])
+          console.log(res)
         } catch (e) {
           this.logger.error(e)
         }
