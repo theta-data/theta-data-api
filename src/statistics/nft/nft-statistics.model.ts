@@ -9,6 +9,12 @@ export class PaginatedNftStatistics extends Paginated(NftStatisticsEntity) {}
 @ObjectType()
 export class NftDetailType {
   @Field({ nullable: true })
+  contract_uri: string
+
+  @Field({ nullable: true })
+  smart_contract_address: string
+
+  @Field({ nullable: true })
   contract_uri_detail: string
 
   @Field({ nullable: true })
@@ -17,13 +23,13 @@ export class NftDetailType {
   @Field({ nullable: true })
   img_uri: string
 
-  @Field(() => [NftDetailByDate])
+  @Field(() => [NftDetailByDate], { nullable: true })
   by_24_hours: Array<NftDetailByDate>
 
-  @Field(() => [NftDetailByDate])
+  @Field(() => [NftDetailByDate], { nullable: true })
   by_7_days: Array<NftDetailByDate>
 
-  @Field(() => [NftDetailByDate])
+  @Field(() => [NftDetailByDate], { nullable: true })
   by_30_days: Array<NftDetailByDate>
 }
 
