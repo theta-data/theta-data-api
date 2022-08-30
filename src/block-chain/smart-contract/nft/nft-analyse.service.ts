@@ -128,7 +128,7 @@ export class NftAnalyseService {
               item.img_uri = res.image
               this.logger.debug('end get token uri ' + item.img_uri)
             },
-            this.utilsService.timeout(2000)
+            this.utilsService.timeout(5000)
           ])
           console.log(res)
         } catch (e) {
@@ -136,12 +136,16 @@ export class NftAnalyseService {
         }
       } else {
         const detail = JSON.parse(item.detail)
-        item.name = detail.name
 
         const imgStorePath = await this.utilsService.getPath(
           detail.image,
           config.get('NFT.STATIC_PATH')
         )
+        if (item.name == detail.name && item.img_uri == imgStorePath) {
+          this.logger.debug('img is ok')
+          continue
+        }
+        item.name = detail.name
         if (imgStorePath != item.img_uri) {
           item.img_uri = detail.image
         }

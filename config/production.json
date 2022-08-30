@@ -34,7 +34,7 @@
     "ANALYSE_NUMBER": 1000,
     "ANALYSE_INTERVAL": 1000,
     "STATIC_PATH": "/data/theta-data/static/nft_img/",
-    "DL_ALL_NFT_IMG": false
+    "DL_ALL_NFT_IMG": true
   },
   "SMART_CONTRACT": {
     "ANALYSE_NUMBER": 1000,
@@ -64,7 +64,7 @@
   },
   "WALLET": {
     "START_HEIGHT": 8000000,
-    "ANALYSE_NUMBER": 3000,
+    "ANALYSE_NUMBER": 4500,
     "ANALYSE_INTERVAL": 1000
   }
 }

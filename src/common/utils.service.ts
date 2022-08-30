@@ -282,7 +282,7 @@ export class UtilsService {
   async getPath(urlPath: string, storePath: string) {
     this.logger.debug('url path: ' + urlPath)
     if (!urlPath) return null
-    const pipeline = promisify(stream.pipeline)
+    // const pipeline = promisify(stream.pipeline)
     // const got: any = await import('got')
     // got.default()
 
