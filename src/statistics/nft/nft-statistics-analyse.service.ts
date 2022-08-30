@@ -76,7 +76,7 @@ export class NftStatisticsAnalyseService {
       await Promise.all(promiseArr)
       // this.logger.debug('start update calltimes by period')
 
-      // await this.updateNftsImgUri()
+      await this.updateNftsImgUri()
 
       // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
@@ -275,6 +275,11 @@ export class NftStatisticsAnalyseService {
         smart_contract_address: config[0].toLowerCase()
       })
       if (nft) {
+        const imgUri = await this.utilsService.getPath(
+          config[1],
+          config.get('NFT_STATISTICS.STATIC_PATH')
+        )
+        if (imgUri == nft.img_uri) continue
         nft.img_uri = await this.downloadImage(config[1])
         await this.nftStatisticsConnection.manager.save(nft)
       }
