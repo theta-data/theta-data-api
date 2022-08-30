@@ -293,13 +293,14 @@ export class WalletsAnalyseService {
       wallets[address.toLowerCase()] = {
         address: address.toLowerCase(),
         latest_active_time: timestamp,
-        hashs: [hash]
+        // hashs: [hash],
+        hashs: []
       }
     } else {
       wallets[address.toLowerCase()]['latest_active_time'] = Number(timestamp)
-      if (!wallets[address.toLowerCase()]['hashs'].includes(hash)) {
-        wallets[address.toLowerCase()]['hashs'].push(hash)
-      }
+      // if (!wallets[address.toLowerCase()]['hashs'].includes(hash)) {
+      //   wallets[address.toLowerCase()]['hashs'].push(hash)
+      // }
     }
   }
 
