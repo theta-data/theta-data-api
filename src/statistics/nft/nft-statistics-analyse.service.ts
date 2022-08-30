@@ -8,7 +8,6 @@ import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
 import { getConnection, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
-const config = require('config')
 const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
@@ -17,6 +16,7 @@ const stream = require('stream')
 const url = require('url')
 const { promisify } = require('util')
 const got = require('got')
+const config = require('config')
 @Injectable()
 export class NftStatisticsAnalyseService {
   private readonly logger = new Logger('nft statistics analyse service')
@@ -32,6 +32,7 @@ export class NftStatisticsAnalyseService {
 
   public async analyseData() {
     try {
+      // console.log(config.get('NFT_STATISTICS.ANALYSE_NUMBER'))
       this.logger.debug('start analyse nft data')
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
@@ -92,6 +93,7 @@ export class NftStatisticsAnalyseService {
           )
         }
       } catch (error) {
+        console.error(error)
         this.logger.error(error)
       }
       // this.logger.debug('commit success')
@@ -274,18 +276,18 @@ export class NftStatisticsAnalyseService {
 
   async updateNftsImgUri() {
     // this.logger.debug(JSON.stringify(nftLogoConfig))
-    for (const config of nftLogoConfig) {
-      if (config.length < 2) continue
+    for (const logo of nftLogoConfig) {
+      if (logo.length < 2) continue
       const nft = await this.nftStatisticsConnection.manager.findOne(NftStatisticsEntity, {
-        smart_contract_address: config[0].toLowerCase()
+        smart_contract_address: logo[0].toLowerCase()
       })
       if (nft) {
         const imgUri = await this.utilsService.getPath(
-          config[1],
+          logo[1],
           config.get('NFT_STATISTICS.STATIC_PATH')
         )
         if (imgUri == nft.img_uri) continue
-        nft.img_uri = await this.downloadImage(config[1])
+        nft.img_uri = await this.downloadImage(logo[1])
         await this.nftStatisticsConnection.manager.save(nft)
       }
     }
