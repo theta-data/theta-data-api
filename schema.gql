@@ -2,116 +2,6 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type NftBalanceEntity {
-  smart_contract_address: String!
-  owner: String!
-  from: String!
-  contract_uri: String!
-  base_token_uri: String!
-  token_uri: String!
-  name: String!
-  img_uri: String!
-  detail: String!
-  token_id: Int!
-}
-
-type NftTransferRecordEntity {
-  smart_contract_address: String!
-  from: String!
-  name: String!
-  to: String!
-  token_id: Int!
-  payment_token_amount: Float!
-  tdrop_mined: Float!
-  height: Int!
-  transaction_hash: String!
-  timestamp: Int!
-}
-
-type KlineObj {
-  time: String!
-  price: Float!
-}
-
-type TokenMarketInformationType {
-  name: String!
-  price: Float!
-  volume_24h: Float!
-  price_change_percent: Float!
-  kline: [KlineObj!]!
-}
-
-type MarketInformationType {
-  Theta: TokenMarketInformationType!
-  ThetaFuel: TokenMarketInformationType!
-  Kline(token_type: TOKEN_PAIR_TYPE!, interval: KLINE_INTERVAL!): [KlineObj!]!
-}
-
-enum TOKEN_PAIR_TYPE {
-  thetaUsdt
-  tfuelUSdt
-}
-
-enum KLINE_INTERVAL {
-  _1m
-  _3m
-  _5m
-  _15m
-  _30m
-  _1h
-  _2h
-  _4h
-  _6h
-  _8h
-  _12h
-  _1d
-  _3d
-  _1w
-  _1M
-}
-
-type SmartContractEntity {
-  """Address of the smart contract"""
-  contract_address: String!
-  verified: Boolean!
-  protocol: Int!
-  abi: String
-  source_code: String
-  byte_code: String
-  verification_date: Int!
-  compiler_version: String
-  optimizer: String
-  optimizerRuns: Int!
-  name: String
-  function_hash: String
-  constructor_arguments: String
-
-  """Total number of smart contract calls"""
-  call_times: Int!
-
-  """Number of smart contract calls in the last 7 days"""
-  last_seven_days_call_times: Int!
-
-  """Number of smart contract calls in the last 24 hours"""
-  last_24h_call_times: Int!
-
-  """call times update timestamp"""
-  call_times_update_timestamp: Int!
-
-  """verification check timestamp"""
-  verification_check_timestamp: Int!
-  contract_uri: String!
-  contract_uri_detail: String!
-  latest_record_parse_height: Int!
-}
-
-type ContactEntity {
-  first_name: String!
-  last_name: String!
-  email: String!
-  content: String!
-}
-
 type NftStatisticsEntity {
   smart_contract_address: String!
   name: String!
@@ -127,6 +17,7 @@ type NftStatisticsEntity {
   last_30_days_transactions: Int!
   last_30_days_volume: Int!
   last_30_days_users: Int!
+  update_timestamp: Int!
 }
 
 type PaginatedNftStatistics {
@@ -138,12 +29,14 @@ type PaginatedNftStatistics {
 }
 
 type NftDetailType {
+  contract_uri: String
+  smart_contract_address: String
   contract_uri_detail: String
   name: String
   img_uri: String
-  by_24_hours: [NftDetailByDate!]!
-  by_7_days: [NftDetailByDate!]!
-  by_30_days: [NftDetailByDate!]!
+  by_24_hours: [NftDetailByDate!]
+  by_7_days: [NftDetailByDate!]
+  by_30_days: [NftDetailByDate!]
 }
 
 type NftDetailByDate {
@@ -153,137 +46,31 @@ type NftDetailByDate {
   users: Int!
 }
 
-type WalletModel {
-  Balance(wallet_address: String!): BalanceModel!
-}
-
-type FiatCurrencyType {
-  usd: Float!
-  cny: Float!
-  eur: Float!
-}
-
-type TokenBalanceType {
-  amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type StakeBalanceType {
-  node_address: String!
-  amount: Float!
-  withdrawn: Boolean!
-  return_height: String!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type TotalBalanceType {
-  theta_amount: Float!
-  theta_fuel_amount: Float!
-  fiat_currency_value: FiatCurrencyType!
-}
-
-type BalanceModel {
-  theta: TokenBalanceType!
-  theta_fuel: TokenBalanceType!
-  stake_to_guardian: [StakeBalanceType!]
-  stake_to_elite_node: [StakeBalanceType!]
-  stake_to_validator_node: [StakeBalanceType!]
-  total: TotalBalanceType!
-}
-
-type Stake {
-  source: String!
-  amount: String!
-  withdrawn: Boolean!
-  return_height: String!
-}
-
-type NftType {
-  SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
-  Balance(wallet_address: String!, search: String, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
-  NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
-  NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
-  NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
-  NftOwners(smart_contract_address: String!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
-  ContractNftTransfers(smart_contract_address: String!, token_id: Int, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
-  TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
-}
-
-type PaginatedNftBalance {
-  nodes: [NftBalanceEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type PaginatedSmartContract {
-  nodes: [SmartContractEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-type PaginatedNftTransferRecord {
-  nodes: [NftTransferRecordEntity!]
-  totalCount: Int!
-  hasNextPage: Boolean!
-  skip: Int!
-  endCursor: String!
-}
-
-"""Statistics on smart contract related calls"""
-type SmartContractStatisticsType {
-  CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
-  Search(protocol: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
-}
-
-enum RankByEnum {
-  call_times
-  last_24h_call_times
-  last_seven_days_call_times
-}
-
-enum SmartContractProtocolEnum {
-  unknow
-  tnt721
-  tnt20
-}
-
-type SmartContractScType {
-  address: String!
-  abi: String!
-  source_code: String!
-  verification_date: String!
-  compiler_version: String!
-  optimizer: String!
-  optimizerRuns: Float!
+type NftTransferRecordEntity {
+  smart_contract_address: String!
+  from: String!
   name: String!
-  function_hash: String!
-  constructor_arguments: String!
+  img_uri: String
+  to: String!
+  token_id: Int!
+  payment_token_amount: Float!
+  tdrop_mined: Float!
+  height: Int!
+  transaction_hash: String!
+  timestamp: Int!
 }
 
-type TransactionEntity {
-  tx_hash: String!
-  tx_type: Int!
-  from: String
-  to: String
-  fee: String
-  gas_price: String
-  gas_limit: String
-  height: Int!
-  timestamp: Int!
-  theta: Float!
-  theta_fuel: Float!
-}
-
-type BlokcListEntity {
-  height: Int!
-  block_hash: String!
-  timestamp: Int!
-  tfuel_burnt: Float!
-  txns: Int!
+type NftBalanceEntity {
+  smart_contract_address: String!
+  owner: String!
+  from: String!
+  contract_uri: String!
+  base_token_uri: String!
+  token_uri: String!
+  name: String!
+  img_uri: String
+  detail: String!
+  token_id: Int!
 }
 
 type CandidateStakeType {
@@ -623,6 +410,225 @@ type ThetaRpcModel {
   GetStakeRewardDistributionByHeight(height: Int): BlockHashStakeRewardDistributionRuleSetPairsModel!
 }
 
+type KlineObj {
+  time: String!
+  price: Float!
+}
+
+type TokenMarketInformationType {
+  name: String!
+  price: Float!
+  circulating_supply: Float!
+  total_supply: Float!
+  volume_24h: Float!
+  price_change_percent: Float!
+  kline: [KlineObj!]!
+}
+
+type MarketInformationType {
+  Theta: TokenMarketInformationType!
+  ThetaFuel: TokenMarketInformationType!
+  Kline(token_type: TOKEN_PAIR_TYPE!, interval: KLINE_INTERVAL!): [KlineObj!]!
+}
+
+enum TOKEN_PAIR_TYPE {
+  thetaUsdt
+  tfuelUSdt
+}
+
+enum KLINE_INTERVAL {
+  _1m
+  _3m
+  _5m
+  _15m
+  _30m
+  _1h
+  _2h
+  _4h
+  _6h
+  _8h
+  _12h
+  _1d
+  _3d
+  _1w
+  _1M
+}
+
+type SmartContractEntity {
+  """Address of the smart contract"""
+  contract_address: String!
+  verified: Boolean!
+  protocol: Int!
+  abi: String
+  source_code: String
+  byte_code: String
+  verification_date: Int!
+  compiler_version: String
+  optimizer: String
+  optimizerRuns: Int!
+  name: String
+  function_hash: String
+  constructor_arguments: String
+
+  """Total number of smart contract calls"""
+  call_times: Int!
+
+  """Number of smart contract calls in the last 7 days"""
+  last_seven_days_call_times: Int!
+
+  """Number of smart contract calls in the last 24 hours"""
+  last_24h_call_times: Int!
+
+  """call times update timestamp"""
+  call_times_update_timestamp: Int!
+
+  """verification check timestamp"""
+  verification_check_timestamp: Int!
+  contract_uri: String!
+  contract_uri_detail: String!
+  latest_record_parse_height: Int!
+}
+
+type ContactEntity {
+  first_name: String!
+  last_name: String!
+  email: String!
+  content: String!
+}
+
+type WalletModel {
+  Balance(wallet_address: String!): BalanceModel!
+}
+
+type FiatCurrencyType {
+  usd: Float!
+  cny: Float!
+  eur: Float!
+}
+
+type TokenBalanceType {
+  amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type StakeBalanceType {
+  node_address: String!
+  amount: Float!
+  withdrawn: Boolean!
+  return_height: String!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type TotalBalanceType {
+  theta_amount: Float!
+  theta_fuel_amount: Float!
+  fiat_currency_value: FiatCurrencyType!
+}
+
+type BalanceModel {
+  theta: TokenBalanceType!
+  theta_fuel: TokenBalanceType!
+  stake_to_guardian: [StakeBalanceType!]
+  stake_to_elite_node: [StakeBalanceType!]
+  stake_to_validator_node: [StakeBalanceType!]
+  total: TotalBalanceType!
+}
+
+type Stake {
+  source: String!
+  amount: String!
+  withdrawn: Boolean!
+  return_height: String!
+}
+
+type NftType {
+  SearchNfts(name: String!, take: Int = 10, after: String): PaginatedSmartContract
+  Balance(wallet_address: String!, search: String, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
+  NftsForContract(wallet_address: String!, smart_contract_address: String!, take: Int = 10, after: String): PaginatedNftBalance
+  NftTransfers(wallet_address: String!, take: Int = 10, after: String): PaginatedNftTransferRecord!
+  NftTransfersByBlock(block_height: Int!): [NftTransferRecordEntity!]!
+  NftOwners(smart_contract_address: String!, take: Int = 10, skip: Int = 0, after: String): PaginatedNftBalance!
+  ContractNftTransfers(smart_contract_address: String!, token_id: Int, take: Int = 10, after: String, skip: Int = 0): PaginatedNftTransferRecord!
+  TokenIdOwners(token_id: Int = 1, contract_adress: String!): NftBalanceEntity!
+}
+
+type PaginatedNftBalance {
+  nodes: [NftBalanceEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedSmartContract {
+  nodes: [SmartContractEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+type PaginatedNftTransferRecord {
+  nodes: [NftTransferRecordEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+  endCursor: String!
+}
+
+"""Statistics on smart contract related calls"""
+type SmartContractStatisticsType {
+  CallRank(rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+  Search(protocol: SmartContractProtocolEnum, name: String, rank_by: RankByEnum, take: Int = 500): [SmartContractEntity!]!
+}
+
+enum RankByEnum {
+  call_times
+  last_24h_call_times
+  last_seven_days_call_times
+}
+
+enum SmartContractProtocolEnum {
+  unknow
+  tnt721
+  tnt20
+}
+
+type SmartContractScType {
+  address: String!
+  abi: String!
+  source_code: String!
+  verification_date: String!
+  compiler_version: String!
+  optimizer: String!
+  optimizerRuns: Float!
+  name: String!
+  function_hash: String!
+  constructor_arguments: String!
+}
+
+type TransactionEntity {
+  tx_hash: String!
+  tx_type: Int!
+  from: String
+  to: String
+  fee: String
+  gas_price: String
+  gas_limit: String
+  height: Int!
+  timestamp: Int!
+  theta: Float!
+  theta_fuel: Float!
+}
+
+type BlokcListEntity {
+  height: Int!
+  block_hash: String!
+  timestamp: Int!
+  tfuel_burnt: Float!
+  txns: Int!
+}
+
 type PaginatedBlockList {
   nodes: [BlokcListEntity!]
   totalCount: Int!
@@ -801,11 +807,11 @@ type Query {
   TransactionsStatistics: ThetaTransactionStatisticsType!
   Wallet: WalletModel!
   MarketInformation: MarketInformationType!
+  ThetaRpc: ThetaRpcModel!
 
   """Return to statistics related to token pledges"""
   StakeStatistics: [StakeStatisticsEntity!]
   StakeReward(wallet_address: String!): StakeRewardModel!
-  ThetaRpc: ThetaRpcModel!
   SmartContractStatistics: SmartContractStatisticsType!
   Nfts: NftType!
   Logger(rank_by: LoggerRankByEnum = call_times): [LoggerEntity!]!
