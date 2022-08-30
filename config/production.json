@@ -31,7 +31,7 @@
     "0x82236267393c31c17bf4e79fb14f9fc0396c05821ebd357e6b420a43933d64db"
   ],
   "NFT": {
-    "ANALYSE_NUMBER": 60000,
+    "ANALYSE_NUMBER": 1000,
     "ANALYSE_INTERVAL": 1000,
     "STATIC_PATH": "/data/theta-data/static/nft_img/",
     "DL_ALL_NFT_IMG": true
