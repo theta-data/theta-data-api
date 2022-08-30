@@ -82,12 +82,12 @@ export class NftStatisticsResolver {
     }
   }
 
-  @Query(() => NftDetailType)
-  async NftDetail(
-    @Args('contract_address', { type: () => GraphQLString }) contractAddress: string
-  ) {
-    return await this.nftStatisticsService.nftDetail(contractAddress)
-  }
+  // @Query(() => NftDetailType)
+  // async NftDetail(
+  //   @Args('contract_address', { type: () => GraphQLString }) contractAddress: string
+  // ) {
+  //   return await this.nftStatisticsService.nftDetail(contractAddress)
+  // }
 
   @Mutation(() => NftStatisticsEntity)
   async updateNftImg(

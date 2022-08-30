@@ -145,9 +145,7 @@ export class NftStatisticsService {
     return {}
   }
 
-  async nftDetail(contractAddress): Promise<NftDetailType> {
-    const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
-
+  async getNftInfo(contractAddress: string) {
     const nftDetail = await this.nftStatisticsRepository.findOne({
       where: {
         smart_contract_address: contractAddress
@@ -157,19 +155,30 @@ export class NftStatisticsService {
       return {
         name: '',
         contract_uri_detail: '',
-        by_24_hours: [],
-        by_30_days: [],
-        by_7_days: [],
         img_uri: ''
       }
     }
-    const nftStatistics = await this.nftTransferRecordRepository.find({
-      where: {
-        smart_contract_address: contractAddress,
-        timestamp: MoreThan(moment().subtract(31, 'days').unix())
-      },
-      order: { timestamp: 'ASC' }
-    })
+    return nftDetail
+    // }
+  }
+
+  async formatNftStatistics(
+    contractUri: string,
+    nftStatistics: Array<NftTransferRecordEntity>
+  ): Promise<{
+    by_24_hours: Array<NftDetailByDate>
+
+    by_7_days: Array<NftDetailByDate>
+
+    by_30_days: Array<NftDetailByDate>
+  }> {
+    const tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
+
+    // const nftDetail = await this.nftStatisticsRepository.findOne({
+    //   where: {
+    //     smart_contract_address: contractAddress
+    //   }
+    // })
     if (nftStatistics) {
       const statisticsObj24H: {
         [index: string]: NftDetailByDate
@@ -192,7 +201,7 @@ export class NftStatisticsService {
           if (statisticsObj24H[hourStr]) {
             usersArr24H[hourStr].includes(record.from) || usersArr24H[hourStr].push(record.from)
             usersArr24H[hourStr].includes(record.to) || usersArr24H[hourStr].push(record.to)
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               statisticsObj24H[hourStr].volume += record.payment_token_amount
             } else {
               statisticsObj24H[hourStr].volume += record.payment_token_amount * tfuelPrice.price
@@ -211,7 +220,7 @@ export class NftStatisticsService {
           } else {
             usersArr24H[hourStr] = [record.from, record.to]
             let volume = 0
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               volume = record.payment_token_amount
             } else {
               volume = record.payment_token_amount * tfuelPrice.price
@@ -235,7 +244,7 @@ export class NftStatisticsService {
           if (statisticsObj7Days[dayStr]) {
             usersArr7Days[dayStr].includes(record.from) || usersArr7Days[dayStr].push(record.from)
             usersArr7Days[dayStr].includes(record.to) || usersArr7Days[dayStr].push(record.to)
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               statisticsObj7Days[dayStr].volume += record.payment_token_amount
             } else {
               statisticsObj7Days[dayStr].volume += record.payment_token_amount * tfuelPrice.price
@@ -246,7 +255,7 @@ export class NftStatisticsService {
           } else {
             usersArr7Days[dayStr] = [record.from, record.to]
             let volume = 0
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               volume = record.payment_token_amount
             } else {
               volume = record.payment_token_amount * tfuelPrice.price
@@ -266,7 +275,7 @@ export class NftStatisticsService {
             usersArr30Days[dayStr].includes(record.from) || usersArr30Days[dayStr].push(record.from)
             usersArr30Days[dayStr].includes(record.to) || usersArr30Days[dayStr].push(record.to)
             // statisticsObj30Days[dayStr].volume += record.payment_token_amount
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               statisticsObj30Days[dayStr].volume += record.payment_token_amount
             } else {
               statisticsObj30Days[dayStr].volume += record.payment_token_amount * tfuelPrice.price
@@ -275,7 +284,7 @@ export class NftStatisticsService {
             statisticsObj30Days[dayStr].transactions += 1
           } else {
             let volume = 0
-            if (record.tdrop_mined == 0 && nftDetail.contract_uri.indexOf('thetadrop.com') > -1) {
+            if (record.tdrop_mined == 0 && contractUri.indexOf('thetadrop.com') > -1) {
               volume = record.payment_token_amount
             } else {
               volume = record.payment_token_amount * tfuelPrice.price
@@ -331,9 +340,6 @@ export class NftStatisticsService {
         }
       }
       return {
-        name: nftDetail.name,
-        img_uri: nftDetail.img_uri,
-        contract_uri_detail: nftDetail.contract_uri_detail,
         by_24_hours: statisticsArr24H,
         by_7_days: statisticsArr7Days,
         by_30_days: statisticsArr30Days
@@ -341,13 +347,46 @@ export class NftStatisticsService {
       // return nftStatistics
     }
     return {
-      name: nftDetail.name,
-      contract_uri_detail: nftDetail.contract_uri_detail,
       by_24_hours: [],
       by_30_days: [],
-      by_7_days: [],
-      img_uri: nftDetail.img_uri
+      by_7_days: []
     }
+  }
+
+  async nftStatistics24H(contractAddress: string, contractUri: string) {
+    const nftStatistics = await this.nftTransferRecordRepository.find({
+      where: {
+        smart_contract_address: contractAddress,
+        timestamp: MoreThan(moment().subtract(31, 'days').unix())
+      },
+      order: { timestamp: 'ASC' }
+    })
+    const res = await this.formatNftStatistics(contractUri, nftStatistics)
+    return res.by_24_hours
+  }
+
+  async nftStatistics7Days(contractAddress: string, contractUri: string) {
+    const nftStatistics = await this.nftTransferRecordRepository.find({
+      where: {
+        smart_contract_address: contractAddress,
+        timestamp: MoreThan(moment().subtract(8, 'days').unix())
+      },
+      order: { timestamp: 'ASC' }
+    })
+    const res = await this.formatNftStatistics(contractUri, nftStatistics)
+    return res.by_7_days
+  }
+
+  async nftStatistics30Days(contractAddress: string, contractUri: string) {
+    const nftStatistics = await this.nftTransferRecordRepository.find({
+      where: {
+        smart_contract_address: contractAddress,
+        timestamp: MoreThan(moment().subtract(31, 'days').unix())
+      },
+      order: { timestamp: 'ASC' }
+    })
+    const res = await this.formatNftStatistics(contractUri, nftStatistics)
+    return res.by_30_days
   }
 
   public async isNftExist(name: string) {

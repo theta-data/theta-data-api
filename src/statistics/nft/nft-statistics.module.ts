@@ -1,3 +1,4 @@
+import { NftDetailResolver } from './nft-detail.resolver'
 import { Module } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
@@ -16,7 +17,12 @@ import { NftStatisticsService } from './nft-statistics.service'
     CommonModule,
     MarketModule
   ],
-  providers: [NftStatisticsAnalyseService, NftStatisticsResolver, NftStatisticsService],
+  providers: [
+    NftStatisticsAnalyseService,
+    NftStatisticsResolver,
+    NftStatisticsService,
+    NftDetailResolver
+  ],
   exports: [NftStatisticsService]
 })
 export class NftStatisticsModule {}
