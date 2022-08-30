@@ -80,16 +80,21 @@ export class NftStatisticsAnalyseService {
 
       // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
-      if (nftTransferRecordList.length > 0) {
-        this.logger.debug(
-          'end height:' + Number(nftTransferRecordList[nftTransferRecordList.length - 1].id)
-        )
-        this.utilsService.updateRecordHeight(
-          this.heightConfigFile,
-          nftTransferRecordList[nftTransferRecordList.length - 1].id
-        )
+
+      try {
+        if (nftTransferRecordList.length > 0) {
+          this.logger.debug(
+            'end height:' + Number(nftTransferRecordList[nftTransferRecordList.length - 1].id)
+          )
+          this.utilsService.updateRecordHeight(
+            this.heightConfigFile,
+            nftTransferRecordList[nftTransferRecordList.length - 1].id
+          )
+        }
+      } catch (error) {
+        this.logger.error(error)
       }
-      this.logger.debug('commit success')
+      // this.logger.debug('commit success')
     } catch (e) {
       console.error(e.message)
       this.logger.error(e.message)
