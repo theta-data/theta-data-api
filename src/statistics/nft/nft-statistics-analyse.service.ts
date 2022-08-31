@@ -69,6 +69,17 @@ export class NftStatisticsAnalyseService {
           nftList.push(record.smart_contract_address)
         }
       }
+      const top20 = await this.nftStatisticsConnection.manager.find(NftStatisticsEntity, {
+        order: {
+          last_24_h_users: 'DESC'
+        },
+        take: 20
+      })
+      for (const nft of top20) {
+        if (!nftList.includes(nft.smart_contract_address)) {
+          nftList.push(nft.smart_contract_address)
+        }
+      }
       this.logger.debug('nft list length:' + nftList.length)
       for (const nft of nftList) {
         promiseArr.push(this.nftStatistics(nft))
