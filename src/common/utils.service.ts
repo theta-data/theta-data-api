@@ -252,7 +252,8 @@ export class UtilsService {
       !parsed.pathname.includes('gif') &&
       !parsed.pathname.includes('png') &&
       !parsed.pathname.includes('jpg') &&
-      !parsed.pathname.includes('jpeg')
+      !parsed.pathname.includes('jpeg') &&
+      !parsed.pathname.includes('svg')
     ) {
       return null
     }

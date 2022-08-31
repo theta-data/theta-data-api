@@ -199,7 +199,10 @@ export class NftStatisticsAnalyseService {
           if (firstTokencontractUri.detail) {
             const contractDetail = JSON.parse(firstTokencontractUri.detail)
             // nftStatistics.img_uri = contractDetail.image
-            nftStatistics.img_uri = await this.downloadImage(contractDetail.image)
+            nftStatistics.img_uri = await this.utilsService.downloadImage(
+              contractDetail.image,
+              config.get('NFT_STATISTICS.STATIC_PATH')
+            )
           }
         }
       } else {
@@ -208,7 +211,10 @@ export class NftStatisticsAnalyseService {
         if (smartContract.contract_uri_detail) {
           const contractDetail = JSON.parse(smartContract.contract_uri_detail)
           nftStatistics.img_uri = contractDetail.image
-          await this.downloadImage(contractDetail.image)
+          await this.utilsService.downloadImage(
+            contractDetail.image,
+            config.get('NFT_STATISTICS.STATIC_PATH')
+          )
         }
       }
       nftStatistics.name = smartContract.name
@@ -290,63 +296,69 @@ export class NftStatisticsAnalyseService {
           config.get('NFT_STATISTICS.STATIC_PATH')
         )
         if (imgUri == nft.img_uri) continue
-        nft.img_uri = await this.downloadImage(logo[1])
+        nft.img_uri = await this.utilsService.downloadImage(
+          logo[1],
+          config.get('NFT_STATISTICS.STATIC_PATH')
+        )
         await this.nftStatisticsConnection.manager.save(nft)
       }
     }
   }
 
-  async downloadImage(urlPath: string): Promise<string | null> {
-    this.logger.debug('url path: ' + urlPath)
-    if (!urlPath) return null
-    if (
-      !urlPath.includes('gif') &&
-      !urlPath.includes('png') &&
-      !urlPath.includes('jpg') &&
-      !urlPath.includes('jpeg')
-    ) {
-      return null
-    }
-    const pipeline = promisify(stream.pipeline)
-    // const got: any = await import('got')
-    // got.default()
-    var path = require('path')
-    var parsed = url.parse(urlPath)
-    // if(!pa)
-    if (!parsed.hostname) {
-      return urlPath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
-    }
-    // const ext = ['gif', 'png', 'jpg', 'jpeg']
+  // async downloadImage(urlPath: string): Promise<string | null> {
+  //   this.logger.debug('url path: ' + urlPath)
+  //   if (!urlPath) return null
+  //   if (
+  //     !urlPath.includes('gif') &&
+  //     !urlPath.includes('png') &&
+  //     !urlPath.includes('jpg') &&
+  //     !urlPath.includes('jpeg')
+  //   ) {
+  //     return null
+  //   }
+  //   const pipeline = promisify(stream.pipeline)
+  //   // const got: any = await import('got')
+  //   // got.default()
+  //   var path = require('path')
+  //   var parsed = url.parse(urlPath)
+  //   // if(!pa)
+  //   if (!parsed.hostname) {
+  //     return urlPath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
+  //   }
+  //   // const ext = ['gif', 'png', 'jpg', 'jpeg']
 
-    const imgPath =
-      config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
-    const imgStorePath = imgPath + parsed.pathname
-    const pathArr = imgStorePath.split('/')
-    pathArr.pop()
+  //   const imgPath =
+  //     config.get('NFT_STATISTICS.STATIC_PATH') + '/' + parsed.hostname.replace(/\./g, '-')
+  //   const imgStorePath = imgPath + parsed.pathname
+  //   const pathArr = imgStorePath.split('/')
+  //   pathArr.pop()
 
-    if (!fs.existsSync(pathArr.join('/'))) {
-      fs.mkdirSync(pathArr.join('/'), { recursive: true })
-    }
+  //   if (!fs.existsSync(pathArr.join('/'))) {
+  //     fs.mkdirSync(pathArr.join('/'), { recursive: true })
+  //   }
 
-    console.log(path.basename(parsed.pathname))
-    if (!fs.existsSync(imgStorePath)) {
-      try {
-        await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
-        return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
-      } catch (e) {
-        console.error(e)
-        return null
-      }
-    } else {
-      return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
-    }
-  }
+  //   console.log(path.basename(parsed.pathname))
+  //   if (!fs.existsSync(imgStorePath)) {
+  //     try {
+  //       await pipeline(got.stream(urlPath), fs.createWriteStream(imgStorePath))
+  //       return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
+  //     } catch (e) {
+  //       console.error(e)
+  //       return null
+  //     }
+  //   } else {
+  //     return imgStorePath.replace(config.get('NFT_STATISTICS.STATIC_PATH'), '')
+  //   }
+  // }
 
   async downloadAllImg() {
     const nfts = await this.nftStatisticsConnection.manager.find(NftStatisticsEntity)
     for (const nft of nfts) {
       if (nft.img_uri) {
-        nft.img_uri = await this.downloadImage(nft.img_uri)
+        nft.img_uri = await this.utilsService.downloadImage(
+          nft.img_uri,
+          config.get('NFT_STATISTICS.STATIC_PATH')
+        )
         await this.nftStatisticsConnection.manager.save(nft)
       }
     }
