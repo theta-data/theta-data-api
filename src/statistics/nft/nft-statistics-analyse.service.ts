@@ -221,8 +221,7 @@ export class NftStatisticsAnalyseService {
         nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
         if (smartContract.contract_uri_detail) {
           const contractDetail = JSON.parse(smartContract.contract_uri_detail)
-          nftStatistics.img_uri = contractDetail.image
-          await this.utilsService.downloadImage(
+          nftStatistics.img_uri = await this.utilsService.downloadImage(
             contractDetail.image,
             config.get('NFT_STATISTICS.STATIC_PATH')
           )
