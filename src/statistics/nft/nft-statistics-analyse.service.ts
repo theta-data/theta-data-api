@@ -37,8 +37,6 @@ export class NftStatisticsAnalyseService {
       this.smartContractConnection = getConnection('smart_contract').createQueryRunner()
       this.nftConnection = getConnection('nft').createQueryRunner()
       this.nftStatisticsConnection = getConnection('nft-statistics').createQueryRunner()
-      this.tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
-
       await this.smartContractConnection.connect()
       await this.nftConnection.connect()
       await this.nftStatisticsConnection.connect()
@@ -52,7 +50,7 @@ export class NftStatisticsAnalyseService {
           startId = Number(data)
         }
       }
-
+      this.tfuelPrice = await this.marketService.getThetaFuelMarketInfo()
       let nftList: Array<string> = []
       const nftTransferRecordList = await this.nftConnection.manager.find(NftTransferRecordEntity, {
         where: {
@@ -62,6 +60,7 @@ export class NftStatisticsAnalyseService {
         order: { id: 'ASC' }
       })
       await this.setZero()
+      // console.log(nftList['a']['b'])
 
       const promiseArr = []
       this.logger.debug('nftTransferRecordList.length: ' + nftTransferRecordList.length)
@@ -74,10 +73,14 @@ export class NftStatisticsAnalyseService {
       for (const nft of nftList) {
         promiseArr.push(this.nftStatistics(nft))
       }
+      console.log(111)
       await Promise.all(promiseArr)
+      console.log(222)
+
       // this.logger.debug('start update calltimes by period')
 
       await this.updateNftsImgUri()
+      console.log(333)
 
       // await this.downloadAllImg()
       await this.nftStatisticsConnection.commitTransaction()
