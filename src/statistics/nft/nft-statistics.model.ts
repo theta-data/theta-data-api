@@ -23,6 +23,12 @@ export class NftDetailType {
   @Field({ nullable: true })
   img_uri: string
 
+  @Field({ nullable: true })
+  update_timestamp: number
+
+  @Field({ nullable: true })
+  contract_uri_update_timestamp: number
+
   @Field(() => [NftDetailByDate], { nullable: true })
   by_24_hours: Array<NftDetailByDate>
 
