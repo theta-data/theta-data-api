@@ -78,6 +78,10 @@ export class NftStatisticsEntity {
   @Column({ type: 'int', default: 0 })
   update_timestamp: number
 
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int', default: 0 })
+  contract_uri_update_timestamp: number
+
   @CreateDateColumn()
   create_date!: number
 

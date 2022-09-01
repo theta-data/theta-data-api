@@ -12,10 +12,7 @@ const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
 const nftIgnore = JSON.parse(fs.readFileSync('resources/nft-ignore.json'))
-const stream = require('stream')
-const url = require('url')
-const { promisify } = require('util')
-const got = require('got')
+import fetch from 'cross-fetch'
 const config = require('config')
 @Injectable()
 export class NftStatisticsAnalyseService {
@@ -241,6 +238,33 @@ export class NftStatisticsAnalyseService {
       nftStatistics.update_timestamp = timestamp
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
+      if (nft.contract_uri_update_timestamp < moment().unix() - 24 * 3600) {
+        try {
+          nft.contract_uri_update_timestamp = moment().unix()
+          //update contract uri
+          if (nft.contract_uri) {
+            const httpRes = await fetch(nft.contract_uri, {
+              method: 'GET',
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            })
+            if (httpRes.status >= 400) {
+              throw new Error('Bad response from server')
+            }
+            const res: any = await httpRes.json()
+            nft.name = res.name
+            nft.img_uri = await this.utilsService.downloadImage(
+              res.image,
+              config.get('NFT_STATISTICS.STATIC_PATH')
+            )
+            nft.contract_uri_detail = JSON.stringify(res)
+          }
+        } catch (e) {
+          this.logger.error(e)
+        }
+      }
+
       nft.last_24_h_transactions = transactionCount24H
       nft.last_7_days_transactions = transactionCount7D
       nft.last_30_days_transactions = transactionCount30D
