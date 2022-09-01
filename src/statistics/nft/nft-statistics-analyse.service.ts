@@ -12,10 +12,7 @@ const fs = require('fs')
 const moment = require('moment')
 const nftLogoConfig = JSON.parse(fs.readFileSync('resources/nft-logo.json'))
 const nftIgnore = JSON.parse(fs.readFileSync('resources/nft-ignore.json'))
-const stream = require('stream')
-const url = require('url')
-const { promisify } = require('util')
-const got = require('got')
+import fetch from 'cross-fetch'
 const config = require('config')
 @Injectable()
 export class NftStatisticsAnalyseService {
