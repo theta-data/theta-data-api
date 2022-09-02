@@ -23,6 +23,7 @@ async function bootstrap() {
     console.log('analyse-nft catch error')
     console.log(e)
     writeFailExcuteLog(config.get('NFT.MONITOR_PATH'))
+    process.exit()
   }
 }
 bootstrap()
