@@ -12,8 +12,8 @@ async function bootstrap() {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
       // console.log(a)
-      const a = {}
-      console.log(a['b']['c'])
+      // const a = {}
+      // console.log(a['b']['c'])
       await service.analyseData(i)
       await new Promise((resolve) => setTimeout(resolve, config.get('NFT.ANALYSE_INTERVAL')))
       app.close()

@@ -6,8 +6,8 @@ import { writeSucessExcuteLog } from 'src/common/utils.service'
 const config = require('config')
 
 async function bootstrap() {
-  while (1) {
-    try {
+  try {
+    while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app
         .select(SmartContractModule)
@@ -18,10 +18,11 @@ async function bootstrap() {
         setTimeout(resolve, config.get('SMART_CONTRACT.ANALYSE_INTERVAL'))
       )
       app.close()
-    } catch (e) {
-      console.log(e)
-      writeSucessExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
     }
+  } catch (e) {
+    console.log(e)
+    writeSucessExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
+    process.exit()
   }
 }
 bootstrap()
