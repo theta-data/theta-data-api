@@ -6,7 +6,7 @@ import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { LoggerService } from 'src/common/logger.service'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 import { SmartContractService } from 'src/block-chain/smart-contract/smart-contract.service'
 import fetch from 'cross-fetch'
 const config = require('config')
@@ -114,9 +114,11 @@ export class SmartContractAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.smartContractConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
     } finally {
       await this.smartContractConnection.release()
       this.logger.debug('release success')
+      writeSucessExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
     }
     // await this.
   }

@@ -5,7 +5,7 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import BigNumber from 'bignumber.js'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 const config = require('config')
 const moment = require('moment')
 @Injectable()
@@ -80,10 +80,12 @@ export class TxAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.txConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('TX.MONITOR_PATH'))
       // process.exit(0)
     } finally {
       await this.txConnection.release()
       this.logger.debug('release success')
+      writeSucessExcuteLog(config.get('TX.MONITOR_PATH'))
     }
   }
 

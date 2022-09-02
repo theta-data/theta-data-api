@@ -4,7 +4,7 @@ import { thetaTsSdk } from 'theta-ts-sdk'
 import { THETA_BLOCK_INTERFACE } from 'theta-ts-sdk/src/types/interface'
 import { LoggerService } from 'src/common/logger.service'
 import { WalletEntity } from 'src/block-chain/wallet/wallet.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 
 const config = require('config')
 const moment = require('moment')
@@ -100,10 +100,12 @@ export class WalletsAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.walletConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('WALLET.MONITOR_PATH'))
       // process.exit(0)
     } finally {
       await this.walletConnection.release()
       this.logger.debug('release success')
+      writeSucessExcuteLog(config.get('WALLET.MONITOR_PATH'))
     }
   }
 

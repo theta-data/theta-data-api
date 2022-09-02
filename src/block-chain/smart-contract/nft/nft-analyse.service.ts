@@ -4,7 +4,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { SmartContractCallRecordEntity } from 'src/block-chain/smart-contract/smart-contract-call-record.entity'
 import { NftService } from 'src/block-chain/smart-contract/nft/nft.service'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 const config = require('config')
 const fs = require('fs')
 import fetch from 'cross-fetch'
@@ -80,8 +80,10 @@ export class NftAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.nftConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('NFT.MONITOR_PATH'))
     } finally {
       await this.nftConnection.release()
+      writeSucessExcuteLog(config.get('NFT.MONITOR_PATH'))
       this.logger.debug('end analyse nft data')
       this.logger.debug('release success')
     }
