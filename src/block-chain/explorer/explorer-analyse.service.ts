@@ -2,7 +2,7 @@ import { BLOCK_COUNT_KEY, TRANSACTION_COUNT_KEY } from './const'
 import { CountEntity } from './count.entity'
 import { TransactionEntity } from './transaction.entity'
 import { BlokcListEntity } from './block-list.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 import { getConnection, QueryRunner } from 'typeorm'
 import { Injectable, Logger } from '@nestjs/common'
 import { thetaTsSdk } from 'theta-ts-sdk'
@@ -118,11 +118,11 @@ export class ExplorerAnalyseService {
       this.logger.debug(JSON.stringify(this.current))
       await this.explorerConnection.rollbackTransaction()
       await this.explorerConnection.release()
+      writeFailExcuteLog(config.get('EXPLORER.MONITOR_PATH'))
       // return
     } finally {
       await this.explorerConnection.release()
-      // await getConnection('explorer').close()
-      // await this.explorerConnection.close()
+      writeSucessExcuteLog(config.get('EXPLORER.MONITOR_PATH'))
     }
     //  let height: number = 0
   }

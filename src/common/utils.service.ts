@@ -10,6 +10,7 @@ const url = require('url')
 const { promisify } = require('util')
 const got = require('got')
 const path = require('path')
+const moment = require('moment')
 export interface LOG_DECODE_INTERFACE {
   address: string
   data: string
@@ -314,4 +315,20 @@ export class UtilsService {
       }, timeout)
     })
   }
+}
+
+export function writeSucessExcuteLog(logPath: string) {
+  const fs = require('fs')
+  if (!fs.existsSync(logPath)) {
+    fs.mkdirSync(logPath, { recursive: true })
+  }
+  fs.writeFileSync(logPath + '/log.txt', moment().format() + ' success')
+}
+
+export function writeFailExcuteLog(logPath: string) {
+  const fs = require('fs')
+  if (!fs.existsSync(logPath)) {
+    fs.mkdirSync(logPath, { recursive: true })
+  }
+  fs.writeFileSync(logPath + '/log.txt', moment().format() + ' fail')
 }
