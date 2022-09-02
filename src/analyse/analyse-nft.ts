@@ -7,8 +7,8 @@ const config = require('config')
 
 async function bootstrap() {
   let i = 0
-  while (1) {
-    try {
+  try {
+    while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app.select(NftModule).get(NftAnalyseService, { strict: true })
       // console.log(a)
@@ -18,10 +18,11 @@ async function bootstrap() {
       await new Promise((resolve) => setTimeout(resolve, config.get('NFT.ANALYSE_INTERVAL')))
       app.close()
       i++
-    } catch (e) {
-      console.log(e)
-      writeFailExcuteLog(config.get('NFT.MONITOR_PATH'))
     }
+  } catch (e) {
+    console.log('analyse-nft catch error')
+    console.log(e)
+    writeFailExcuteLog(config.get('NFT.MONITOR_PATH'))
   }
 }
 bootstrap()
