@@ -18,6 +18,7 @@ async function bootstrap() {
   } catch (e) {
     console.log(e)
     writeFailExcuteLog(config.get('TX.MONITOR_PATH'))
+    process.exit()
   }
 }
 bootstrap()
