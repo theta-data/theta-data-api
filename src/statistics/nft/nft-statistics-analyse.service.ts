@@ -3,7 +3,7 @@ import { Injectable, Logger } from '@nestjs/common'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
 import { NftTransferRecordEntity } from 'src/block-chain/smart-contract/nft/nft-transfer-record.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
 import { getConnection, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm'
@@ -113,10 +113,12 @@ export class NftStatisticsAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.nftStatisticsConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('NFT_STATISTICS.MONITOR_PATH'))
     } finally {
       await this.nftStatisticsConnection.release()
       this.logger.debug('end analyse nft data')
       this.logger.debug('release success')
+      writeSucessExcuteLog(config.get('NFT_STATISTICS.MONITOR_PATH'))
     }
   }
 

@@ -8,7 +8,7 @@ import BigNumber from 'bignumber.js'
 import { StakeStatisticsEntity } from '../../block-chain/stake/stake-statistics.entity'
 import { StakeRewardEntity } from '../../block-chain/stake/stake-reward.entity'
 import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contract.entity'
-import { UtilsService } from 'src/common/utils.service'
+import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 import { STAKE_NODE_TYPE_ENUM } from './stake.entity'
 const config = require('config')
 const moment = require('moment')
@@ -96,10 +96,12 @@ export class StakeAnalyseService {
       this.logger.error(e.message)
       this.logger.error('rollback')
       await this.stakeConnection.rollbackTransaction()
+      writeFailExcuteLog(config.get('STAKE.MONITOR_PATH'))
       // process.exit(0)
     } finally {
       await this.stakeConnection.release()
       this.logger.debug('release success')
+      writeSucessExcuteLog(config.get('STAKE.MONITOR_PATH'))
     }
   }
 
