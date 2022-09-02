@@ -5,17 +5,18 @@ import { StakeAnalyseService } from 'src/block-chain/stake/stake-analyse.service
 import { StakeModule } from 'src/block-chain/stake/stake.module'
 const config = require('config')
 async function bootstrap() {
-  while (1) {
-    try {
+  try {
+    while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app.select(StakeModule).get(StakeAnalyseService, { strict: true })
       await service.analyseData()
       await new Promise((resolve) => setTimeout(resolve, config.get('STAKE.ANALYSE_INTERVAL')))
       app.close()
-    } catch (e) {
-      writeFailExcuteLog(config.get('STAKE.MONITOR_PATH'))
-      console.log(e)
     }
+  } catch (e) {
+    writeFailExcuteLog(config.get('STAKE.MONITOR_PATH'))
+    console.log(e)
+    process.exit()
   }
 }
 bootstrap()
