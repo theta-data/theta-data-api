@@ -18,6 +18,7 @@ type NftStatisticsEntity {
   last_30_days_volume: Int!
   last_30_days_users: Int!
   update_timestamp: Int!
+  contract_uri_update_timestamp: Int!
 }
 
 type PaginatedNftStatistics {
@@ -34,9 +35,26 @@ type NftDetailType {
   contract_uri_detail: String
   name: String
   img_uri: String
-  by_24_hours: [NftDetailByDate!]
-  by_7_days: [NftDetailByDate!]
-  by_30_days: [NftDetailByDate!]
+  update_timestamp: Float
+  contract_uri_update_timestamp: Float
+  by_24_hours(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [NftDetailByDate!]
+  by_7_days(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [NftDetailByDate!]
+  by_30_days(
+    """
+    the timezone difference in minutes, between the UTC and the current local time.Such as PDT time is utc-07, should pass -420
+    """
+    timezoneOffset: Int = 0
+  ): [NftDetailByDate!]
 }
 
 type NftDetailByDate {
@@ -800,6 +818,7 @@ type LoggerEntity {
   query: String!
   hash: String!
   call_times: Float!
+  update_timestamp: Float!
   update_date: Float!
 }
 
