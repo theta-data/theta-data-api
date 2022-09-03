@@ -14,7 +14,8 @@ async function bootstrap() {
         new Promise((resolve, reject) => {
           setTimeout(() => {
             resolve('timeout')
-            this.logger.debug('timeout')
+            console.log('analyse race timeout')
+            // this.logger.debug('timeout')
           }, 1000 * 60 * 5)
         })
       ])
