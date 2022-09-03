@@ -1,8 +1,16 @@
 import { Field, ObjectType } from '@nestjs/graphql'
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from 'typeorm'
 
 @ObjectType()
 @Entity()
+@Index(['update_timestamp'])
 export class LoggerEntity {
   // @Field(() => Int)
   @PrimaryGeneratedColumn()
@@ -19,6 +27,10 @@ export class LoggerEntity {
   @Field()
   @Column({ type: 'int', default: 0 })
   call_times: number
+
+  @Field()
+  @Column({ type: 'int', default: 0 })
+  update_timestamp: number
 
   // @Field()
   @CreateDateColumn()
