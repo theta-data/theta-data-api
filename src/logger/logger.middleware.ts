@@ -14,7 +14,11 @@ export class LoggerMiddleware implements NestMiddleware {
       const object = print(parse(req.body.query))
       console.log(object)
       const hash = crypto.createHash('md5').update(object).digest('hex')
-      this.loggerService.addQueryLog(object, hash)
+      try {
+        this.loggerService.addQueryLog(object, hash)
+      } catch (e) {
+        console.error(e)
+      }
     }
 
     // await
