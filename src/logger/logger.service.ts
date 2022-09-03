@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm'
 import { FindManyOptions, Repository } from 'typeorm'
 import { LoggerEntity } from './logger.entity'
 import { LoggerRankByEnum } from './logger.resolver'
-
+const moment = require('moment')
 // import { LoggerService } from "src/common/logger.service";
 @Injectable()
 export class LoggerService {
@@ -14,7 +14,7 @@ export class LoggerService {
 
   async addQueryLog(query: string, hash: string) {
     await this.loggerRepository.query(
-      `INSERT INTO  logger_entity (query,hash,call_times) VALUES (?, ?,1) ON CONFLICT (hash) DO UPDATE set call_times=call_times+1`,
+      `INSERT INTO  logger_entity (query,hash,call_times) VALUES (?, ?,1) ON CONFLICT (hash) DO UPDATE set call_times=call_times+1,update_timestamp=${moment().unix()}`,
       [query, hash]
     )
   }
@@ -26,7 +26,7 @@ export class LoggerService {
         queryParam.order = { call_times: 'DESC' }
         break
       case LoggerRankByEnum.update_time:
-        queryParam.order = { update_date: 'DESC' }
+        queryParam.order = { update_timestamp: 'DESC' }
         break
       default:
         break
