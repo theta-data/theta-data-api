@@ -14,7 +14,7 @@ export class LoggerService {
 
   async addQueryLog(query: string, hash: string) {
     await this.loggerRepository.query(
-      `INSERT INTO  logger_entity (query,hash,call_times) VALUES (?, ?,1) ON CONFLICT (hash) DO UPDATE set call_times=call_times+1,update_timestamp=${moment().unix()}`,
+      `INSERT INTO  logger_entity (query,hash,call_times,update_timestamp) VALUES (?, ?,1,${moment().unix()}) ON CONFLICT (hash) DO UPDATE set call_times=call_times+1,update_timestamp=${moment().unix()}`,
       [query, hash]
     )
   }
