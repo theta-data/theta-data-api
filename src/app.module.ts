@@ -72,7 +72,7 @@ const config = require('config')
     }),
     TypeOrmModule.forRoot({
       ...config.get('ORM_CONFIG'),
-      database: config.get('ORM_CONFIG')['database'] + 'logger/wallet.sqlite',
+      database: config.get('ORM_CONFIG')['database'] + 'logger/index.sqlite',
       name: 'logger',
       entities: []
     }),
