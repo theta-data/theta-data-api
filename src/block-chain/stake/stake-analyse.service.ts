@@ -84,12 +84,13 @@ export class StakeAnalyseService {
       this.logger.debug('start update calltimes by period')
       await this.stakeConnection.commitTransaction()
       this.logger.debug('commit success')
-      if (blockList.result.length > 0) {
-        this.utilsService.updateRecordHeight(
-          this.heightConfigFile,
-          Number(blockList.result[blockList.result.length - 1].height)
-        )
-      }
+      // if (blockList.result.length > 0) {
+      this.utilsService.updateRecordHeight(
+        this.heightConfigFile,
+        Number(blockList.result[blockList.result.length - 1].height)
+      )
+      writeSucessExcuteLog(config.get('STAKE.MONITOR_PATH'))
+      // }
     } catch (e) {
       // console.log(e)
       console.error(e.message)
@@ -101,7 +102,6 @@ export class StakeAnalyseService {
     } finally {
       await this.stakeConnection.release()
       this.logger.debug('release success')
-      writeSucessExcuteLog(config.get('STAKE.MONITOR_PATH'))
     }
   }
 
