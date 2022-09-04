@@ -339,6 +339,17 @@ export class NftStatisticsAnalyseService {
           this.logger.error(e)
         }
       }
+      if (!nft.img_uri) {
+        const firstToken = await this.nftConnection.manager.findOne(NftBalanceEntity, {
+          order: { id: 'ASC' }
+        })
+        if (firstToken) {
+          nft.img_uri = await this.utilsService.downloadImage(
+            firstToken.img_uri,
+            config.get('NFT_STATISTICS.STATIC_PATH')
+          )
+        }
+      }
 
       nft.last_24_h_transactions = transactionCount24H
       nft.last_7_days_transactions = transactionCount7D
