@@ -131,6 +131,7 @@ export class NftStatisticsService {
       hasNextPage = true
       nftList = nftList.slice(0, take)
     }
+
     return [hasNextPage, totalNft, nftList]
   }
 
