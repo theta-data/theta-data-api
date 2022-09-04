@@ -171,7 +171,10 @@ export class NftStatisticsAnalyseService {
           if (record.payment_token_amount > highestPrice24H) {
             highestPrice24H = record.payment_token_amount
           }
-          if (floorPrice24H == 0 || record.payment_token_amount < floorPrice24H) {
+          if (
+            floorPrice24H == 0 ||
+            (record.payment_token_amount < floorPrice24H && record.payment_token_amount != 0)
+          ) {
             floorPrice24H = record.payment_token_amount
           }
           if (record.payment_token_amount > highestPrice24H) {
@@ -184,7 +187,8 @@ export class NftStatisticsAnalyseService {
           }
           if (
             floorPrice24H == 0 ||
-            record.payment_token_amount * this.tfuelPrice.price < floorPrice24H
+            (record.payment_token_amount * this.tfuelPrice.price < floorPrice24H &&
+              record.payment_token_amount != 0)
           ) {
             floorPrice24H = record.payment_token_amount * this.tfuelPrice.price
           }
@@ -203,7 +207,10 @@ export class NftStatisticsAnalyseService {
           if (record.payment_token_amount > highestPrice7D) {
             highestPrice7D = record.payment_token_amount
           }
-          if (floorPrice7D == 0 || record.payment_token_amount < floorPrice7D) {
+          if (
+            floorPrice7D == 0 ||
+            (record.payment_token_amount < floorPrice7D && record.payment_token_amount != 0)
+          ) {
             floorPrice7D = record.payment_token_amount
           }
           if (record.payment_token_amount > highestPrice7D) {
@@ -217,7 +224,8 @@ export class NftStatisticsAnalyseService {
           }
           if (
             floorPrice7D == 0 ||
-            record.payment_token_amount * this.tfuelPrice.price < floorPrice7D
+            (record.payment_token_amount * this.tfuelPrice.price < floorPrice7D &&
+              record.payment_token_amount != 0)
           ) {
             floorPrice7D = record.payment_token_amount * this.tfuelPrice.price
           }
@@ -232,7 +240,10 @@ export class NftStatisticsAnalyseService {
           if (record.payment_token_amount > highestPrice30D) {
             highestPrice30D = record.payment_token_amount
           }
-          if (floorPrice30D == 0 || record.payment_token_amount < floorPrice30D) {
+          if (
+            floorPrice30D == 0 ||
+            (record.payment_token_amount < floorPrice30D && record.payment_token_amount != 0)
+          ) {
             floorPrice30D = record.payment_token_amount
           }
         } else {
@@ -242,7 +253,8 @@ export class NftStatisticsAnalyseService {
           }
           if (
             floorPrice30D == 0 ||
-            record.payment_token_amount * this.tfuelPrice.price < floorPrice30D
+            (record.payment_token_amount * this.tfuelPrice.price < floorPrice30D &&
+              record.payment_token_amount != 0)
           ) {
             floorPrice30D = record.payment_token_amount * this.tfuelPrice.price
           }
