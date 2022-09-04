@@ -94,6 +94,7 @@ export class WalletsAnalyseService {
       if (blockList.result.length > 0) {
         this.utilsService.updateRecordHeight(this.heightConfigFile, actualEndHeight)
       }
+      writeSucessExcuteLog(config.get('WALLET.MONITOR_PATH'))
     } catch (e) {
       // console.log(e)
       console.error(e.message)
@@ -105,7 +106,6 @@ export class WalletsAnalyseService {
     } finally {
       await this.walletConnection.release()
       this.logger.debug('release success')
-      writeSucessExcuteLog(config.get('WALLET.MONITOR_PATH'))
     }
   }
 
