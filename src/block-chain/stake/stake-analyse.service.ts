@@ -69,7 +69,7 @@ export class StakeAnalyseService {
       this.logger.debug('init counter', this.counter)
       const lastAnalyseHeight = await this.stakeConnection.manager.findOne(StakeRewardEntity, {
         order: {
-          reward_height: 'DESC'
+          id: 'DESC'
         }
       })
       for (let i = 0; i < blockList.result.length; i++) {
