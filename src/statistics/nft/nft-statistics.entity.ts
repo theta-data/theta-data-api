@@ -51,11 +51,11 @@ export class NftStatisticsEntity {
   last_24_h_users: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_24_h_floor_price: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_24_h_highest_price: number
 
   @Field(() => GraphQLInt)
@@ -71,11 +71,11 @@ export class NftStatisticsEntity {
   last_7_days_users: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_7_days_highest_price: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_7_days_floor_price: number
 
   @Field(() => GraphQLInt)
@@ -91,11 +91,11 @@ export class NftStatisticsEntity {
   last_30_days_users: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_30_days_highest_price: number
 
   @Field(() => GraphQLFloat)
-  @Column({ type: 'float' })
+  @Column({ type: 'float', default: 0 })
   last_30_days_floor_price: number
 
   @Field(() => GraphQLInt)
