@@ -147,6 +147,12 @@ export class NftStatisticsAnalyseService {
     let volume24H = 0,
       volume7D = 0,
       volume30D = 0,
+      floorPrice24H = 0,
+      floorPrice7D = 0,
+      floorPrice30D = 0,
+      highestPrice24H = 0,
+      highestPrice7D = 0,
+      highestPrice30D = 0,
       transactionCount24H = 0,
       transactionCount7D = 0,
       transactionCount30D = 0
@@ -162,8 +168,29 @@ export class NftStatisticsAnalyseService {
         !users24H.includes(record.to) && users24H.push(record.to)
         if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume24H += record.payment_token_amount
+          if (record.payment_token_amount > highestPrice24H) {
+            highestPrice24H = record.payment_token_amount
+          }
+          if (floorPrice24H == 0 || record.payment_token_amount < floorPrice24H) {
+            floorPrice24H = record.payment_token_amount
+          }
+          if (record.payment_token_amount > highestPrice24H) {
+            highestPrice24H = record.payment_token_amount
+          }
         } else {
           volume24H += record.payment_token_amount * this.tfuelPrice.price
+          if (record.payment_token_amount * this.tfuelPrice.price > highestPrice24H) {
+            highestPrice24H = record.payment_token_amount * this.tfuelPrice.price
+          }
+          if (
+            floorPrice24H == 0 ||
+            record.payment_token_amount * this.tfuelPrice.price < floorPrice24H
+          ) {
+            floorPrice24H = record.payment_token_amount * this.tfuelPrice.price
+          }
+          if (record.payment_token_amount * this.tfuelPrice.price > highestPrice24H) {
+            highestPrice24H = record.payment_token_amount * this.tfuelPrice.price
+          }
         }
 
         transactionCount24H += 1
@@ -173,8 +200,27 @@ export class NftStatisticsAnalyseService {
         !users7D.includes(record.to) && users7D.push(record.to)
         if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume7D += record.payment_token_amount
+          if (record.payment_token_amount > highestPrice7D) {
+            highestPrice7D = record.payment_token_amount
+          }
+          if (floorPrice7D == 0 || record.payment_token_amount < floorPrice7D) {
+            floorPrice7D = record.payment_token_amount
+          }
+          if (record.payment_token_amount > highestPrice7D) {
+            highestPrice7D = record.payment_token_amount
+          }
         } else {
           volume7D += record.payment_token_amount * this.tfuelPrice.price
+
+          if (record.payment_token_amount * this.tfuelPrice.price > highestPrice7D) {
+            highestPrice7D = record.payment_token_amount * this.tfuelPrice.price
+          }
+          if (
+            floorPrice7D == 0 ||
+            record.payment_token_amount * this.tfuelPrice.price < floorPrice7D
+          ) {
+            floorPrice7D = record.payment_token_amount * this.tfuelPrice.price
+          }
         }
         transactionCount7D += 1
       }
@@ -183,8 +229,23 @@ export class NftStatisticsAnalyseService {
         !users30D.includes(record.to) && users30D.push(record.to)
         if (record.tdrop_mined == 0 && smartContract.contract_uri.indexOf('thetadrop.com') > -1) {
           volume30D += record.payment_token_amount
+          if (record.payment_token_amount > highestPrice30D) {
+            highestPrice30D = record.payment_token_amount
+          }
+          if (floorPrice30D == 0 || record.payment_token_amount < floorPrice30D) {
+            floorPrice30D = record.payment_token_amount
+          }
         } else {
           volume30D += record.payment_token_amount * this.tfuelPrice.price
+          if (record.payment_token_amount * this.tfuelPrice.price > highestPrice30D) {
+            highestPrice30D = record.payment_token_amount * this.tfuelPrice.price
+          }
+          if (
+            floorPrice30D == 0 ||
+            record.payment_token_amount * this.tfuelPrice.price < floorPrice30D
+          ) {
+            floorPrice30D = record.payment_token_amount * this.tfuelPrice.price
+          }
         }
         transactionCount30D += 1
       }
@@ -277,6 +338,12 @@ export class NftStatisticsAnalyseService {
       nft.last_7_days_volume = Math.floor(volume7D)
       nft.last_30_days_volume = Math.floor(volume30D)
       nft.update_timestamp = timestamp
+      nft.last_24_h_floor_price = floorPrice24H
+      nft.last_7_days_floor_price = floorPrice7D
+      nft.last_30_days_floor_price = floorPrice30D
+      nft.last_24_h_highest_price = highestPrice24H
+      nft.last_7_days_highest_price = highestPrice7D
+      nft.last_30_days_highest_price = highestPrice30D
       await this.nftStatisticsConnection.manager.save(nft)
     }
   }
