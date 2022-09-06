@@ -1,3 +1,4 @@
+import { WalletTxHistoryModule } from './../block-chain/wallet-tx-history/wallet-tx-history.module'
 import { StakeAnalyseService } from './../block-chain/stake/stake-analyse.service'
 import { StakeModule } from './../block-chain/stake/stake.module'
 import { WalletsAnalyseService } from './../block-chain/wallet/wallets-analyse.service'
@@ -14,6 +15,7 @@ import { AppModule } from 'src/app.module'
 import { TxAnalyseService } from 'src/block-chain/tx/tx-analyse.service'
 import { TxModule } from 'src/block-chain/tx/tx.module'
 import { WalletModule } from 'src/block-chain/wallet/wallet.module'
+import { WalletTxHistoryAnalyseService } from 'src/block-chain/wallet-tx-history/wallet-tx-history-analyse.service'
 
 async function bootstrap() {
   let i = 0
@@ -32,6 +34,9 @@ async function bootstrap() {
     const wallet = app.select(WalletModule).get(WalletsAnalyseService, { strict: true })
 
     const stake = app.select(StakeModule).get(StakeAnalyseService, { strict: true })
+    const walletTxHistory = app
+      .select(WalletTxHistoryModule)
+      .get(WalletTxHistoryAnalyseService, { strict: true })
 
     // console.log('do while')
     await tx.analyseData()
@@ -41,6 +46,7 @@ async function bootstrap() {
     await stake.analyseData()
     await nft.analyseData(i)
     await nftStatistics.analyseData()
+    await walletTxHistory.analyseData()
     await new Promise((resolve) => setTimeout(resolve, 1000))
     app.close()
     i++
