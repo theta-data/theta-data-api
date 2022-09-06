@@ -32,7 +32,7 @@ export class NftResolver {
       endCursor = Buffer.from(res[res.length - 1].id.toString()).toString('base64')
     }
     return {
-      endCursor: endCursor,
+      // endCursor: endCursor,
       hasNextPage: hasNextPage,
       nodes: res,
       totalCount: totalNumber
