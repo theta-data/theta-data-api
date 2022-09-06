@@ -2,6 +2,20 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TransactionEntity {
+  tx_hash: String!
+  tx_type: Int!
+  from: String
+  to: String
+  fee: String
+  gas_price: String
+  gas_limit: String
+  height: Int!
+  timestamp: Int!
+  theta: Float!
+  theta_fuel: Float!
+}
+
 type NftStatisticsEntity {
   smart_contract_address: String!
   name: String!
@@ -11,12 +25,18 @@ type NftStatisticsEntity {
   last_24_h_transactions: Int!
   last_24_h_volume: Int!
   last_24_h_users: Int!
+  last_24_h_floor_price: Float!
+  last_24_h_highest_price: Float!
   last_7_days_transactions: Int!
   last_7_days_volume: Int!
   last_7_days_users: Int!
+  last_7_days_highest_price: Float!
+  last_7_days_floor_price: Float!
   last_30_days_transactions: Int!
   last_30_days_volume: Int!
   last_30_days_users: Int!
+  last_30_days_highest_price: Float!
+  last_30_days_floor_price: Float!
   update_timestamp: Int!
   contract_uri_update_timestamp: Int!
 }
@@ -623,20 +643,6 @@ type SmartContractScType {
   name: String!
   function_hash: String!
   constructor_arguments: String!
-}
-
-type TransactionEntity {
-  tx_hash: String!
-  tx_type: Int!
-  from: String
-  to: String
-  fee: String
-  gas_price: String
-  gas_limit: String
-  height: Int!
-  timestamp: Int!
-  theta: Float!
-  theta_fuel: Float!
 }
 
 type BlokcListEntity {
