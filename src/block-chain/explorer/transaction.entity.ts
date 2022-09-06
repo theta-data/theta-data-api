@@ -1,4 +1,4 @@
-import { THETA_TRANSACTION_TYPE_ENUM } from 'theta-ts-sdk/dist/types/enum'
+import { THETA_TRANSACTION_TYPE_ENUM } from './../tx/theta.enum'
 // import { THETA_TX_TYPE_ENUM } from './../tx/theta.enum'
 import { Field, ObjectType } from '@nestjs/graphql'
 import { GraphQLFloat, GraphQLInt, GraphQLString } from 'graphql'
