@@ -19,7 +19,7 @@ export class WalletTxHistoryResolver {
     txType: number
   ) {
     const [hasNextPage, totalNumber, res] = await this.walletTxHistoryService.getTransactions(
-      walletAddress,
+      walletAddress.toLocaleLowerCase(),
       take,
       skip,
       txType
