@@ -44,12 +44,14 @@ export class WalletTxHistoryAnalyseService {
         take: config.get('WALLET-TX-HISTORY.ANALYSE_NUMBER'),
         order: { id: 'ASC' }
       })
-      const walletToUpdates: { [index: string]: Array<number> } = {}
-
+      const walletToUpdates: { [index: string]: Array<string> } = {}
+      this.logger.debug('tx records: ' + txRecords.length)
       for (const record of txRecords) {
         await this.addWallet(record, walletToUpdates)
       }
+      this.logger.debug('add wallet end')
       await this.updateWalletTxHistory(walletToUpdates)
+      this.logger.debug('update wallet end')
       // await this.downloadAllImg()
       await this.walletTxHistoryConnection.commitTransaction()
 
@@ -75,32 +77,33 @@ export class WalletTxHistoryAnalyseService {
     }
   }
 
-  async addWallet(record: TransactionEntity, walletsToupdate: { [index: string]: Array<number> }) {
+  async addWallet(record: TransactionEntity, walletsToupdate: { [index: string]: Array<string> }) {
     if (record.tx_type === THETA_TRANSACTION_TYPE_ENUM.send) {
       for (const addr of [...record.from, ...record.to]) {
         if (addr === '0x0000000000000000000000000000000000000000') continue
         if (!walletsToupdate[addr]) {
           walletsToupdate[addr] = []
         }
-        !walletsToupdate[addr].includes(record.id) && walletsToupdate[addr].push(record.id)
+        !walletsToupdate[addr].includes(record.id + '_' + record.tx_type) &&
+          walletsToupdate[addr].push(record.id + '_' + record.tx_type)
       }
     } else {
       if (record.from && record.from != '0x0000000000000000000000000000000000000000') {
         if (!walletsToupdate[record.from]) {
           walletsToupdate[record.from] = []
         }
-        walletsToupdate[record.from].push(record.id)
+        walletsToupdate[record.from].push(record.id + '_' + record.tx_type)
       }
       if (record.to && record.to != '0x0000000000000000000000000000000000000000') {
         if (!walletsToupdate[record.to]) {
           walletsToupdate[record.to] = []
         }
-        walletsToupdate[record.to].push(record.id)
+        walletsToupdate[record.to].push(record.id + '_' + record.tx_type)
       }
     }
   }
 
-  async updateWalletTxHistory(walletsToupdate: { [index: string]: Array<number> }) {
+  async updateWalletTxHistory(walletsToupdate: { [index: string]: Array<string> }) {
     const wallets = Object.keys(walletsToupdate)
     for (const wallet of wallets) {
       const tx = await this.walletTxHistoryConnection.manager.findOne(WalletTxHistoryEntity, {
