@@ -4,7 +4,7 @@
 
 type TransactionEntity {
   tx_hash: String!
-  tx_type: Int!
+  tx_type: THETA_TRANSACTION_TYPE_ENUM!
   from: String
   to: String
   fee: String
@@ -14,6 +14,21 @@ type TransactionEntity {
   timestamp: Int!
   theta: Float!
   theta_fuel: Float!
+}
+
+enum THETA_TRANSACTION_TYPE_ENUM {
+  coinbase
+  slash
+  send
+  reserve_fund
+  release_fund
+  service_payment
+  split_rule
+  smart_contract
+  deposit_stake
+  withdraw_stake
+  tx_deposit_stake_v2
+  tx_stake_reward_distribution
 }
 
 type PaginatedHistoryTransactions {
@@ -377,21 +392,6 @@ type transactionType {
   type: THETA_TRANSACTION_TYPE_ENUM!
   hash: String!
   receipt: receiptType
-}
-
-enum THETA_TRANSACTION_TYPE_ENUM {
-  coinbase
-  slash
-  send
-  reserve_fund
-  release_fund
-  service_payment
-  split_rule
-  smart_contract
-  deposit_stake
-  withdraw_stake
-  tx_deposit_stake_v2
-  tx_stake_reward_distribution
 }
 
 type GetTransactionModel {
