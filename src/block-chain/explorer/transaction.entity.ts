@@ -22,7 +22,7 @@ export class TransactionEntity {
   @Column({ unique: true })
   tx_hash: string
 
-  @Field(() => GraphQLInt)
+  @Field(() => THETA_TRANSACTION_TYPE_ENUM)
   @Column({ type: 'int' })
   tx_type: THETA_TRANSACTION_TYPE_ENUM
 
