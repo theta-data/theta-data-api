@@ -1,3 +1,4 @@
+import { WalletTxHistoryModule } from './block-chain/wallet-tx-history/wallet-tx-history.module'
 import { ExplorerModule } from './block-chain/explorer/explorer.module'
 import { CacheModule, MiddlewareConsumer, Module, NestModule } from '@nestjs/common'
 import { TypeOrmModule } from '@nestjs/typeorm'
@@ -86,11 +87,12 @@ const config = require('config')
       ...config.get('ORM_CONFIG'),
       database: config.get('ORM_CONFIG')['database'] + 'explorer/data.sqlite',
       name: 'explorer',
-      // prepareDatabase: (obj) => {
-      //   obj.pragma('journal_size_limit', { journal_size_limit: 1024 * 1024 * 100 })
-      //   console.log('prepare database obj', obj)
-      // },
-
+      entities: []
+    }),
+    TypeOrmModule.forRoot({
+      ...config.get('ORM_CONFIG'),
+      database: config.get('ORM_CONFIG')['database'] + 'wallet-tx-history/index.sqlite',
+      name: 'wallet-tx-history',
       entities: []
     }),
     GraphQLModule.forRoot({
@@ -120,7 +122,8 @@ const config = require('config')
     ContactModule,
     LoggerModule,
     NftStatisticsModule,
-    ExplorerModule
+    ExplorerModule,
+    WalletTxHistoryModule
   ],
   providers: [
     {
