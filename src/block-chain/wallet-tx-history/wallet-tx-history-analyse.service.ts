@@ -57,7 +57,7 @@ export class WalletTxHistoryAnalyseService {
 
       // try {
       if (txRecords.length > 0) {
-        this.logger.debug('end height:' + Number(txRecords[txRecords.length - 1].id))
+        this.logger.debug('end height:' + Number(txRecords[txRecords.length - 1].height))
         this.utilsService.updateRecordHeight(
           this.heightConfigFile,
           txRecords[txRecords.length - 1].id
