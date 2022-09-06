@@ -20,7 +20,7 @@ export class WalletTxHistoryAnalyseService {
   public async analyseData() {
     try {
       // console.log(config.get('NFT_STATISTICS.ANALYSE_NUMBER'))
-      this.logger.debug('start analyse nft data')
+      this.logger.debug('start analyse')
       this.walletConnection = getConnection('wallet').createQueryRunner()
       this.explorerConnection = getConnection('explorer').createQueryRunner()
       this.walletTxHistoryConnection = getConnection('wallet-tx-history').createQueryRunner()
@@ -69,7 +69,7 @@ export class WalletTxHistoryAnalyseService {
       writeFailExcuteLog(config.get('WALLET-TX-HISTORY.MONITOR_PATH'))
     } finally {
       await this.walletTxHistoryConnection.release()
-      this.logger.debug('end analyse nft data')
+      this.logger.debug('end analyse')
       this.logger.debug('release success')
       writeSucessExcuteLog(config.get('WALLET-TX-HISTORY.MONITOR_PATH'))
     }
