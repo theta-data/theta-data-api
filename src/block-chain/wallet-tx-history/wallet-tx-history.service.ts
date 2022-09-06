@@ -35,16 +35,13 @@ export class WalletTxHistoryService {
     }
 
     // if (txs.length  take) {
-    const ids = txs.map((tx) => {
-      if (txType == undefined) {
-        return tx.split('_')[0]
-      } else {
-        if (Number(tx.split('_')[1]) == txType) {
-          return tx.split('_')[0]
-        } else return null
+    const idsTyped = []
+    for (let i = 0; i < txs.length; i++) {
+      if (txType == undefined || Number(txs[i].split('_')[1]) == txType) {
+        idsTyped.push(txs[i].split('_')[0])
       }
-    })
-    const idsTyped = ids.filter((id) => id != null)
+    }
+
     if (skip > idsTyped.length) {
       return [false, 0, []]
     }
