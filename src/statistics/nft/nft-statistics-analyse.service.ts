@@ -137,8 +137,11 @@ export class NftStatisticsAnalyseService {
       return
     }
     const allItems = await this.nftConnection.manager.find(NftBalanceEntity, {
-      owner: Not('0x0000000000000000000000000000000000000000'),
-      smart_contract_address: smartContractAddress
+      select: ['owner'],
+      where: {
+        owner: Not('0x0000000000000000000000000000000000000000'),
+        smart_contract_address: smartContractAddress
+      }
     })
     const uniqueOwners = []
     for (let i = 0; i < allItems.length; i++) {
