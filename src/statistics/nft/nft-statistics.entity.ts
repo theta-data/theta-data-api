@@ -27,7 +27,7 @@ export class NftStatisticsEntity {
   name: string
 
   @Field()
-  @Column({ default: '' })
+  @Column({ default: '', nullable: true })
   description: string
 
   @Field(() => GraphQLInt)
