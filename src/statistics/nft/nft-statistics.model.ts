@@ -24,6 +24,15 @@ export class NftDetailType {
   img_uri: string
 
   @Field({ nullable: true })
+  description: string
+
+  @Field(() => GraphQLInt)
+  unique_owners: number
+
+  @Field(() => GraphQLInt)
+  items: number
+
+  @Field({ nullable: true })
   update_timestamp: number
 
   @Field({ nullable: true })
