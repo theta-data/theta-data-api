@@ -335,6 +335,11 @@ export class NftStatisticsAnalyseService {
           this.logger.error(e)
         }
       }
+      if (!nft.description && nft.contract_uri_detail) {
+        const detail = JSON.parse(nft.contract_uri_detail)
+        nft.description = detail.description
+      }
+
       if (!nft.img_uri || !nft.description) {
         const firstToken = await this.nftConnection.manager.findOne(NftBalanceEntity, {
           order: { id: 'ASC' }
