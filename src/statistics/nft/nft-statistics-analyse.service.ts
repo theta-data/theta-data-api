@@ -340,7 +340,10 @@ export class NftStatisticsAnalyseService {
       if (!nft.img_uri || !nft.description) {
         const firstToken = await this.nftConnection.manager.findOne(NftBalanceEntity, {
           order: { id: 'ASC' },
-          where: { smart_contract_address: smartContractAddress }
+          where: {
+            smart_contract_address: smartContractAddress,
+            owner: Not('0x0000000000000000000000000000000000000000')
+          }
         })
         if (firstToken) {
           nft.img_uri = nft.img_uri
