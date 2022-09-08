@@ -26,6 +26,18 @@ export class NftStatisticsEntity {
   @Column()
   name: string
 
+  @Field()
+  @Column({ default: '' })
+  description: string
+
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int', default: 0 })
+  unique_owners: number
+
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int', default: 0 })
+  items: number
+
   @Field({ nullable: true })
   @Column({ default: '', nullable: true })
   img_uri: string
