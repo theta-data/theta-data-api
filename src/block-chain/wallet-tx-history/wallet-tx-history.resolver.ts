@@ -29,7 +29,8 @@ export class WalletTxHistoryResolver {
       nodes: res,
       totalCount: totalNumber,
       take: take,
-      skip: skip
+      skip: skip,
+      endCursor: skip + res.length
     }
   }
 }

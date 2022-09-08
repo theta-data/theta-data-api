@@ -12,7 +12,7 @@ export interface IPaginatedType<T> {
   totalCount: number
   hasNextPage: boolean
   skip: number
-  // endCursor: string
+  endCursor: string
 }
 
 export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
