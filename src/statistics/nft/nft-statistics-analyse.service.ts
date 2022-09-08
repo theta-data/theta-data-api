@@ -136,19 +136,27 @@ export class NftStatisticsAnalyseService {
       this.logger.debug('no contract or not tnt721 protocol:' + smartContractAddress)
       return
     }
-    const allItems = await this.nftConnection.manager.find(NftBalanceEntity, {
-      select: ['owner'],
+    const allItems = await this.nftConnection.manager.count(NftBalanceEntity, {
       where: {
         owner: Not('0x0000000000000000000000000000000000000000'),
         smart_contract_address: smartContractAddress
       }
     })
-    const uniqueOwners = []
-    for (let i = 0; i < allItems.length; i++) {
-      if (!uniqueOwners.includes(allItems[i].owner)) {
-        uniqueOwners.push(allItems[i].owner)
-      }
-    }
+    const uniqueHolders = await this.nftConnection.manager
+      .createQueryBuilder(NftBalanceEntity, 'nft')
+      .select('nft.owner')
+      .where('nft.owner != :owner and smart_contract_address=:smartContract', {
+        owner: '0x0000000000000000000000000000000000000000',
+        smartContract: smartContractAddress
+      })
+      .distinct(true)
+      .getCount()
+    // const uniqueOwners = []
+    // for (let i = 0; i < allItems.length; i++) {
+    //   if (!uniqueOwners.includes(allItems[i].owner)) {
+    //     uniqueOwners.push(allItems[i].owner)
+    //   }
+    // }
 
     const recordList = await this.nftConnection.manager.find(NftTransferRecordEntity, {
       smart_contract_address: smartContractAddress,
@@ -294,8 +302,8 @@ export class NftStatisticsAnalyseService {
       nftStatistics.last_7_days_transactions = transactionCount7D
       nftStatistics.last_30_days_transactions = transactionCount30D
       nftStatistics.update_timestamp = timestamp
-      nftStatistics.unique_owners = uniqueOwners.length
-      nftStatistics.items = allItems.length
+      nftStatistics.unique_owners = uniqueHolders
+      nftStatistics.items = allItems
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
       if (nft.contract_uri_update_timestamp < moment().unix() - 24 * 3600) {
@@ -361,8 +369,8 @@ export class NftStatisticsAnalyseService {
       nft.last_24_h_highest_price = highestPrice24H
       nft.last_7_days_highest_price = highestPrice7D
       nft.last_30_days_highest_price = highestPrice30D
-      nft.unique_owners = uniqueOwners.length
-      nft.items = allItems.length
+      nft.unique_owners = uniqueHolders
+      nft.items = allItems
       await this.nftStatisticsConnection.manager.save(nft)
     }
   }
