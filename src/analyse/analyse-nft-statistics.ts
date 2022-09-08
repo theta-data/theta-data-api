@@ -14,7 +14,16 @@ async function bootstrap() {
         .get(NftStatisticsAnalyseService, { strict: true })
 
       console.log('do while')
-      await service.analyseData()
+      await Promise.race([
+        service.analyseData(),
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('timeout')
+            console.log('analyse race timeout')
+            // this.logger.debug('timeout')
+          }, 1000 * 60 * 5)
+        })
+      ])
       await new Promise((resolve) =>
         setTimeout(resolve, config.get('NFT_STATISTICS.ANALYSE_INTERVAL'))
       )
