@@ -145,7 +145,7 @@ export class NftStatisticsAnalyseService {
     const uniqueOwners = await this.nftConnection.query(
       `select count(distinct(owner)) as _num from nft_balance_entity where nft_balance_entity.smart_contract_address = '${smartContractAddress}' and nft_balance_entity.owner != '0x0000000000000000000000000000000000000000'`
     )
-    console.log(uniqueOwners)
+    // console.log(uniqueOwners)
     const uniqueHolders = uniqueOwners[0]._num
 
     // const uniqueOwners = []
