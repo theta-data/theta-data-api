@@ -41,8 +41,9 @@ export function Paginated<T>(classRef: Type<T>): Type<IPaginatedType<T>> {
 
     @Field((type) => Int)
     skip: number
-    // @Field()
-    // endCursor: string
+
+    @Field()
+    endCursor: string
   }
   return PaginatedType as Type<IPaginatedType<T>>
 }
