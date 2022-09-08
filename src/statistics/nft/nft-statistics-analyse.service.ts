@@ -142,15 +142,12 @@ export class NftStatisticsAnalyseService {
         smart_contract_address: smartContractAddress
       }
     })
-    const uniqueHolders = await this.nftConnection.manager
-      .createQueryBuilder(NftBalanceEntity, 'nft')
-      .select('nft.owner')
-      .where('nft.owner != :owner and smart_contract_address=:smartContract', {
-        owner: '0x0000000000000000000000000000000000000000',
-        smartContract: smartContractAddress
-      })
-      .distinct(true)
-      .getCount()
+    const uniqueOwners = await this.nftConnection.query(
+      `select count(distinct(owner)) as _num from nft_balance_entity where nft_balance_entity.smart_contract_address = '${smartContractAddress}' and nft_balance_entity.owner != '0x0000000000000000000000000000000000000000'`
+    )
+    console.log(uniqueOwners)
+    const uniqueHolders = uniqueOwners[0]._num
+
     // const uniqueOwners = []
     // for (let i = 0; i < allItems.length; i++) {
     //   if (!uniqueOwners.includes(allItems[i].owner)) {
