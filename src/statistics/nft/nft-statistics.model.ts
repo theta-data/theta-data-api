@@ -32,6 +32,9 @@ export class NftDetailType {
   @Field(() => GraphQLInt)
   items: number
 
+  @Field(() => GraphQLInt)
+  destroyed_items: number
+
   @Field({ nullable: true })
   update_timestamp: number
 
