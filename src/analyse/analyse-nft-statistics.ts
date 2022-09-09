@@ -24,10 +24,12 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      console.log('finish')
       await new Promise((resolve) =>
         setTimeout(resolve, config.get('NFT_STATISTICS.ANALYSE_INTERVAL'))
       )
       app.close()
+      console.log('app close')
     }
   } catch (e) {
     writeFailExcuteLog(config.get('NFT_STATISTICS.MONITOR_PATH'))

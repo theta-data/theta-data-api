@@ -38,6 +38,10 @@ export class NftStatisticsEntity {
   @Column({ type: 'int', default: 0 })
   items: number
 
+  @Field(() => GraphQLInt)
+  @Column({ type: 'int', default: 0 })
+  destroyed_items: number
+
   @Field({ nullable: true })
   @Column({ default: '', nullable: true })
   img_uri: string

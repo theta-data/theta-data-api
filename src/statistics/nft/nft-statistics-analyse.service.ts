@@ -142,6 +142,12 @@ export class NftStatisticsAnalyseService {
         smart_contract_address: smartContractAddress
       }
     })
+    const destroyedItems = await this.nftConnection.manager.count(NftBalanceEntity, {
+      where: {
+        owner: '0x0000000000000000000000000000000000000000',
+        smart_contract_address: smartContractAddress
+      }
+    })
     const uniqueOwners = await this.nftConnection.query(
       `select count(distinct(owner)) as _num from nft_balance_entity where nft_balance_entity.smart_contract_address = '${smartContractAddress}' and nft_balance_entity.owner != '0x0000000000000000000000000000000000000000'`
     )
@@ -301,6 +307,7 @@ export class NftStatisticsAnalyseService {
       nftStatistics.update_timestamp = timestamp
       nftStatistics.unique_owners = uniqueHolders
       nftStatistics.items = allItems
+      nftStatistics.destroyed_items = destroyedItems
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
       if (nft.contract_uri_update_timestamp < moment().unix() - 24 * 3600) {
@@ -377,6 +384,7 @@ export class NftStatisticsAnalyseService {
       nft.last_30_days_highest_price = highestPrice30D
       nft.unique_owners = uniqueHolders
       nft.items = allItems
+      nft.destroyed_items = destroyedItems
       await this.nftStatisticsConnection.manager.save(nft)
     }
   }
