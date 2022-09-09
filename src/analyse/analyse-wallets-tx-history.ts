@@ -1,19 +1,16 @@
-import { writeFailExcuteLog } from 'src/common/utils.service'
+import { WalletTxHistoryAnalyseService } from './../block-chain/wallet-tx-history/wallet-tx-history-analyse.service'
+import { WalletTxHistoryModule } from './../block-chain/wallet-tx-history/wallet-tx-history.module'
 import { NestFactory } from '@nestjs/core'
 import { AppModule } from 'src/app.module'
-import { NftStatisticsAnalyseService } from 'src/statistics/nft/nft-statistics-analyse.service'
-import { NftStatisticsModule } from 'src/statistics/nft/nft-statistics.module'
+import { writeFailExcuteLog } from 'src/common/utils.service'
 const config = require('config')
-
 async function bootstrap() {
   try {
     while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app
-        .select(NftStatisticsModule)
-        .get(NftStatisticsAnalyseService, { strict: true })
-
-      console.log('do while')
+        .select(WalletTxHistoryModule)
+        .get(WalletTxHistoryAnalyseService, { strict: true })
       await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
@@ -24,14 +21,16 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      // await service.analyseData()
       await new Promise((resolve) =>
-        setTimeout(resolve, config.get('NFT_STATISTICS.ANALYSE_INTERVAL'))
+        setTimeout(resolve, config.get('WALLET-TX-HISTORY.ANALYSE_INTERVAL'))
       )
       app.close()
+      // await sleep(1000)
     }
   } catch (e) {
-    writeFailExcuteLog(config.get('NFT_STATISTICS.MONITOR_PATH'))
     console.log(e)
+    writeFailExcuteLog(config.get('WALLET-TX-HISTORY.MONITOR_PATH'))
     process.exit()
   }
 }

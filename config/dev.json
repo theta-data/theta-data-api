@@ -73,5 +73,11 @@
     "ANALYSE_NUMBER": 100,
     "ANALYSE_INTERVAL": 1000,
     "MONITOR_PATH": "../database/monitor/wallet/"
+  },
+  "WALLET-TX-HISTORY": {
+    "START_HEIGHT": 8000000,
+    "ANALYSE_NUMBER": 100,
+    "ANALYSE_INTERVAL": 1000,
+    "MONITOR_PATH": "../database/monitor/wallet-tx-history/"
   }
 }

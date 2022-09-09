@@ -2,6 +2,42 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type TransactionEntity {
+  tx_hash: String!
+  tx_type: THETA_TRANSACTION_TYPE_ENUM!
+  from: String
+  to: String
+  fee: String
+  gas_price: String
+  gas_limit: String
+  height: Int!
+  timestamp: Int!
+  theta: Float!
+  theta_fuel: Float!
+}
+
+enum THETA_TRANSACTION_TYPE_ENUM {
+  coinbase
+  slash
+  send
+  reserve_fund
+  release_fund
+  service_payment
+  split_rule
+  smart_contract
+  deposit_stake
+  withdraw_stake
+  tx_deposit_stake_v2
+  tx_stake_reward_distribution
+}
+
+type PaginatedHistoryTransactions {
+  nodes: [TransactionEntity!]
+  totalCount: Int!
+  hasNextPage: Boolean!
+  skip: Int!
+}
+
 type NftStatisticsEntity {
   smart_contract_address: String!
   name: String!
@@ -11,12 +47,18 @@ type NftStatisticsEntity {
   last_24_h_transactions: Int!
   last_24_h_volume: Int!
   last_24_h_users: Int!
+  last_24_h_floor_price: Float!
+  last_24_h_highest_price: Float!
   last_7_days_transactions: Int!
   last_7_days_volume: Int!
   last_7_days_users: Int!
+  last_7_days_highest_price: Float!
+  last_7_days_floor_price: Float!
   last_30_days_transactions: Int!
   last_30_days_volume: Int!
   last_30_days_users: Int!
+  last_30_days_highest_price: Float!
+  last_30_days_floor_price: Float!
   update_timestamp: Int!
   contract_uri_update_timestamp: Int!
 }
@@ -26,7 +68,6 @@ type PaginatedNftStatistics {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 type NftDetailType {
@@ -353,21 +394,6 @@ type transactionType {
   receipt: receiptType
 }
 
-enum THETA_TRANSACTION_TYPE_ENUM {
-  coinbase
-  slash
-  send
-  reserve_fund
-  release_fund
-  service_payment
-  split_rule
-  smart_contract
-  deposit_stake
-  withdraw_stake
-  tx_deposit_stake_v2
-  tx_stake_reward_distribution
-}
-
 type GetTransactionModel {
   block_hash: String!
   block_height: String!
@@ -575,7 +601,6 @@ type PaginatedNftBalance {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 type PaginatedSmartContract {
@@ -583,7 +608,6 @@ type PaginatedSmartContract {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 type PaginatedNftTransferRecord {
@@ -591,7 +615,6 @@ type PaginatedNftTransferRecord {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 """Statistics on smart contract related calls"""
@@ -625,20 +648,6 @@ type SmartContractScType {
   constructor_arguments: String!
 }
 
-type TransactionEntity {
-  tx_hash: String!
-  tx_type: Int!
-  from: String
-  to: String
-  fee: String
-  gas_price: String
-  gas_limit: String
-  height: Int!
-  timestamp: Int!
-  theta: Float!
-  theta_fuel: Float!
-}
-
 type BlokcListEntity {
   height: Int!
   block_hash: String!
@@ -652,7 +661,6 @@ type PaginatedBlockList {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 type PaginatedTransactions {
@@ -660,7 +668,6 @@ type PaginatedTransactions {
   totalCount: Int!
   hasNextPage: Boolean!
   skip: Int!
-  endCursor: String!
 }
 
 type ExplorerSearchModelType {
@@ -837,6 +844,7 @@ type Query {
   NftStatistics(order_by: NftStatisticsOrderByType!, take: Int = 10, skip: Int = 0, search: String, after: String): PaginatedNftStatistics!
   NftDetail(contract_address: String!): NftDetailType!
   Explorer: ExplorerModelType!
+  TxHistory(wallet_address: String!, take: Int = 10, skip: Int = 0, tx_type: THETA_TRANSACTION_TYPE_ENUM): PaginatedHistoryTransactions!
 }
 
 enum LoggerRankByEnum {

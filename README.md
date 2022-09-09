@@ -200,6 +200,11 @@ open another terminal
 node dist/main
 ```
 
+## Links
+* Playground - [Playground](http://playground.thetadata.io/)
+* Official Website - [thetadata.io](https://www.thetadata.io/)
+
+
 ## Contact
 
 contact@thetadata.io

@@ -1,3 +1,4 @@
+import { Paginated } from 'src/common/common.model'
 import { TokenMarketInformationType } from './../../market/market.model'
 import { Injectable, Logger } from '@nestjs/common'
 import { NftBalanceEntity } from 'src/block-chain/smart-contract/nft/nft-balance.entity'
@@ -6,7 +7,7 @@ import { SmartContractEntity } from 'src/block-chain/smart-contract/smart-contra
 import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 import { SmartContractProtocolEnum } from 'src/contact/contact.entity'
 import { MarketService } from 'src/market/market.service'
-import { getConnection, LessThan, MoreThan, QueryRunner, Repository } from 'typeorm'
+import { getConnection, LessThan, MoreThan, Not, QueryRunner, Repository } from 'typeorm'
 import { NftStatisticsEntity } from './nft-statistics.entity'
 const fs = require('fs')
 const moment = require('moment')
@@ -135,6 +136,24 @@ export class NftStatisticsAnalyseService {
       this.logger.debug('no contract or not tnt721 protocol:' + smartContractAddress)
       return
     }
+    const allItems = await this.nftConnection.manager.count(NftBalanceEntity, {
+      where: {
+        owner: Not('0x0000000000000000000000000000000000000000'),
+        smart_contract_address: smartContractAddress
+      }
+    })
+    const uniqueOwners = await this.nftConnection.query(
+      `select count(distinct(owner)) as _num from nft_balance_entity where nft_balance_entity.smart_contract_address = '${smartContractAddress}' and nft_balance_entity.owner != '0x0000000000000000000000000000000000000000'`
+    )
+    // console.log(uniqueOwners)
+    const uniqueHolders = uniqueOwners[0]._num
+
+    // const uniqueOwners = []
+    // for (let i = 0; i < allItems.length; i++) {
+    //   if (!uniqueOwners.includes(allItems[i].owner)) {
+    //     uniqueOwners.push(allItems[i].owner)
+    //   }
+    // }
 
     const recordList = await this.nftConnection.manager.find(NftTransferRecordEntity, {
       smart_contract_address: smartContractAddress,
@@ -267,38 +286,7 @@ export class NftStatisticsAnalyseService {
     })
     if (!nft) {
       const nftStatistics = new NftStatisticsEntity()
-      if (!smartContract.contract_uri) {
-        const firstTokencontractUri = await this.nftConnection.manager.findOne(NftBalanceEntity, {
-          where: {
-            smart_contract_address: smartContractAddress
-          },
-          order: {
-            token_id: 'ASC'
-          }
-        })
-        if (firstTokencontractUri) {
-          nftStatistics.contract_uri = firstTokencontractUri.contract_uri
-          nftStatistics.contract_uri_detail = firstTokencontractUri.detail
-          if (firstTokencontractUri.detail) {
-            const contractDetail = JSON.parse(firstTokencontractUri.detail)
-            // nftStatistics.img_uri = contractDetail.image
-            nftStatistics.img_uri = await this.utilsService.downloadImage(
-              contractDetail.image,
-              config.get('NFT_STATISTICS.STATIC_PATH')
-            )
-          }
-        }
-      } else {
-        nftStatistics.contract_uri = smartContract.contract_uri
-        nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
-        if (smartContract.contract_uri_detail) {
-          const contractDetail = JSON.parse(smartContract.contract_uri_detail)
-          nftStatistics.img_uri = await this.utilsService.downloadImage(
-            contractDetail.image,
-            config.get('NFT_STATISTICS.STATIC_PATH')
-          )
-        }
-      }
+      await this.syncNftInfo(smartContract, nftStatistics)
       nftStatistics.name = smartContract.name
       nftStatistics.smart_contract_address = smartContractAddress
       nftStatistics.last_24_h_users = users24H.length
@@ -311,6 +299,8 @@ export class NftStatisticsAnalyseService {
       nftStatistics.last_7_days_transactions = transactionCount7D
       nftStatistics.last_30_days_transactions = transactionCount30D
       nftStatistics.update_timestamp = timestamp
+      nftStatistics.unique_owners = uniqueHolders
+      nftStatistics.items = allItems
       await this.nftStatisticsConnection.manager.save(nftStatistics)
     } else {
       if (nft.contract_uri_update_timestamp < moment().unix() - 24 * 3600) {
@@ -334,20 +324,38 @@ export class NftStatisticsAnalyseService {
               config.get('NFT_STATISTICS.STATIC_PATH')
             )
             nft.contract_uri_detail = JSON.stringify(res)
+            if (res.description) {
+              nft.description = res.description
+            }
           }
         } catch (e) {
           this.logger.error(e)
         }
       }
-      if (!nft.img_uri) {
+      if (!nft.description && nft.contract_uri_detail) {
+        const detail = JSON.parse(nft.contract_uri_detail)
+        nft.description = detail.description
+      }
+
+      if (!nft.img_uri || !nft.description) {
         const firstToken = await this.nftConnection.manager.findOne(NftBalanceEntity, {
-          order: { id: 'ASC' }
+          order: { id: 'ASC' },
+          where: {
+            smart_contract_address: smartContractAddress,
+            owner: Not('0x0000000000000000000000000000000000000000')
+          }
         })
         if (firstToken) {
-          nft.img_uri = await this.utilsService.downloadImage(
-            firstToken.img_uri,
-            config.get('NFT_STATISTICS.STATIC_PATH')
-          )
+          nft.img_uri = nft.img_uri
+            ? nft.img_uri
+            : await this.utilsService.downloadImage(
+                firstToken.img_uri,
+                config.get('NFT_STATISTICS.STATIC_PATH')
+              )
+          if (firstToken.detail) {
+            const contractInfo = JSON.parse(firstToken.detail)
+            nft.description = nft.description ? nft.description : contractInfo.description
+          }
         }
       }
 
@@ -367,6 +375,8 @@ export class NftStatisticsAnalyseService {
       nft.last_24_h_highest_price = highestPrice24H
       nft.last_7_days_highest_price = highestPrice7D
       nft.last_30_days_highest_price = highestPrice30D
+      nft.unique_owners = uniqueHolders
+      nft.items = allItems
       await this.nftStatisticsConnection.manager.save(nft)
     }
   }
@@ -427,6 +437,43 @@ export class NftStatisticsAnalyseService {
           config.get('NFT_STATISTICS.STATIC_PATH')
         )
         await this.nftStatisticsConnection.manager.save(nft)
+      }
+    }
+  }
+
+  async syncNftInfo(smartContract: SmartContractEntity, nftStatistics: NftStatisticsEntity) {
+    if (!smartContract.contract_uri) {
+      const firstTokencontractUri = await this.nftConnection.manager.findOne(NftBalanceEntity, {
+        where: {
+          smart_contract_address: smartContract.contract_address
+        },
+        order: {
+          token_id: 'ASC'
+        }
+      })
+      if (firstTokencontractUri) {
+        nftStatistics.contract_uri = firstTokencontractUri.contract_uri
+        nftStatistics.contract_uri_detail = firstTokencontractUri.detail
+        if (firstTokencontractUri.detail) {
+          const contractDetail = JSON.parse(firstTokencontractUri.detail)
+          // nftStatistics.img_uri = contractDetail.image
+          nftStatistics.img_uri = await this.utilsService.downloadImage(
+            contractDetail.image,
+            config.get('NFT_STATISTICS.STATIC_PATH')
+          )
+          nftStatistics.description = contractDetail.description
+        }
+      }
+    } else {
+      nftStatistics.contract_uri = smartContract.contract_uri
+      nftStatistics.contract_uri_detail = smartContract.contract_uri_detail
+      if (smartContract.contract_uri_detail) {
+        const contractDetail = JSON.parse(smartContract.contract_uri_detail)
+        nftStatistics.img_uri = await this.utilsService.downloadImage(
+          contractDetail.image,
+          config.get('NFT_STATISTICS.STATIC_PATH')
+        )
+        nftStatistics.description = contractDetail.description
       }
     }
   }

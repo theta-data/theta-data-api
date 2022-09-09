@@ -36,5 +36,6 @@ jobs:
       - name: build
         run: |
           npm run build
+          pm2 stop all
           pm2 delete ecosystem.config.js
           pm2 start ecosystem.config.js --env test
