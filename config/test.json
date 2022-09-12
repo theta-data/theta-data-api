@@ -76,7 +76,7 @@
   },
   "WALLET-TX-HISTORY": {
     "START_HEIGHT": 8000000,
-    "ANALYSE_NUMBER": 100,
+    "ANALYSE_NUMBER": 1000,
     "ANALYSE_INTERVAL": 200,
     "MONITOR_PATH": "/home/ubuntu/theta-data/monitor/wallet-tx-history/"
   }

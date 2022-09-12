@@ -4,6 +4,7 @@ import { UtilsService, writeFailExcuteLog, writeSucessExcuteLog } from 'src/comm
 import { getConnection, MoreThan, QueryRunner } from 'typeorm'
 import { THETA_TRANSACTION_TYPE_ENUM } from '../tx/theta.enum'
 import { WalletTxHistoryEntity } from './wallet-tx-history.entity'
+import { id } from 'ethers/lib/utils'
 const fs = require('fs')
 const config = require('config')
 @Injectable()
@@ -86,21 +87,25 @@ export class WalletTxHistoryAnalyseService {
         if (!walletsToupdate[addr.address]) {
           walletsToupdate[addr.address] = []
         }
-        !walletsToupdate[addr.address].includes(record.id + '_' + record.tx_type) &&
-          walletsToupdate[addr.address].push(record.id + '_' + record.tx_type)
+        const id36 = record.id.toString(36) + record.tx_type.toString(36)
+        !walletsToupdate[addr.address].includes(id36) && walletsToupdate[addr.address].push(id36)
       }
     } else {
       if (record.from && record.from != '0x0000000000000000000000000000000000000000') {
         if (!walletsToupdate[record.from]) {
           walletsToupdate[record.from] = []
         }
-        walletsToupdate[record.from].push(record.id + '_' + record.tx_type)
+        const id36 = record.id.toString(36) + record.tx_type.toString(36)
+
+        walletsToupdate[record.from].push(id36)
       }
       if (record.to && record.to != '0x0000000000000000000000000000000000000000') {
         if (!walletsToupdate[record.to]) {
           walletsToupdate[record.to] = []
         }
-        walletsToupdate[record.to].push(record.id + '_' + record.tx_type)
+        // walletsToupdate[record.to].push(record.id + '_' + record.tx_type)
+        const id36 = record.id.toString(36) + record.tx_type.toString(36)
+        walletsToupdate[record.to].push(id36)
       }
     }
   }

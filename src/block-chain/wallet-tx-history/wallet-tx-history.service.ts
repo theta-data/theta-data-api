@@ -37,8 +37,8 @@ export class WalletTxHistoryService {
     // if (txs.length  take) {
     const idsTyped = []
     for (let i = 0; i < txs.length; i++) {
-      if (txType == undefined || Number(txs[i].split('_')[1]) == txType) {
-        idsTyped.push(txs[i].split('_')[0])
+      if (txType == undefined || parseInt(txs[i].substring(txs[i].length - 1), 36) == txType) {
+        idsTyped.push(parseInt(txs[i].substring(0, txs[i].length - 1), 36))
       }
     }
 
