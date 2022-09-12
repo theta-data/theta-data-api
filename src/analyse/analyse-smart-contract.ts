@@ -13,7 +13,16 @@ async function bootstrap() {
         .select(SmartContractModule)
         .get(SmartContractAnalyseService, { strict: true })
 
-      await service.analyseData()
+      await Promise.race([
+        service.analyseData(),
+        new Promise((resolve, reject) => {
+          setTimeout(() => {
+            resolve('timeout')
+            console.log('analyse race timeout')
+            // this.logger.debug('timeout')
+          }, 1000 * 60 * 5)
+        })
+      ])
       await new Promise((resolve) =>
         setTimeout(resolve, config.get('SMART_CONTRACT.ANALYSE_INTERVAL'))
       )
