@@ -53,10 +53,14 @@ export class NftAnalyseService {
 
       const promiseArr = []
       for (const record of contractRecordList) {
-        promiseArr.push(
-          this.nftService.updateNftRecord(this.nftConnection, this.smartContractConnection, record)
+        // promiseArr.push(
+        await this.nftService.updateNftRecord(
+          this.nftConnection,
+          this.smartContractConnection,
+          record
         )
-        await Promise.all(promiseArr)
+        // )
+        // await Promise.all(promiseArr)
       }
 
       this.logger.debug('start update calltimes by period')
