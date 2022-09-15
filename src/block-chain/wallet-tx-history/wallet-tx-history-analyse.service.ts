@@ -80,8 +80,10 @@ export class WalletTxHistoryAnalyseService {
 
   async addWallet(record: TransactionEntity, walletsToupdate: { [index: string]: Array<string> }) {
     if (record.tx_type === THETA_TRANSACTION_TYPE_ENUM.send) {
+      // console.log('send record')
       const from = JSON.parse(record.from)
       const to = JSON.parse(record.to)
+      // console.log('send record parsed')
       for (const addr of [...from, ...to]) {
         if (addr.address === '0x0000000000000000000000000000000000000000') continue
         if (!walletsToupdate[addr.address]) {

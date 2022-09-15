@@ -207,7 +207,7 @@ export class SmartContractAnalyseService {
     const byteCode = res.body.bytecode
 
     address = this.utilsService.normalize(address.toLowerCase())
-    return this.smartContractService.getVerifyInfo(
+    return await this.smartContractService.getVerifyInfo(
       address,
       sourceCode,
       byteCode,
