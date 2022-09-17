@@ -45,8 +45,8 @@
     "MONITOR_PATH": "/data/theta-data/monitor/smart_contract/"
   },
   "NFT_STATISTICS": {
-    "ANALYSE_NUMBER": 5000,
-    "ANALYSE_INTERVAL": 60000,
+    "ANALYSE_NUMBER": 100,
+    "ANALYSE_INTERVAL": 100,
     "STATIC_PATH": "/data/theta-data/static/nft_img/",
     "MONITOR_PATH": "/data/theta-data/monitor/nft_statistics/"
   },
