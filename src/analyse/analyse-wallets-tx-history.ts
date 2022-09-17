@@ -11,7 +11,7 @@ async function bootstrap() {
       const service = app
         .select(WalletTxHistoryModule)
         .get(WalletTxHistoryAnalyseService, { strict: true })
-      await Promise.race([
+      const res = await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -21,6 +21,7 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      if (res == 'timeout') writeFailExcuteLog(config.get('WALLET-TX-HISTORY.MONITOR_PATH'))
       // await service.analyseData()
       await new Promise((resolve) =>
         setTimeout(resolve, config.get('WALLET-TX-HISTORY.ANALYSE_INTERVAL'))

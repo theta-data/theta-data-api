@@ -11,7 +11,7 @@ async function bootstrap() {
       const service = app.select(TxModule).get(TxAnalyseService, { strict: true })
 
       // console.log('do while')
-      await Promise.race([
+      const res = await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -21,6 +21,7 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      if (res == 'timeout') writeFailExcuteLog(config.get('TX.MONITOR_PATH'))
       await new Promise((resolve) => setTimeout(resolve, config.get('TX.ANALYSE_INTERVAL')))
       app.close()
     }
