@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core'
 import { AppModule } from 'src/app.module'
 import { SmartContractAnalyseService } from 'src/block-chain/smart-contract/smart-contract-analyse.service'
 import { SmartContractModule } from 'src/block-chain/smart-contract/smart-contract.module'
-import { writeSucessExcuteLog } from 'src/common/utils.service'
+import { writeFailExcuteLog, writeSucessExcuteLog } from 'src/common/utils.service'
 const config = require('config')
 
 async function bootstrap() {
@@ -13,7 +13,7 @@ async function bootstrap() {
         .select(SmartContractModule)
         .get(SmartContractAnalyseService, { strict: true })
 
-      await Promise.race([
+      const res = await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -23,6 +23,7 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      if (res == 'timeout') writeFailExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
       await new Promise((resolve) =>
         setTimeout(resolve, config.get('SMART_CONTRACT.ANALYSE_INTERVAL'))
       )
@@ -30,7 +31,7 @@ async function bootstrap() {
     }
   } catch (e) {
     console.log(e)
-    writeSucessExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
+    writeFailExcuteLog(config.get('SMART_CONTRACT.MONITOR_PATH'))
     process.exit()
   }
 }

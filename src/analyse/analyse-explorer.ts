@@ -10,7 +10,7 @@ async function bootstrap() {
     while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app.select(ExplorerModule).get(ExplorerAnalyseService, { strict: true })
-      await Promise.race([
+      const res = await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -20,6 +20,7 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      if (res == 'timeout') writeFailExcuteLog(config.get('EXPLORER.MONITOR_PATH'))
       await new Promise((resolve) => setTimeout(resolve, config.get('EXPLORER.ANALYSE_INTERVAL')))
       app.close()
     }
