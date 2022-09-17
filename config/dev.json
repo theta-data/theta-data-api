@@ -32,7 +32,7 @@
   ],
   "NFT": {
     "ANALYSE_NUMBER": 2,
-    "ANALYSE_INTERVAL": 20000,
+    "ANALYSE_INTERVAL": 60000,
     "DL_ALL_NFT_IMG": false,
     "STATIC_PATH": "../static/",
     "MONITOR_PATH": "../database/monitor/nft/"

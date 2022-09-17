@@ -9,7 +9,7 @@ async function bootstrap() {
     while (1) {
       const app = await NestFactory.createApplicationContext(AppModule)
       const service = app.select(StakeModule).get(StakeAnalyseService, { strict: true })
-      await Promise.race([
+      const res = await Promise.race([
         service.analyseData(),
         new Promise((resolve, reject) => {
           setTimeout(() => {
@@ -19,6 +19,7 @@ async function bootstrap() {
           }, 1000 * 60 * 5)
         })
       ])
+      if (res == 'timeout') writeFailExcuteLog(config.get('STAKE.MONITOR_PATH'))
       await new Promise((resolve) => setTimeout(resolve, config.get('STAKE.ANALYSE_INTERVAL')))
       app.close()
     }
