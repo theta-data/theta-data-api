@@ -31,7 +31,7 @@
     "0x82236267393c31c17bf4e79fb14f9fc0396c05821ebd357e6b420a43933d64db"
   ],
   "NFT": {
-    "ANALYSE_NUMBER": 100,
+    "ANALYSE_NUMBER": 10,
     "ANALYSE_INTERVAL": 100,
     "DL_ALL_NFT_IMG": false,
     "STATIC_PATH": "/home/ubuntu/theta-data/static/nft_img/",
