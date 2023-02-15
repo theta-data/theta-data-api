@@ -1,3 +1,4 @@
+# 【Deprecated】
 Theta Data is a Data Explorer and Analytics Platform for Theta Network.
 It collects data from Guardian Node, performs analysis and provides data and analysis result through convenient Graphql interfaces.
 Users can access the data with simple statements and queries.
