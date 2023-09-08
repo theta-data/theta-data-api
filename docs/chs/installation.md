@@ -170,8 +170,7 @@ After running the graphql api server.You can then open your web browser and navi
 
 ## Contact
 
-contact@thetadata.io
-
+[https://twitter.com/larry38184614](https://twitter.com/larry38184614)
 ## License
 
 Theta Data  is licensed under the [MIT License](https://opensource.org/licenses/MIT).
