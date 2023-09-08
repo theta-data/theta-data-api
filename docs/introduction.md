@@ -1,14 +1,23 @@
-# Introduction
+[![NPM](https://nodei.co/npm/theta-data.png)](https://www.npmjs.com/package/theta-data)   
 
-## What is Theta Data
-
-Theta Data is a Data Explorer and Analytics Platform for Theta Network.
+Theta Data is a Data Analytics Tool for [The Theta Network](https://www.thetatoken.org/).
 It collects data from Guardian Node, performs analysis and provides data and analysis result through convenient Graphql interfaces.
 Users can access the data with simple statements and queries.
 
+## Features
+* Sqlite database support
+* Modular data analysis services
+* Nft Data
+* Stake Data
+* Market Data
+* Wallet Data
+* Transactions Data
+* Blocks Data
+And more...
+
 ## User Interface
 
-![img](img/playground.png)
+![img](https://docs.thetadata.io/img/playground.png)
 
 We provide a simple GUI for basic queries. With box checking, you can look up the relevant data of your own interest. History queries will be saved so that you do not need to rewrite the statements.
 
@@ -133,14 +142,41 @@ Response:
 
 It is also worth mentioning that Theta Data only returns the data you specify in the query statement. No redundant fields will be returned.
 
-## Data source and service stability
+## Run Theta Data
 
-Since the whole project is open sourced, the data source can be audited through the [source code](https://github.com/theta-data/theta-data-api).
+### Install
+```bash
+npm i theta-data
+```
 
-Except for market-related data which is obtained from [Coinmarketcap](https://coinmarketcap.com/), all our data is obtained from Guardian Node. Therefore, our data service is independent from any other third-party data services.
+### Runnning Analyse Server
+```javascript
+const thetaData = require("theta-data");
+thetaData.analyse();
+```
 
-If you have massive data demand and are concerned with the stability of our service, please contract [us](*****@****.com) for further support.
+### Running The Graphql Api Server
+```javascript
+const thetaData = require("theta-data");
+thetaData.serve();
+```
 
-You can also pull our code and deploy Theta Data to your own server so that you can retrieve data from your Guardian node.
+### PlayGround
 
-This project is licensed under the terms of the MIT license.
+After running the graphql api server.You can then open your web browser and navigate to http://localhost:3000 (host and port may vary depending on your configuration). You will then see the GraphQL playground.
+
+![avatar](https://github.com/larryro/image/blob/main/playground_20211101112605.png?raw=true)
+
+
+## Links
+* Playground - [Playground](http://playground.thetadata.io/)
+* Official Website - [thetadata.io](https://www.thetadata.io/)
+
+
+## Contact
+
+contact@thetadata.io
+
+## License
+
+Theta Data  is licensed under the [MIT License](https://opensource.org/licenses/MIT).
